@@ -1,6 +1,5 @@
 from .utils import *
 
-
 class EquirectRotate:
   """
     @:param height: height of image to rotate
@@ -28,9 +27,7 @@ class EquirectRotate:
     # src_xyz     = out_xyz @ R^t
     self.R = getRotMatrix(np.array(rotation))
     Rt = np.transpose(self.R)  # we should fill out the output image, so use R^t.
-    for i in range(self.height):
-      for j in range(self.width):
-        self.src_xyz[i][j] = self.out_xyz[i][j] @ Rt
+    self.src_xyz = self.out_xyz @ Rt
 
     # mapping xyz(sphere) coordinate into LatLon coordinate system
     self.src_LonLat = Sphere2LatLon(self.src_xyz)  # (H, W, 2)
@@ -46,11 +43,10 @@ class EquirectRotate:
     assert image.shape[:2] == (self.height, self.width)
 
     rotated_img = np.zeros_like(image)  # (H, W, C)
-    for i in range(self.height):
-      for j in range(self.width):
-        pixel = self.src_Pixel[i][j]
-        rotated_img[i][j] = image[pixel[0]][pixel[1]]
-    return rotated_img
+    px,py=np.dsplit(self.src_Pixel,2)
+    rotated_img = image[px,py]
+    return rotated_img.squeeze()
+
 
   def setInverse(self, isInverse=False):
     if not isInverse:
@@ -59,9 +55,7 @@ class EquirectRotate:
     # re-generate coordinate pairing
     self.R = np.transpose(self.R)
     Rt = np.transpose(self.R)  # we should fill out the output image, so use R^t.
-    for i in range(self.height):
-      for j in range(self.width):
-        self.src_xyz[i][j] = self.out_xyz[i][j] @ Rt
+    self.src_xyz = self.out_xyz @ Rt
 
     # mapping xyz(sphere) coordinate into LatLon coordinate system
     self.src_LonLat = Sphere2LatLon(self.src_xyz)  # (H, W, 2)
