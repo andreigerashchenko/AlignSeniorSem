@@ -8,10 +8,10 @@ from kivy.uix.widget import Widget
 from kivy.uix.boxlayout import BoxLayout
 
 
-kv = Builder.load_file('mainscreen.kv')
+kv = Builder.load_file('main_screen.kv')
 
 
-class MainLayout(BoxLayout):
+class MainScreen(BoxLayout):
 
     # replace with the function which does some calculation to maintain progressbar value
 
@@ -27,21 +27,26 @@ class MainLayout(BoxLayout):
         self.ids.my_progress_bar.value = current
         # Update the label
         #self.ids.my_label.text = f'{int(current)}% Progress'
-
     # see doc MDProgress bar
+
     def press_it2(self):
         # Grab the current progress bar value
         current = self.progression_value
         # If statement to start over after 100
+        if current == 100:
+            current = 0
+
+        # Increment value by .25
+        current += 25
 
         # Update the label
         #self.ids.my_label2.text = f'{int(current)}% Progress'
 
 
-class MainApp(MDApp):
+class MainScreenApp(MDApp):
 
     def build(self):
-        return MainLayout()
+        return MainScreen()
 
 
-MainApp().run()
+MainScreenApp().run()

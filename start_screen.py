@@ -7,18 +7,18 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
 from kivy.uix.label import Label
 
-Builder.load_file('grid.kv')
+kv = Builder.load_file('start_screen.kv')
 
 
-class MyCustomLayout(BoxLayout):
+class StartScreen(BoxLayout):
     def oFile(self):
-        self.ids.openFile.source='images/whitefileclicked.png'
+        self.ids.openFile.source = 'images/whitefileclicked.png'
         self.ids.hh.text = 'button'
-        
+
     def sFile(self):
         self.ids.openFile.source = 'images/whitefile.png'
-        self.ids.hh.text='Hey Horizon'
-        
+        self.ids.hh.text = 'Hey Horizon'
+
     def oFolder(self):
         self.ids.openFile.source = 'images/whitefileclicked.png'
         self.ids.hh.text = 'opening Folder'
@@ -28,11 +28,11 @@ class MyCustomLayout(BoxLayout):
         self.ids.hh.text = 'Hey Horizon'
 
 
-class CustomLayoutApp(App):
+class StartScreenApp(App):
     def build(self):
         #Window.borderless = True
-        return MyCustomLayout()
+        return StartScreen()
 
 
 if __name__ == '__main__':
-    CustomLayoutApp().run()
+    StartScreenApp().run()
