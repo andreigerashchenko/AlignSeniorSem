@@ -42,6 +42,8 @@
 
         Label:
             id: hh
+            font_size: 55
+            font: 'font/sf-ui-display.otf'
             text: "Hey Horizon"
 
     BoxLayout: 
@@ -53,12 +55,13 @@
         width: 10
 
         Button:
+            id: file
             #text: "open File"
             size_hint: .45, 1.95
 			pos_hint: {'center_x': 0.5, 'center_y': 0.18}
 			background_color: 0,0.5,0,0.9
             on_press: root.oFile()
-            on_release:root.sFile()
+            #on_release:
             Image:
                 id: openFile
                 source: 'images/whitefile.png'
@@ -85,7 +88,7 @@
             size_hint: .45, 1.75
             pos_hint: {'center_x': 0.5, 'center_y': 0.18}
             background_color: 0,0.5,0,0.9
-            on_press: root.ostartCSreeFolder()
+            on_press: root.oFolder()
             on_release:root.sFolder()
             Image:
                 id: openProject

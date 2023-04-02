@@ -1,3 +1,4 @@
+from main_screen import MainScreen
 from main_screen import MainScreenApp
 from kivy import Config
 from kivy.app import App
@@ -8,7 +9,6 @@ from kivy.uix.screenmanager import ScreenManager, Screen
 # get all the screens using builder and import
 from start_screen import StartScreen
 Builder.load_file('start_screen.kv')
-
 Builder.load_file('main_screen.kv')
 
 
@@ -21,12 +21,21 @@ class mainScreen(Screen):
     pass
 
 
-class pref(ScreenManager):
-    pass
+# class pref(ScreenManager):
+    # pass
 
 
 class WindowManager(ScreenManager):
-    pass
+    def __init__(self, **kwargs):
+        super(WindowManager, self).__init__(**kwargs)
+        self.add_widget(mainScreen(name='mainScreen'))
+        # Add the start screen to the screen manager
+        self.add_widget(startScreen(name='startScreen'))
+
+        # Add other screens to the screen manager
+
+        # self.add_widget(pref(name='pref'))
+        self.current = 'startScreen'
 
 
 # Designate Our .kv design file
