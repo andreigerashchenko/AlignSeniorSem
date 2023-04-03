@@ -4,7 +4,8 @@ from kivy.uix.carousel import Carousel
 from kivymd.uix.toolbar import MDTopAppBar
 from kivy.uix.image import Image
 from kivy.uix.widget import Widget
-
+from kivy.properties import ObjectProperty
+from kivy.uix.popup import Popup
 from kivy.uix.boxlayout import BoxLayout
 import os
 import numpy as np
@@ -14,7 +15,24 @@ from equirectRotate import EquirectRotate, pointRotate
 kv = Builder.load_file('main_screen.kv')
 
 
+class HelpPopup(Popup):
+    pass
+
+
+class PrefPopup(Popup):
+    pass
+
+
 class MainScreen(BoxLayout):
+    popup = ObjectProperty(None)
+
+    def open_Help(self):
+        self.popup = HelpPopup()
+        self.popup.open()
+
+    def open_popup(self):
+        self.popup = PrefPopup()
+        self.popup.open()
 
     # replace with the function which does some calculation to maintain progressbar value
 
@@ -80,7 +98,8 @@ class MainScreen(BoxLayout):
         src_image = cv2.imread(src_path)
 
         # scale touch coordinates to image size
-        h, w, c, ix, iy = scaleImage(src_image,imgSize,touchLocalX,touchLocalY)
+        h, w, c, ix, iy = scaleImage(
+            src_image, imgSize, touchLocalX, touchLocalY)
         print(f"Clicked Location (x,y): {ix},{iy}")
 
         # rotate the image and update the preview

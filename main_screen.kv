@@ -1,38 +1,30 @@
 <MainScreen>:
     BoxLayout:
         orientation: "vertical"
-        padding: 9
-        spacing: 18
+        padding: 12
+        spacing: 10
         canvas.before:
             Color:
-                rgba: 0,0,0.768,1
+                rgba: 142/255,39/255,39/255,1
             Rectangle:
                 pos: self.pos
                 size: self.size
 
         BoxLayout: 
             orientation: "horizontal"
-            padding: 19
+            padding: 25
             spacing: 10
 
-            canvas.before:
-                Color:
-                    rgba: 0.7,0,0.768,1
-                Rectangle:
-                    pos: self.pos
-                    size: self.size
-
             Button:
-                size_hint: 1,0.5
-                pos_hint: {'center_x ': 0.91, 'top': 1}
+                pos_hint: {'center_x ': 0.3, 'top': 1}
                 background_normal: '/Users/rush/Desktop/senSem/heyHorizon/tryingtransitions/images/help button.png'
                 background_down: '/Users/rush/Desktop/senSem/heyHorizon/tryingtransitions/images/help buttonDown.png'
-                size: 50,50
+                size: 35,35
                 size_hint: None, None
+                on_press: root.open_Help()
 
 
             FitImage:
-                id: previewImage
                 pos_hint: {'center_x': 0.5, 'center_y': 0.5}
                 #size_hint: 0.751,0.651
                 source: "imgassets/r1.jpg"
@@ -47,17 +39,15 @@
                 
 
         BoxLayout: 
-            canvas.before:
-                Color:
-                    rgba: 0.3,0.5,0.768,1
-                Rectangle:
-                    pos: self.pos
-                    size: self.size
+
             orientation: "horizontal"
-            size_hint: 1, 0.1
-            padding: 19
+            size_hint: 1, 0.125
+            padding: 10
             spacing: 8
             Label:
+                pos_hint: {'x': 1, 'center_y': 0.5}
+                font_size: 20
+                font:'font/sf-ui-display.otf'
                 text: "Queue"
 
             #include from another kivy file the carousel widget as the queue
@@ -65,39 +55,31 @@
             Label:
                 text: " "
 
+            Label:
+                text: " "
+
 
         BoxLayout:
-
-            canvas.before:
-                Color:
-                    rgba: 0.3,0.5,0.768,1
-                Rectangle:
-                    pos: self.pos
-                    size: self.size
             orientation: "horizontal"
-            size_hint: 1, 0.35
-            padding: 18
+            size_hint: 1, 0.60
+            padding: 15
             spacing: 18
 
             BoxLayout: 
-                canvas.before:
-                    Color:
-                        rgba: 0.43,0.5,0.768,1
-                    Rectangle:
-                        pos: self.pos
-                        size: self.size
                 #progression_value: 25
                 orientation: 'vertical'
                 pos_hint: {'x':.5}
+                size_hint: 0.75,1
+
                 ProgressBar:
                     id: my_progress_bar
                     # Set Default Value
                     # value: .25
                     min: 0
                     max: 100
-                    pos_hint: {'x':.1}
-                    size_hint_x: 0.45
-                    size_hint_y: 0.2
+                    pos_hint: {'x':0.055}
+                    size_hint_x: 0.89
+                    size_hint_y: 0.5
 
            
                 #MDProgressBar:
@@ -114,44 +96,200 @@
                 
                 #delete this button when implementing the progress bar function
                 Button:
-                    size_hint: 0.12,0.15
+                    pos_hint: {'x':0.25, 'y':0}
+                    size_hint: 0.5,0.2
                     id: increment
                     text: "Press Me!"
                     on_press: root.press_it()
 
             GridLayout:
-                cols: 2
-                rows: 2
+                cols: 4
+                rows: 3
+                padding: 10
+                spacing: 15
+
+                Label: 
+                    text: "text: "
                 
                 Switch:
-                    size_hint: 0.2,0.425
+                    border_radius: 10
+                    #size_hint: 0.2,0.425
                     id: my_switch
                     active: True
                     disabled: False
                     font_size: 32
-
+                Label: 
+                    text: "text: "
                 Switch:
-                    size_hint: 0.32,0.425
+                    #size_hint: 0.32,0.425
                     id: my_switch
                     active: True
                     disabled: False
                     font_size: 32
-
+                Label: 
+                    text: "text: "
                 Switch:
                     background_color: 1,0.5,1,0.9
-                    size_hint: 0.32,0.425
+                    #size_hint: 0.32,0.425
+                    id: my_switch
+                    active: True
+                    disabled: False
+                    font_size: 32
+                Label: 
+                    text: "text: "
+                Switch:
+                    background_color: 1,0.5,0,0.9
+                    #size_hint: 0.32,0.45
+                    id: my_switch
+                    active: True
+                    disabled: False
+                    font_size: 32
+
+
+            GridLayout:
+                cols: 1
+                rows: 3
+                padding: 10
+                spacing: 10
+                size_hint: 0.75,1
+
+                Button:
+                    background_color: 2.85,2.850,2.850,1
+                    color: 0,0,0,1
+                    on_press: 
+                        self.background_color = (0,0,0,1)
+                        self.color = (2.85,2.850,2.850,1)
+                    size_hint: 0.1,0.2
+                    id: increment
+                    text: "Add Files"
+                    on_release: 
+                        self.background_color= (2.85,2.850,2.850,1)
+                        self.color= 0,0,0,1
+
+                Button:
+                    color: 0,0,0,1
+                    background_color: 2.85,2.850,2.850,1
+                    on_press: 
+                        self.background_color = (0,0,0,1)
+                        self.color = (2.85,2.850,2.850,1)
+                    size_hint: 0.05,0.2
+                    id: increment
+                    text: "Process"
+                    on_press: 
+                    on_release: 
+                        self.background_color = (2.85,2.850,2.850,1)
+                        self.color= 0,0,0,1
+
+                Button:
+                    background_color: 2.85,2.850,2.850,1
+                    color: 0,0,0,1
+                    on_release: 
+                        self.background_color = (2.85,2.850,2.850,1)
+                        self.color= 0,0,0,1
+                    on_press: 
+                        self.background_color = (0,0,0,1)
+                        self.color = (2.85,2.850,2.850,1)
+                    size_hint: 0.025,0.2
+                    id: increment
+                    text: "Prefrences"
+                    on_press: root.open_popup()
+
+
+
+
+
+
+<PrefPopup>:
+    id: pref
+    size_hint: 0.8, 0.8
+    auto_dismiss: False
+    title: 'Prefrences: '
+    padding: 40
+    space: 40
+    background_color: 152/255,49/255,49/255,1
+    
+
+    BoxLayout:
+        orientation: 'vertical'
+
+        BoxLayout:
+            orientation: 'horizontal'
+            #size_hint: 1, 0.1
+            padding: 19
+            spacing: 8
+            BoxLayout:
+                orientation: 'vertical'
+                canvas.before:
+                    Color:
+                        rgba: 0.3,0.5,0.768,1
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+
+                Switch:
+                    #size_hint: 0.2,0.425
                     id: my_switch
                     active: True
                     disabled: False
                     font_size: 32
 
                 Switch:
-                    background_color: 1,0.5,0,0.9
-                    size_hint: 0.32,0.45
+                    #size_hint: 0.32,0.425
                     id: my_switch
                     active: True
                     disabled: False
                     font_size: 32
 
+            BoxLayout:
+                orientation: 'vertical'
+                canvas.before:
+                    Color:
+                        rgba: 0.7,0.5,0.768,1
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+
+                Switch:
+                    border_radius: 10
+                    #size_hint: 0.2,0.425
+                    id: my_switch
+                    active: True
+                    disabled: False
+                    font_size: 32
+
+                Switch:
+                    #size_hint: 0.32,0.425
+                    id: my_switch
+                    active: True
+                    disabled: False
+                    font_size: 32
+        Label:
+            text: 'This is my popup!'
+        Button:
+            text: 'Close'
+            size_hint: 0.2, 0.2
+            pos_hint: {'center_x': 0.5, 'center_y': 1}
+            on_press: root.dismiss()
 
 
+
+<HelpPopup>:
+    id: help
+    size_hint: 0.8, 0.8
+    auto_dismiss: False
+    title: 'Help: '
+    padding: 40
+    space: 40
+    background_color: 152/255,49/255,49/255,1
+    BoxLayout:
+        orientation: 'vertical'
+    
+        Label:
+            size_hint_y: 0.65
+            text_size: self.width, None
+            text: 'Help! I need somebody! Help! Not just anybody! Help! You know I need someone! Help! When I was younger, so much younger than today! I never needed anybodys help in any way! But now these days are gone, I\m not so self assured! Now I find Ive changed my mind and opened up the doors! Help me if you can, Im feeling down! And I do appreciate you being round! Help me get my feet back on the ground! Wont you please, please help me? And now my life has changed in oh so many ways! My independence seems to vanish in the haze! But every now and then I feel so insecure! I know that I just need you like Ive never done before! Help me if you can, Im feeling down! And I do appreciate you being round! Help me get my feet b'
+        Button:
+            text: 'Close'
+            size_hint: 0.2, 0.2
+            pos_hint: {'center_x': 0.5, 'center_y': 1}
+            on_press: root.dismiss()
