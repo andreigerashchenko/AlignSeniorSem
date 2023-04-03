@@ -20,11 +20,19 @@ class StartScreen(BoxLayout):
         self.ids.hh.text = 'Hey Horizon'
 
     def oFolder(self):
-        self.ids.openFile.source = 'images/whitefileclicked.png'
+        self.ids.openFile.source = 'images/folderDown.png'
         self.ids.hh.text = 'opening Folder'
 
     def sFolder(self):
-        self.ids.openFile.source = 'images/whitefile.png'
+        self.ids.openFile.source = 'images/folder.png'
+        self.ids.hh.text = 'Hey Horizon'
+
+    def oProject(self):
+        self.ids.openFile.source = 'images/projectDown.png'
+        self.ids.hh.text = 'opening Folder'
+
+    def sProject(self):
+        self.ids.openFile.source = 'images/project.png'
         self.ids.hh.text = 'Hey Horizon'
 
 
