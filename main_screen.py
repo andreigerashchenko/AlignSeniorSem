@@ -83,7 +83,6 @@ class MainScreen(BoxLayout):
             return
 
         # flip Y value to be top to bottom
-        # this is what dipankr uses, so I'll keep it consistent
         touchLocalY = -(touchLocalY - imgSize[1])
 
         """
@@ -107,6 +106,7 @@ class MainScreen(BoxLayout):
 
         cv2.imwrite(opfile, rotatedImage, [int(cv2.IMWRITE_JPEG_QUALITY), 100])
         previewImg.source = opfile
+        src_path =  opfile
 
 
 def scaleImage(src_image, imgSize, localX, localY):
@@ -156,6 +156,7 @@ def rotateImage(src_image, h, w, c, ix, iy):
     ###################################################################
 
     final_image = cv2.rotate(rotated_image, cv2.ROTATE_180)
+    print("DONE")
 
     return final_image
 
