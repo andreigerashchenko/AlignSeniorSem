@@ -13,6 +13,8 @@ import numpy as np
 import cv2
 from equirectRotate import EquirectRotate, pointRotate
 
+from plyer import filechooser
+
 kv = Builder.load_file('main_screen.kv')
 
 
@@ -98,7 +100,7 @@ class MainScreen(BoxLayout):
         the file path of the chosen image will be gathered by the start screen
         for now, it is hardcoded in here
         """
-        src_path = "imgassets/r1.jpg"
+        src_path = "imgassets/r2.JPG"
         opfile = ".previewImg.jpg"
 
         # open the image to be transformed
