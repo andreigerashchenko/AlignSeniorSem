@@ -160,7 +160,7 @@
 
             GridLayout:
                 cols: 1
-                rows: 3
+                rows: 4
                 padding: 10
                 spacing: 10
                 size_hint: 0.75,1
@@ -187,6 +187,21 @@
                     size_hint: 0.05,0.2
                     id: increment
                     text: "Process"
+                    on_press: 
+                    on_release: 
+                        self.background_color = (2.85,2.850,2.850,1)
+                        self.color= 0,0,0,1
+
+
+                Button:
+                    color: 0,0,0,1
+                    background_color: 2.85,2.850,2.850,1
+                    on_press: 
+                        self.background_color = (0,0,0,1)
+                        self.color = (2.85,2.850,2.850,1)
+                    size_hint: 0.05,0.2
+                    id: increment
+                    text: "Download"
                     on_press: 
                     on_release: 
                         self.background_color = (2.85,2.850,2.850,1)
