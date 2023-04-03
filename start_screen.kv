@@ -1,0 +1,115 @@
+
+<StartScreen>:
+    canvas.before:
+        Color:
+            rgba: 0.020, 0.090, 0.5, 1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+    orientation: 'vertical'
+
+    BoxLayout:
+        orientation: 'horizontal'
+        anchor_x: 'center'
+        height: 25
+        width: 10
+        spacing: 10
+        padding: 10
+
+        Label:
+            text: " "
+        Label:
+            text: ""
+        Button:
+            pos_hint: {'center_x ': 1, 'top': 1}
+            background_normal: '/Users/rush/Desktop/senSem/heyHorizon/tryingtransitions/images/Settings.png'
+            background_down: '/Users/rush/Desktop/senSem/heyHorizon/tryingtransitions/images/SettingsDown.png'
+            size_hint: None, None
+            size: 50,50
+
+
+        Button:
+            pos_hint: {'center_x ': 0.5, 'top': 1}
+            background_normal: '/Users/rush/Desktop/senSem/heyHorizon/tryingtransitions/images/help button.png'
+            background_down: '/Users/rush/Desktop/senSem/heyHorizon/tryingtransitions/images/help buttonDown.png'
+            size: 50,50
+            size_hint: None, None
+
+    BoxLayout:
+        orientation: 'horizontal'
+        anchor_x: 'center'
+        anchor_y: 'center'
+
+        Label:
+            id: hh
+            font_size: 55
+            font: 'font/sf-ui-display.otf'
+            text: "Hey Horizon"
+
+    BoxLayout: 
+        orientation: 'horizontal'
+        anchor_y: 'center'
+        spacing: 10
+        padding: 55
+        height: 50
+        width: 10
+
+        Button:
+            id: file
+            #text: "open File"
+            size_hint: .45, 1.95
+			pos_hint: {'center_x': 0.5, 'center_y': 0.18}
+			background_color: 0,0.5,0,0.9
+            on_press: root.oFile()
+            #on_release:
+            Image:
+                id: openFile
+                source: 'images/whitefile.png'
+                center_x: self.parent.center_x
+				center_y: self.parent.center_y
+				size: 60,60
+                
+        Button:
+            #text: "open File"
+            size_hint: .55, 1.95
+            pos_hint: {'center_x': 0.5, 'center_y': 0.18}
+            background_color: 0,0.5,0,0.9
+            on_press: root.oFolder()
+            on_release:root.sFolder()
+            Image:
+                id: openFolder
+                source: 'images/folder.png'
+                center_x: self.parent.center_x
+                center_y: self.parent.center_y
+                size: 60,60
+
+        Button:
+            #text: "open File"
+            size_hint: .45, 1.75
+            pos_hint: {'center_x': 0.5, 'center_y': 0.18}
+            background_color: 0,0.5,0,0.9
+            on_press: root.oFolder()
+            on_release:root.sFolder()
+            Image:
+                id: openProject
+                source: 'images/project.png'
+                center_x: self.parent.center_x
+                center_y: self.parent.center_y
+                size: 120,120
+
+    BoxLayout:
+        orientation: 'horizontal'
+        anchor_x: 'center'
+        anchor_y: 'center'
+        spacing: 10
+        padding: 10
+
+
+        Label:
+            text: " "
+        Button:
+            size_hint: (0.1, .1)
+            font_size: 15
+            text: "Close App"
+            on_press: app.stop()
+		
