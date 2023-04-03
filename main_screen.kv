@@ -19,7 +19,7 @@
                 pos_hint: {'center_x ': 0.3, 'top': 1}
                 background_normal: 'images/help button.png'
                 background_down: 'images/help buttonDown.png'
-                size: 35,35
+                size: 85,85
                 size_hint: None, None
                 on_press: root.open_Help()
 
@@ -28,6 +28,7 @@
                 pos_hint: {'center_x': 0.5, 'center_y': 0.5}
                 #size_hint: 0.751,0.651
                 source: "imgassets/r1.jpg"
+                id: previewImage
                 radius: [2,]
                 allow_stretch: False
                 keep_ratio: True
@@ -73,6 +74,17 @@
 
                 ProgressBar:
                     id: my_progress_bar
+                    # Set Default Value
+                    # value: .25
+                    min: 0
+                    max: 100
+                    pos_hint: {'x':0.055}
+                    size_hint_x: 0.89
+                    size_hint_y: 0.5
+
+
+                ProgressBar:
+                    id: my_progress_bar2
                     # Set Default Value
                     # value: .25
                     min: 0

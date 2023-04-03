@@ -1,3 +1,4 @@
+from time import sleep
 from kivy.lang import Builder
 from kivymd.app import MDApp
 from kivy.uix.carousel import Carousel
@@ -39,13 +40,19 @@ class MainScreen(BoxLayout):
     def press_it(self):
         # Grab the current progress bar value
         current = self.ids.my_progress_bar.value
+        current2 = self.ids.my_progress_bar.value
         # Increment value by .25
         current += 25
+
+        current2 += 29
         # If statement to start over after 100
         if current > 100:
             current = 0
+            current2 = 0
         # Update the progress bar
         self.ids.my_progress_bar.value = current
+        sleep(0.31)
+        self.ids.my_progress_bar2.value = current2
         # Update the label
         # self.ids.my_label.text = f'{int(current)}% Progress'
 
