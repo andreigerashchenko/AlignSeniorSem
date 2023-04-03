@@ -47,7 +47,7 @@
             spacing: 8
             Label:
                 pos_hint: {'x': 1, 'center_y': 0.5}
-                font_size: 20
+                font_size: 45
                 font:'font/sf-ui-display.otf'
                 text: "Queue"
 
@@ -121,7 +121,7 @@
                 spacing: 15
 
                 Label: 
-                    text: "text: "
+                    text: "Mirror Y: "
                 
                 Switch:
                     border_radius: 10
@@ -131,7 +131,7 @@
                     disabled: False
                     font_size: 32
                 Label: 
-                    text: "text: "
+                    text: "Mirror X: "
                 Switch:
                     #size_hint: 0.32,0.425
                     id: my_switch
@@ -139,7 +139,7 @@
                     disabled: False
                     font_size: 32
                 Label: 
-                    text: "text: "
+                    text: "Timelapse: "
                 Switch:
                     background_color: 1,0.5,1,0.9
                     #size_hint: 0.32,0.425
@@ -148,7 +148,7 @@
                     disabled: False
                     font_size: 32
                 Label: 
-                    text: "text: "
+                    text: "VR Support: "
                 Switch:
                     background_color: 1,0.5,0,0.9
                     #size_hint: 0.32,0.45
@@ -291,12 +291,15 @@
                     disabled: False
                     font_size: 32
         Label:
-            text: 'This is my popup!'
+            text: 'More settings to be added'
         Button:
             text: 'Close'
             size_hint: 0.2, 0.2
             pos_hint: {'center_x': 0.5, 'center_y': 1}
             on_press: root.dismiss()
+
+        Label:
+            text: ''
 
 
 
@@ -314,9 +317,12 @@
         Label:
             size_hint_y: 0.65
             text_size: self.width, None
-            text: 'Help! I need somebody! Help! Not just anybody! Help! You know I need someone! Help! When I was younger, so much younger than today! I never needed anybodys help in any way! But now these days are gone, I\m not so self assured! Now I find Ive changed my mind and opened up the doors! Help me if you can, Im feeling down! And I do appreciate you being round! Help me get my feet back on the ground! Wont you please, please help me? And now my life has changed in oh so many ways! My independence seems to vanish in the haze! But every now and then I feel so insecure! I know that I just need you like Ive never done before! Help me if you can, Im feeling down! And I do appreciate you being round! Help me get my feet b'
+            text: 'This is the help section. More information will be added here.'
         Button:
             text: 'Close'
             size_hint: 0.2, 0.2
             pos_hint: {'center_x': 0.5, 'center_y': 1}
             on_press: root.dismiss()
+
+        Label:
+            text: ''
