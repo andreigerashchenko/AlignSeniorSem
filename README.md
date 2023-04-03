@@ -1,6 +1,7 @@
 # AlignSeniorSem
 Align Repository
 
+=======
 
 # Setting up dev environment
 1. Create a virtual environment if you don't have one already (`python -m venv env`)
