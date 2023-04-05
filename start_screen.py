@@ -6,11 +6,20 @@ from kivy.uix.widget import Widget
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
 from kivy.uix.label import Label
+from kivy.config import Config
+from plyer import filechooser
+from kivy.properties import ListProperty
+Config.set('graphics', 'resizable', '0')
+
+
+Config.set('graphics', 'width', '950')
 
 kv = Builder.load_file('start_screen.kv')
 
 
 class StartScreen(BoxLayout):
+    selection = ListProperty([])
+
     def oFile(self):
         self.ids.openFile.source = 'images/whitefileclicked.png'
         self.ids.hh.text = 'button'
@@ -20,19 +29,11 @@ class StartScreen(BoxLayout):
         self.ids.hh.text = 'Hey Horizon'
 
     def oFolder(self):
-        self.ids.openFolder.source = 'images/folderDown.png'
+        self.ids.openFile.source = 'images/whitefileclicked.png'
         self.ids.hh.text = 'opening Folder'
 
     def sFolder(self):
-        self.ids.openFolder.source = 'images/folder.png'
-        self.ids.hh.text = 'Hey Horizon'
-
-    def oProject(self):
-        self.ids.openProject.source = 'images/projectDown.png'
-        self.ids.hh.text = 'opening Project'
-
-    def sProject(self):
-        self.ids.openProject.source = 'images/project.png'
+        self.ids.openFile.source = 'images/whitefile.png'
         self.ids.hh.text = 'Hey Horizon'
 
 

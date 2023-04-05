@@ -1,19 +1,22 @@
-from time import sleep
-from kivy.lang import Builder
-from kivymd.app import MDApp
-from kivy.uix.carousel import Carousel
-from kivymd.uix.toolbar import MDTopAppBar
-from kivy.uix.image import Image
-from kivy.uix.widget import Widget
-from kivy.properties import ObjectProperty
-from kivy.uix.popup import Popup
-from kivy.uix.boxlayout import BoxLayout
-import os
-import numpy as np
-import cv2
-from equirectRotate import EquirectRotate, pointRotate
-
 from plyer import filechooser
+from equirectRotate import EquirectRotate, pointRotate
+import cv2
+import numpy as np
+import os
+from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.popup import Popup
+from kivy.properties import ObjectProperty
+from kivy.uix.widget import Widget
+from kivy.uix.image import Image
+from kivymd.uix.toolbar import MDTopAppBar
+from kivy.uix.carousel import Carousel
+from kivymd.app import MDApp
+from time import sleep
+from kivy.config import Config
+from kivy.lang import Builder
+Config.set('graphics', 'resizable', '0')
+Config.set('graphics', 'width', '100950')
+
 
 kv = Builder.load_file('main_screen.kv')
 
@@ -100,7 +103,6 @@ class MainScreen(BoxLayout):
         the file path of the chosen image will be gathered by the start screen
         for now, it is hardcoded in here
         """
-        src_path = "imgassets/r2.JPG"
         opfile = ".previewImg.jpg"
 
         # open the image to be transformed
