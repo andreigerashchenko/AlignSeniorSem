@@ -36,8 +36,10 @@ class MainScreen(BoxLayout):
     popup = ObjectProperty(None)
 
     def openFileBrowser(self):
+        file_path = ""
         file_path = filechooser.open_file(title="File Selection", filters=[
                                           ("Image Files", "*.jpg *.png")])
+        self.ids.previewImage.source = file_path[0]
 
     def open_Help(self):
         self.popup = HelpPopup()
