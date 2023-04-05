@@ -14,6 +14,9 @@ from kivymd.app import MDApp
 from time import sleep
 from kivy.config import Config
 from kivy.lang import Builder
+
+from plyer import filechooser
+
 Config.set('graphics', 'resizable', '0')
 Config.set('graphics', 'width', '100950')
 
@@ -31,6 +34,10 @@ class PrefPopup(Popup):
 
 class MainScreen(BoxLayout):
     popup = ObjectProperty(None)
+
+    def openFileBrowser(self):
+        file_path = filechooser.open_file(title="File Selection", filters=[
+                                          ("Image Files", "*.jpg *.png")])
 
     def open_Help(self):
         self.popup = HelpPopup()
@@ -104,6 +111,7 @@ class MainScreen(BoxLayout):
         for now, it is hardcoded in here
         """
         opfile = ".previewImg.jpg"
+        opfile = "AlignSeniorSem/previewImg.jpg"
 
         # open the image to be transformed
         src_image = cv2.imread(src_path)
