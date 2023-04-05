@@ -18,9 +18,8 @@ from kivy.lang import Builder
 from plyer import filechooser
 
 Config.set('graphics', 'resizable', '0')
-Config.set('graphics', 'width', '100950')
-
-
+Config.set('graphics', 'width', '2048')
+#Config.set('graphics', 'height', '1280')
 kv = Builder.load_file('main_screen.kv')
 
 
@@ -33,13 +32,17 @@ class PrefPopup(Popup):
 
 
 class MainScreen(BoxLayout):
+
     popup = ObjectProperty(None)
 
     def openFileBrowser(self):
         file_path = ""
         file_path = filechooser.open_file(title="File Selection", filters=[
-                                          ("Image Files", "*.jpg *.png")])
-        self.ids.previewImage.source = file_path[0]
+                                          "*.jpg", "*.png", "*.jpeg"])
+        if (file_path == ""):
+            pass
+        else:
+            self.ids.previewImage.source = file_path[0]
 
     def open_Help(self):
         self.popup = HelpPopup()
