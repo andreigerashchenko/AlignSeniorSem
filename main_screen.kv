@@ -12,15 +12,15 @@
 
         BoxLayout: 
             orientation: "horizontal"
-            padding: 25
-            spacing: 10
+            padding: 15
+            spacing: 25
 
             Button:
                 pos_hint: {'center_x ': 0.3, 'top': 1}
                 background_normal: 'images/help button.png'
                 background_down: 'images/help buttonDown.png'
-                size: 85,85
                 size_hint: None, None
+                size: 50, 50    
                 on_press: root.open_Help()
 
 
@@ -93,7 +93,16 @@
                     size_hint_x: 0.89
                     size_hint_y: 0.5
 
-           
+                CircularProgressBar:
+                    pos: 50, 100 
+                    thickness: 15
+                    cap_style: "round"
+                    progress_colour: "10"
+                    max: 150
+                    min: 100
+                    widget_size: 300
+
+
                 #MDProgressBar:
                    # value: root.progression_value
                    # id: my_progress_bar2

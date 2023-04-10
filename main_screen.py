@@ -14,6 +14,7 @@ from kivymd.app import MDApp
 from time import sleep
 from kivy.config import Config
 from kivy.lang import Builder
+import circular_progress_bar
 
 from plyer import filechooser
 
@@ -187,6 +188,7 @@ def rotateImage(src_image, h, w, c, ix, iy):
 class MainScreenApp(MDApp):
 
     def build(self):
+
         return MainScreen()
 
 
