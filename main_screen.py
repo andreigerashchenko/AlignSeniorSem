@@ -43,13 +43,19 @@ class MainScreen(BoxLayout):
         self.selectedPoint = None
 
     def openFileBrowser(self):
+        # save original directory to restore at end
+        cwd = os.getcwd()
+
         file_path = ""
         file_path = filechooser.open_file(title="File Selection", filters=[
             "*.jpg", "*.png", "*.jpeg"])
-        if (file_path == ""):
+        if file_path == []:
             pass
         else:
             self.ids.previewImage.source = file_path[0]
+
+        # restore original directory
+        os.chdir(cwd)
 
     def open_Help(self):
         self.popup = HelpPopup()
