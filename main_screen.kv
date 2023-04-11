@@ -126,7 +126,7 @@
                 Switch:
                     border_radius: 10
                     #size_hint: 0.2,0.425
-                    id: my_switch
+                    id: mirrorY_switch
                     active: True
                     disabled: False
                     font_size: 32
@@ -134,8 +134,8 @@
                     text: "Mirror X: "
                 Switch:
                     #size_hint: 0.32,0.425
-                    id: my_switch
-                    active: True
+                    id: mirrorX_switch
+                    active: False
                     disabled: False
                     font_size: 32
                 Label: 
@@ -189,10 +189,11 @@
                     size_hint: 0.05,0.2
                     id: increment
                     text: "Process"
-                    on_press: 
+                    on_press:
                     on_release: 
                         self.background_color = (2.85,2.850,2.850,1)
                         self.color= 0,0,0,1
+                        root.processImage()
 
 
                 Button:
