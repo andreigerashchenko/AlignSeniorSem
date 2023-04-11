@@ -5,7 +5,7 @@
         spacing: 10
         canvas.before:
             Color:
-                rgba: 142/255,39/255,39/255,1
+                rgba: 132/255,39/255,39/255,1
             Rectangle:
                 pos: self.pos
                 size: self.size
@@ -17,9 +17,9 @@
 
             Button:
                 pos_hint: {'center_x ': 0.3, 'top': 1}
-                background_normal: '/Users/rush/Desktop/senSem/heyHorizon/tryingtransitions/images/help button.png'
-                background_down: '/Users/rush/Desktop/senSem/heyHorizon/tryingtransitions/images/help buttonDown.png'
-                size: 35,35
+                background_normal: 'images/help button.png'
+                background_down: 'images/help buttonDown.png'
+                size: 85,85
                 size_hint: None, None
                 on_press: root.open_Help()
 
@@ -28,7 +28,8 @@
                 id: previewImage
                 pos_hint: {'center_x': 0.5, 'center_y': 0.5}
                 #size_hint: 0.751,0.651
-                source: "imgassets/r1.jpg"
+                source: "imgassets/r2.jpg"
+                id: previewImage
                 radius: [2,]
                 allow_stretch: False
                 keep_ratio: True
@@ -47,7 +48,7 @@
             spacing: 8
             Label:
                 pos_hint: {'x': 1, 'center_y': 0.5}
-                font_size: 20
+                font_size: 45
                 font:'font/sf-ui-display.otf'
                 text: "Queue"
 
@@ -74,6 +75,17 @@
 
                 ProgressBar:
                     id: my_progress_bar
+                    # Set Default Value
+                    # value: .25
+                    min: 0
+                    max: 100
+                    pos_hint: {'x':0.055}
+                    size_hint_x: 0.89
+                    size_hint_y: 0.5
+
+
+                ProgressBar:
+                    id: my_progress_bar2
                     # Set Default Value
                     # value: .25
                     min: 0
@@ -110,25 +122,25 @@
                 spacing: 15
 
                 Label: 
-                    text: "text: "
+                    text: "Mirror Y: "
                 
                 Switch:
                     border_radius: 10
                     #size_hint: 0.2,0.425
-                    id: my_switch
+                    id: mirrorY_switch
                     active: True
                     disabled: False
                     font_size: 32
                 Label: 
-                    text: "text: "
+                    text: "Mirror X: "
                 Switch:
                     #size_hint: 0.32,0.425
-                    id: my_switch
-                    active: True
+                    id: mirrorX_switch
+                    active: False
                     disabled: False
                     font_size: 32
                 Label: 
-                    text: "text: "
+                    text: "Timelapse: "
                 Switch:
                     background_color: 1,0.5,1,0.9
                     #size_hint: 0.32,0.425
@@ -137,7 +149,7 @@
                     disabled: False
                     font_size: 32
                 Label: 
-                    text: "text: "
+                    text: "VR Support: "
                 Switch:
                     background_color: 1,0.5,0,0.9
                     #size_hint: 0.32,0.45
@@ -149,7 +161,7 @@
 
             GridLayout:
                 cols: 1
-                rows: 3
+                rows: 4
                 padding: 10
                 spacing: 10
                 size_hint: 0.75,1
@@ -158,6 +170,8 @@
                     background_color: 2.85,2.850,2.850,1
                     color: 0,0,0,1
                     on_press: 
+                        #root.ids.previewImage.source = "imgassets/r4.jpg"
+                        root.openFileBrowser()
                         self.background_color = (0,0,0,1)
                         self.color = (2.85,2.850,2.850,1)
                     size_hint: 0.1,0.2
@@ -176,6 +190,22 @@
                     size_hint: 0.05,0.2
                     id: increment
                     text: "Process"
+                    on_press:
+                    on_release: 
+                        self.background_color = (2.85,2.850,2.850,1)
+                        self.color= 0,0,0,1
+                        root.processImage()
+
+
+                Button:
+                    color: 0,0,0,1
+                    background_color: 2.85,2.850,2.850,1
+                    on_press: 
+                        self.background_color = (0,0,0,1)
+                        self.color = (2.85,2.850,2.850,1)
+                    size_hint: 0.05,0.2
+                    id: increment
+                    text: "Download"
                     on_press: 
                     on_release: 
                         self.background_color = (2.85,2.850,2.850,1)
@@ -192,7 +222,7 @@
                         self.color = (2.85,2.850,2.850,1)
                     size_hint: 0.025,0.2
                     id: increment
-                    text: "Prefrences"
+                    text: "Preferences"
                     on_press: root.open_popup()
 
 
@@ -204,7 +234,7 @@
     id: pref
     size_hint: 0.8, 0.8
     auto_dismiss: False
-    title: 'Prefrences: '
+    title: 'Preferences: '
     padding: 40
     space: 40
     background_color: 152/255,49/255,49/255,1
@@ -220,12 +250,6 @@
             spacing: 8
             BoxLayout:
                 orientation: 'vertical'
-                canvas.before:
-                    Color:
-                        rgba: 0.3,0.5,0.768,1
-                    Rectangle:
-                        pos: self.pos
-                        size: self.size
 
                 Switch:
                     #size_hint: 0.2,0.425
@@ -243,12 +267,6 @@
 
             BoxLayout:
                 orientation: 'vertical'
-                canvas.before:
-                    Color:
-                        rgba: 0.7,0.5,0.768,1
-                    Rectangle:
-                        pos: self.pos
-                        size: self.size
 
                 Switch:
                     border_radius: 10
@@ -265,12 +283,15 @@
                     disabled: False
                     font_size: 32
         Label:
-            text: 'This is my popup!'
+            text: 'More settings to be added'
         Button:
             text: 'Close'
             size_hint: 0.2, 0.2
             pos_hint: {'center_x': 0.5, 'center_y': 1}
             on_press: root.dismiss()
+
+        Label:
+            text: ''
 
 
 
@@ -288,9 +309,12 @@
         Label:
             size_hint_y: 0.65
             text_size: self.width, None
-            text: 'Help! I need somebody! Help! Not just anybody! Help! You know I need someone! Help! When I was younger, so much younger than today! I never needed anybodys help in any way! But now these days are gone, I\m not so self assured! Now I find Ive changed my mind and opened up the doors! Help me if you can, Im feeling down! And I do appreciate you being round! Help me get my feet back on the ground! Wont you please, please help me? And now my life has changed in oh so many ways! My independence seems to vanish in the haze! But every now and then I feel so insecure! I know that I just need you like Ive never done before! Help me if you can, Im feeling down! And I do appreciate you being round! Help me get my feet b'
+            text: 'This is the help section. More information will be added here.'
         Button:
             text: 'Close'
             size_hint: 0.2, 0.2
             pos_hint: {'center_x': 0.5, 'center_y': 1}
             on_press: root.dismiss()
+
+        Label:
+            text: ''

@@ -1,17 +1,27 @@
-from kivy.lang import Builder
-from kivymd.app import MDApp
-from kivy.uix.carousel import Carousel
-from kivymd.uix.toolbar import MDTopAppBar
-from kivy.uix.image import Image
-from kivy.uix.widget import Widget
-from kivy.properties import ObjectProperty
-from kivy.uix.popup import Popup
-from kivy.uix.boxlayout import BoxLayout
-import os
-import numpy as np
-import cv2
+from kivy.graphics import Color, Ellipse
+from kivymd.toast import toast
+from plyer import filechooser
 from equirectRotate import EquirectRotate, pointRotate
+import cv2
+import numpy as np
+import os
+from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.popup import Popup
+from kivy.properties import ObjectProperty
+from kivy.uix.widget import Widget
+from kivy.uix.image import Image
+from kivymd.uix.toolbar import MDTopAppBar
+from kivy.uix.carousel import Carousel
+from kivymd.app import MDApp
+from time import sleep
+from kivy.config import Config
+from kivy.lang import Builder
 
+from plyer import filechooser
+
+Config.set('graphics', 'resizable', '0')
+Config.set('graphics', 'width', '2048')
+# Config.set('graphics', 'height', '1280')
 kv = Builder.load_file('main_screen.kv')
 
 
@@ -26,6 +36,21 @@ class PrefPopup(Popup):
 class MainScreen(BoxLayout):
     popup = ObjectProperty(None)
 
+    def __init__(self, **kwargs):
+        super().__init__()
+        self.touchLocalX = None
+        self.touchLocalY = None
+        self.selectedPoint = None
+
+    def openFileBrowser(self):
+        file_path = ""
+        file_path = filechooser.open_file(title="File Selection", filters=[
+            "*.jpg", "*.png", "*.jpeg"])
+        if (file_path == ""):
+            pass
+        else:
+            self.ids.previewImage.source = file_path[0]
+
     def open_Help(self):
         self.popup = HelpPopup()
         self.popup.open()
@@ -37,15 +62,22 @@ class MainScreen(BoxLayout):
     # replace with the function which does some calculation to maintain progressbar value
 
     def press_it(self):
+        print(self.ids.mirrorX_switch.active)
         # Grab the current progress bar value
         current = self.ids.my_progress_bar.value
+        current2 = self.ids.my_progress_bar.value
         # Increment value by .25
         current += 25
+
+        current2 += 29
         # If statement to start over after 100
         if current > 100:
             current = 0
+            current2 = 0
         # Update the progress bar
         self.ids.my_progress_bar.value = current
+        sleep(0.31)
+        self.ids.my_progress_bar2.value = current2
         # Update the label
         # self.ids.my_label.text = f'{int(current)}% Progress'
 
@@ -82,31 +114,70 @@ class MainScreen(BoxLayout):
         if touchLocalY < 0 or touchLocalY > imgSize[1]:
             return
 
-        # flip Y value to be top to bottom
-        touchLocalY = -(touchLocalY - imgSize[1])
+        self.touchLocalX = touchLocalX
+        self.touchLocalY = touchLocalY
 
-        """
-        TEMPORARY 
-        the file path of the chosen image will be gathered by the start screen
-        for now, it is hardcoded in here
-        """
-        src_path = "imgassets/r1.jpg"
+        # draw cricle to represent selected area
+        with self.canvas:
+            # remove selected point from image
+            if self.selectedPoint:
+                self.canvas.remove(self.selectedPoint)
+                self.selectedPoint = None
+
+            Color(.75, .3, .3, .6)
+            d = 15.
+            self.selectedPoint = Ellipse(pos=(touch.x - d / 2, touch.y - d / 2), size=(d, d))
+
+    def processImage(self):
+        # placeholder for how manual vs automatic processing
+        # takes place
+        manual = True
+        if manual:
+            self.manualProcess()
+
+    def manualProcess(self):
+        # if no point selected, message the user and return
+        if not self.selectedPoint:
+            toast("no point selected")
+            return
+
+        # remove selected point from image
+        self.canvas.remove(self.selectedPoint)
+        self.selectedPoint = None
+
+        previewImg = self.ids.previewImage
+        imgSize = previewImg.size
+
+        # check for mirror X and mirror Y settings
+        mirrorX = self.ids.mirrorX_switch.active
+        mirrorY = self.ids.mirrorY_switch.active
+
+        # flip Y cordinate if mirrorY is active
+        if self.ids.mirrorY_switch.active:
+            self.touchLocalY = -(self.touchLocalY - imgSize[1])
+
+        # get image paths for input and output
+        src_path = previewImg.source
         opfile = ".previewImg.jpg"
 
         # open the image to be transformed
         src_image = cv2.imread(src_path)
+        print(src_path)
 
         # scale touch coordinates to image size
         h, w, c, ix, iy = scaleImage(
-            src_image, imgSize, touchLocalX, touchLocalY)
+            src_image, imgSize, self.touchLocalX, self.touchLocalY)
         print(f"Clicked Location (x,y): {ix},{iy}")
 
         # rotate the image and update the preview
-        rotatedImage = rotateImage(src_image, h, w, c, ix, iy)
+        rotatedImage = rotateImage(src_image, h, w, c, ix, iy, mirrorX, mirrorY)
 
-        cv2.imwrite(opfile, rotatedImage, [int(cv2.IMWRITE_JPEG_QUALITY), 100])
+        print(opfile)
+        print(cv2.imwrite(opfile, rotatedImage, [int(cv2.IMWRITE_JPEG_QUALITY), 100]))
         previewImg.source = opfile
-        src_path =  opfile
+        src_path = opfile
+
+        previewImg.reload()
 
 
 def scaleImage(src_image, imgSize, localX, localY):
@@ -120,7 +191,7 @@ def scaleImage(src_image, imgSize, localX, localY):
     return h, w, c, ix, iy
 
 
-def rotateImage(src_image, h, w, c, ix, iy):
+def rotateImage(src_image, h, w, c, ix, iy, mirrorX, mirrorY):
     # everything after this is dipankr's code
     ###################################################################
     print('\n Now rotating the image to straighten the horizon.')
@@ -155,8 +226,18 @@ def rotateImage(src_image, h, w, c, ix, iy):
     rotated_image = equirectRot.rotate(src_image)
     ###################################################################
 
-    final_image = cv2.rotate(rotated_image, cv2.ROTATE_180)
-    print("DONE")
+    # mirror axis WIP
+    if mirrorX and not mirrorY:
+        flipAxis = 1
+    if mirrorY and not mirrorX:
+        flipAxis = 0
+    if mirrorX and mirrorY:
+        flipAxis = -1
+
+    if not (mirrorX or mirrorY):
+        final_image = rotated_image
+    else:
+        final_image = cv2.flip(rotated_image, flipAxis)
 
     return final_image
 
