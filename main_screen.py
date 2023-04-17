@@ -14,13 +14,10 @@ from kivymd.app import MDApp
 from time import sleep
 from kivy.config import Config
 from kivy.lang import Builder
-import circular_progress_bar
+from kivy.core.window import Window
 
-from plyer import filechooser
+Window.size = (1280, 1900)
 
-Config.set('graphics', 'resizable', '0')
-Config.set('graphics', 'width', '2048')
-#Config.set('graphics', 'height', '1280')
 kv = Builder.load_file('main_screen.kv')
 
 
@@ -120,7 +117,7 @@ class MainScreen(BoxLayout):
         opfile = "AlignSeniorSem/previewImg.jpg"
 
         # open the image to be transformed
-        src_image = cv2.imread(src_path)
+        src_image = cv2.imread(previewImg.source)
 
         # scale touch coordinates to image size
         h, w, c, ix, iy = scaleImage(
