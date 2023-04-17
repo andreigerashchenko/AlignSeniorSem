@@ -25,6 +25,7 @@
 
 
             FitImage:
+                id: previewImage
                 pos_hint: {'center_x': 0.5, 'center_y': 0.5}
                 #size_hint: 0.751,0.651
                 source: "imgassets/r2.jpg"
@@ -39,7 +40,18 @@
                 pos_hint: {'center_x ': 0.91, 'top': 1}
                 
 
-        BoxLayout: 
+        ScrollView:
+            #id: imgQueue
+            size_hint: 1, None
+            height: 50
+            do_scroll_y: False
+            BoxLayout:
+                id: imgQueue
+                size_hint_x: None
+                width: self.minimum_width
+                orientation: 'horizontal'
+                padding: 10, 0
+                spacing: 10
 
             orientation: "horizontal"
             size_hint: 1, 0.125
@@ -50,14 +62,6 @@
                 font_size: 45
                 font:'font/sf-ui-display.otf'
                 #text: "Queue"
-
-            #include from another kivy file the carousel widget as the queue
-                
-            Label:
-                text: " "
-
-            Label:
-                text: " "
 
 
         BoxLayout:
@@ -118,7 +122,7 @@
                 Switch:
                     border_radius: 10
                     #size_hint: 0.2,0.425
-                    id: my_switch
+                    id: mirrorY_switch
                     active: True
                     disabled: False
                     font_size: 32
@@ -126,8 +130,8 @@
                     text: "Mirror X: "
                 Switch:
                     #size_hint: 0.32,0.425
-                    id: my_switch
-                    active: True
+                    id: mirrorX_switch
+                    active: False
                     disabled: False
                     font_size: 32
                 Label: 
@@ -191,10 +195,11 @@
                     size_hint: 0.05,0.2
                     id: increment
                     text: "Process"
-                    on_press: 
+                    on_press:
                     on_release: 
                         self.background_color = (2.85,2.850,2.850,1)
                         self.color= 0,0,0,1
+                        root.processImage()
 
 
                 Button:
