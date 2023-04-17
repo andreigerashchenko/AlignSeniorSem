@@ -1,3 +1,5 @@
+import io
+
 from kivy.graphics import Color, Ellipse
 from kivymd.toast import toast
 from plyer import filechooser
@@ -9,14 +11,15 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.popup import Popup
 from kivy.properties import ObjectProperty
 from kivy.uix.widget import Widget
-from kivy.uix.image import Image
+from kivy.uix.image import Image, AsyncImage
+from kivy.core.image import Image as CoreImage
 from kivymd.uix.toolbar import MDTopAppBar
 from kivy.uix.carousel import Carousel
 from kivymd.app import MDApp
 from time import sleep
 from kivy.config import Config
 from kivy.lang import Builder
-
+from queue import Queue
 from plyer import filechooser
 
 Config.set('graphics', 'resizable', '0')
@@ -41,6 +44,7 @@ class MainScreen(BoxLayout):
         self.touchLocalX = None
         self.touchLocalY = None
         self.selectedPoint = None
+        self.fileQueue = []
 
     def openFileBrowser(self):
         # save original directory to restore at end
@@ -52,7 +56,19 @@ class MainScreen(BoxLayout):
         if file_path == []:
             pass
         else:
-            self.ids.previewImage.source = file_path[0]
+            self.fileQueue.extend(file_path)
+            self.ids.previewImage.source = self.fileQueue[0]
+
+            # load thumbnails to the queue carousel object
+            queueThumbnails = self.ids.imgQueue
+            for file in file_path:
+                # get extension of the file
+                fExtension = os.path.splitext(file)[1][1:].lower()
+                print(fExtension)
+
+                data = io.BytesIO(open(file, "rb").read())
+                im = AsyncImage(source= file, allow_stretch=True, size_hint = (None,1), width=100)
+                queueThumbnails.add_widget(im)
 
         # restore original directory
         os.chdir(cwd)
@@ -158,9 +174,9 @@ class MainScreen(BoxLayout):
         mirrorX = self.ids.mirrorX_switch.active
         mirrorY = self.ids.mirrorY_switch.active
 
-        # flip Y cordinate if mirrorY is active
-        if self.ids.mirrorY_switch.active:
-            self.touchLocalY = -(self.touchLocalY - imgSize[1])
+        # # flip Y cordinate if mirrorY is active
+        # if mirrorY:
+        #     self.touchLocalY = -(self.touchLocalY - imgSize[1])
 
         # get image paths for input and output
         src_path = previewImg.source
@@ -168,7 +184,6 @@ class MainScreen(BoxLayout):
 
         # open the image to be transformed
         src_image = cv2.imread(src_path)
-        print(src_path)
 
         # scale touch coordinates to image size
         h, w, c, ix, iy = scaleImage(
@@ -181,7 +196,6 @@ class MainScreen(BoxLayout):
         print(opfile)
         print(cv2.imwrite(opfile, rotatedImage, [int(cv2.IMWRITE_JPEG_QUALITY), 100]))
         previewImg.source = opfile
-        src_path = opfile
 
         previewImg.reload()
 
