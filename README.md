@@ -1,5 +1,7 @@
 # AlignSeniorSem
-Align Repository
+[![Pylint](https://github.com/andreigerashchenko/AlignSeniorSem/actions/workflows/pylint.yml/badge.svg)](https://github.com/andreigerashchenko/AlignSeniorSem/actions/workflows/pylint.yml)
+
+Spring 2023 final project for Senior Seminar.
 
 # Setting up dev environment
 1. Create a virtual environment if you don't have one already (`python -m venv env`)
