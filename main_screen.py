@@ -1,5 +1,6 @@
 import io
 
+from kivy.core.window import Window
 from kivy.graphics import Color, Ellipse
 from kivy.uix.button import Button
 from kivymd.toast import toast
@@ -23,9 +24,7 @@ from kivy.lang import Builder
 from queue import Queue
 import moviepy
 
-Config.set('graphics', 'resizable', '0')
-Config.set('graphics', 'width', '2048')
-# Config.set('graphics', 'height', '1280')
+Window.size = (1200,750)
 kv = Builder.load_file('main_screen.kv')
 
 
@@ -38,6 +37,10 @@ class PrefPopup(Popup):
 
 
 def getHorizonPoint(frame):
+    pass
+
+
+class DownloadPopup(Popup):
     pass
 
 
@@ -88,6 +91,12 @@ class MainScreen(BoxLayout):
     def open_popup(self):
         self.popup = PrefPopup()
         self.popup.open()
+
+    # pops up a menu for the user to select a file name and save image to that file
+    def saveImagePopup(self):
+        self.popup = DownloadPopup()
+        self.popup.open()
+
 
     # replace with the function which does some calculation to maintain progressbar value
 
@@ -183,8 +192,8 @@ class MainScreen(BoxLayout):
         mirrorY = self.ids.mirrorY_switch.active
 
         # # flip Y cordinate if mirrorY is active
-        # if mirrorY:
-        #     self.touchLocalY = -(self.touchLocalY - imgSize[1])
+        if mirrorY:
+            self.touchLocalY = -(self.touchLocalY - imgSize[1])
 
         # get image paths for input and output
         src_path = previewImg.source
@@ -207,6 +216,9 @@ class MainScreen(BoxLayout):
 
         previewImg.reload()
 
+    def saveImage(self):
+        previewImg = self.ids
+
     '''
     processFrame
     takes a bitmaap array and video timing data to process into it's equirotated state
@@ -214,16 +226,16 @@ class MainScreen(BoxLayout):
     frameNum: the number of the specific frame out of the video
     interval: the interval in which the horizon location will be recalculated after [interval] frames
     '''
-    def processFrame(self,frame,frameNum,interval,rotator):
-        frameIntervalProgress = frameNum % interval
-
-        # when at frame interval
-        # find the horizon of the current feame
-        if frameIntervalProgress == 0:
-            horizonX,horizonY = getHorizonPoint(frame)
-
-        equiRotateFrame(frame,horizonX,horizonY)
-
+    # def processFrame(self,frame,frameNum,interval,rotator):
+    #     frameIntervalProgress = frameNum % interval
+    #
+    #     # when at frame interval
+    #     # find the horizon of the current feame
+    #     if frameIntervalProgress == 0:
+    #         horizonX,horizonY = getHorizonPoint(frame)
+    #
+    #     equiRotateFrame(frame,horizonX,horizonY)
+    #
 
 
 def scaleImage(src_image, imgSize, localX, localY):
