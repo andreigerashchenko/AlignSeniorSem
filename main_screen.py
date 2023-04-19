@@ -207,7 +207,7 @@ class MainScreen(BoxLayout):
         print("flipY")
         # flip Y cordinate if mirrorY is active
         # if self.ids.mirrorY_switch.active:
-        img = cv2.imread(self.ids.previewImage)
+        #img = cv2.imread(self.ids.previewImage)
        # self.ids.previewImage = flip(img, 0)
 
 
