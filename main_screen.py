@@ -1,6 +1,7 @@
 import io
 
 from kivy.graphics import Color, Ellipse
+from kivy.uix.button import Button
 from kivymd.toast import toast
 from plyer import filechooser
 from equirectRotate import EquirectRotate, pointRotate
@@ -20,7 +21,7 @@ from time import sleep
 from kivy.config import Config
 from kivy.lang import Builder
 from queue import Queue
-from plyer import filechooser
+import moviepy
 
 Config.set('graphics', 'resizable', '0')
 Config.set('graphics', 'width', '2048')
@@ -33,6 +34,10 @@ class HelpPopup(Popup):
 
 
 class PrefPopup(Popup):
+    pass
+
+
+def getHorizonPoint(frame):
     pass
 
 
@@ -51,8 +56,8 @@ class MainScreen(BoxLayout):
         cwd = os.getcwd()
 
         file_path = ""
-        file_path = filechooser.open_file(title="File Selection", filters=[
-            "*.jpg", "*.png", "*.jpeg"])
+        file_path = filechooser.open_file(title="File Selection", multiple=True, filters=[
+            "*.jpg", "*.png", "*.jpeg", "*.mp4"])
         if file_path == []:
             pass
         else:
@@ -62,16 +67,19 @@ class MainScreen(BoxLayout):
             # load thumbnails to the queue carousel object
             queueThumbnails = self.ids.imgQueue
             for file in file_path:
-                # get extension of the file
-                fExtension = os.path.splitext(file)[1][1:].lower()
-                print(fExtension)
+                # create image button of the selected file
+                im = Button(background_normal=file, size_hint=(None, 1), width=100,
+                            on_press=lambda image: self.focusImage(image))
 
-                data = io.BytesIO(open(file, "rb").read())
-                im = AsyncImage(source= file, allow_stretch=True, size_hint = (None,1), width=100)
+                # add the buttonImage to the queue
                 queueThumbnails.add_widget(im)
+                print("added",im.background_normal)
 
         # restore original directory
         os.chdir(cwd)
+
+    def focusImage(self, img):
+        self.ids.previewImage.source = img.background_normal
 
     def open_Help(self):
         self.popup = HelpPopup()
@@ -198,6 +206,24 @@ class MainScreen(BoxLayout):
         previewImg.source = opfile
 
         previewImg.reload()
+
+    '''
+    processFrame
+    takes a bitmaap array and video timing data to process into it's equirotated state
+    frame: a bitmap array of a frame of a video
+    frameNum: the number of the specific frame out of the video
+    interval: the interval in which the horizon location will be recalculated after [interval] frames
+    '''
+    def processFrame(self,frame,frameNum,interval,rotator):
+        frameIntervalProgress = frameNum % interval
+
+        # when at frame interval
+        # find the horizon of the current feame
+        if frameIntervalProgress == 0:
+            horizonX,horizonY = getHorizonPoint(frame)
+
+        equiRotateFrame(frame,horizonX,horizonY)
+
 
 
 def scaleImage(src_image, imgSize, localX, localY):
