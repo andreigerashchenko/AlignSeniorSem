@@ -21,10 +21,10 @@ from kivy.config import Config
 from kivy.lang import Builder
 from queue import Queue
 from plyer import filechooser
+from kivy.core.window import Window
 
-Config.set('graphics', 'resizable', '0')
-Config.set('graphics', 'width', '2048')
-# Config.set('graphics', 'height', '1280')
+
+Window.size = (1200, 750)
 kv = Builder.load_file('main_screen.kv')
 
 
@@ -67,7 +67,8 @@ class MainScreen(BoxLayout):
                 print(fExtension)
 
                 data = io.BytesIO(open(file, "rb").read())
-                im = AsyncImage(source= file, allow_stretch=True, size_hint = (None,1), width=100)
+                im = AsyncImage(source=file, allow_stretch=True,
+                                size_hint=(None, 1), width=100)
                 queueThumbnails.add_widget(im)
 
         # restore original directory
@@ -148,7 +149,8 @@ class MainScreen(BoxLayout):
 
             Color(.75, .3, .3, .6)
             d = 15.
-            self.selectedPoint = Ellipse(pos=(touch.x - d / 2, touch.y - d / 2), size=(d, d))
+            self.selectedPoint = Ellipse(
+                pos=(touch.x - d / 2, touch.y - d / 2), size=(d, d))
 
     def processImage(self):
         # placeholder for how manual vs automatic processing
@@ -191,10 +193,12 @@ class MainScreen(BoxLayout):
         print(f"Clicked Location (x,y): {ix},{iy}")
 
         # rotate the image and update the preview
-        rotatedImage = rotateImage(src_image, h, w, c, ix, iy, mirrorX, mirrorY)
+        rotatedImage = rotateImage(
+            src_image, h, w, c, ix, iy, mirrorX, mirrorY)
 
         print(opfile)
-        print(cv2.imwrite(opfile, rotatedImage, [int(cv2.IMWRITE_JPEG_QUALITY), 100]))
+        print(cv2.imwrite(opfile, rotatedImage, [
+              int(cv2.IMWRITE_JPEG_QUALITY), 100]))
         previewImg.source = opfile
 
         previewImg.reload()
