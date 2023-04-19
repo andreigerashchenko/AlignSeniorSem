@@ -65,7 +65,7 @@
                     padding: 10, 0
                     spacing: 10
 
-                
+
 
 
         BoxLayout:
@@ -218,7 +218,7 @@
                     size_hint: 0.05,0.2
                     id: increment
                     text: "Save"
-                    on_press: 
+                    on_press: root.saveImagePopup()
                     on_release: 
                         self.background_color = (2.85,2.850,2.850,1)
                         self.color= 0,0,0,1
@@ -236,6 +236,27 @@
                     id: increment
                     text: "Preferences"
                     on_press: root.open_popup()
+
+
+<DownloadPopup>
+    id: downloadPopup
+    size_hint: 0.8,.1
+    auto_dismiss: True
+    title: 'Download: '
+    padding: 40
+    space: 40
+    background_color: 152/255,49/255,49/255,1
+
+    BoxLayout:
+        orientation: "horizontal"
+        Label:
+            id: saveFileNameLabel
+            text: "Enter a file name: "
+        TextInput:
+            id: saveFileNameInput
+        Button:
+            text: "Enter"
+            on_press: saveImage
 
 
 

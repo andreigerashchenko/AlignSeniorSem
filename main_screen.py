@@ -1,6 +1,8 @@
 import io
 
+from kivy.core.window import Window
 from kivy.graphics import Color, Ellipse
+from kivy.uix.button import Button
 from kivymd.toast import toast
 from plyer import filechooser
 from equirectRotate import EquirectRotate, pointRotate
@@ -20,11 +22,12 @@ from time import sleep
 from kivy.config import Config
 from kivy.lang import Builder
 from queue import Queue
+import moviepy
 from plyer import filechooser
 from kivy.core.window import Window
 
 
-Window.size = (1200, 750)
+Window.size = (1200,750)
 kv = Builder.load_file('main_screen.kv')
 
 
@@ -33,6 +36,14 @@ class HelpPopup(Popup):
 
 
 class PrefPopup(Popup):
+    pass
+
+
+def getHorizonPoint(frame):
+    pass
+
+
+class DownloadPopup(Popup):
     pass
 
 
@@ -51,8 +62,8 @@ class MainScreen(BoxLayout):
         cwd = os.getcwd()
 
         file_path = ""
-        file_path = filechooser.open_file(title="File Selection", filters=[
-            "*.jpg", "*.png", "*.jpeg"])
+        file_path = filechooser.open_file(title="File Selection", multiple=True, filters=[
+            "*.jpg", "*.png", "*.jpeg", "*.mp4"])
         if file_path == []:
             pass
         else:
@@ -62,17 +73,21 @@ class MainScreen(BoxLayout):
             # load thumbnails to the queue carousel object
             queueThumbnails = self.ids.imgQueue
             for file in file_path:
-                # get extension of the file
-                fExtension = os.path.splitext(file)[1][1:].lower()
-                print(fExtension)
+                # create image button of the selected file
+                im = Button(background_normal=file, size_hint=(None, 1), width=100,
+                            on_press=lambda image: self.focusImage(image))
 
                 data = io.BytesIO(open(file, "rb").read())
                 im = AsyncImage(source=file, allow_stretch=True,
                                 size_hint=(None, 1), width=100)
                 queueThumbnails.add_widget(im)
+                print("added",im.background_normal)
 
         # restore original directory
         os.chdir(cwd)
+
+    def focusImage(self, img):
+        self.ids.previewImage.source = img.background_normal
 
     def open_Help(self):
         self.popup = HelpPopup()
@@ -81,6 +96,12 @@ class MainScreen(BoxLayout):
     def open_popup(self):
         self.popup = PrefPopup()
         self.popup.open()
+
+    # pops up a menu for the user to select a file name and save image to that file
+    def saveImagePopup(self):
+        self.popup = DownloadPopup()
+        self.popup.open()
+
 
     # replace with the function which does some calculation to maintain progressbar value
 
@@ -177,8 +198,8 @@ class MainScreen(BoxLayout):
         mirrorY = self.ids.mirrorY_switch.active
 
         # # flip Y cordinate if mirrorY is active
-        # if mirrorY:
-        #     self.touchLocalY = -(self.touchLocalY - imgSize[1])
+        if mirrorY:
+            self.touchLocalY = -(self.touchLocalY - imgSize[1])
 
         # get image paths for input and output
         src_path = previewImg.source
@@ -202,13 +223,6 @@ class MainScreen(BoxLayout):
         previewImg.source = opfile
 
         previewImg.reload()
-
-    def flipY(self):
-        print("flipY")
-        # flip Y cordinate if mirrorY is active
-        # if self.ids.mirrorY_switch.active:
-        #img = cv2.imread(self.ids.previewImage)
-       # self.ids.previewImage = flip(img, 0)
 
 
 def scaleImage(src_image, imgSize, localX, localY):
