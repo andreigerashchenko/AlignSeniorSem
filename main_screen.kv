@@ -24,15 +24,15 @@
                 on_press: root.open_Help()
 
 
-            FitImage:
+            Image:
                 id: previewImage
                 pos_hint: {'center_x': 0.5, 'center_y': 0.5}
                 #size_hint: 0.751,0.651
                 source: "imgassets/r2.jpg"
                 id: previewImage
-                radius: [2,]
-                allow_stretch: False
-                keep_ratio: True
+                radius: [5,]
+                #allow_stretch: False
+                #keep_ratio: False
 
             Label:
                 text:" "
@@ -130,8 +130,8 @@
                     active: True
                     disabled: False
                     font_size: 32
-                    on_press: 
-                        #self.flipY()
+                    on_active: 
+                        root.flipY()
 
                 Label: 
                     text: "Mirror X: "
