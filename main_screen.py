@@ -23,6 +23,9 @@ from kivy.config import Config
 from kivy.lang import Builder
 from queue import Queue
 import moviepy
+from plyer import filechooser
+from kivy.core.window import Window
+
 
 Window.size = (1200,750)
 kv = Builder.load_file('main_screen.kv')
@@ -74,7 +77,9 @@ class MainScreen(BoxLayout):
                 im = Button(background_normal=file, size_hint=(None, 1), width=100,
                             on_press=lambda image: self.focusImage(image))
 
-                # add the buttonImage to the queue
+                data = io.BytesIO(open(file, "rb").read())
+                im = AsyncImage(source=file, allow_stretch=True,
+                                size_hint=(None, 1), width=100)
                 queueThumbnails.add_widget(im)
                 print("added",im.background_normal)
 
@@ -165,7 +170,8 @@ class MainScreen(BoxLayout):
 
             Color(.75, .3, .3, .6)
             d = 15.
-            self.selectedPoint = Ellipse(pos=(touch.x - d / 2, touch.y - d / 2), size=(d, d))
+            self.selectedPoint = Ellipse(
+                pos=(touch.x - d / 2, touch.y - d / 2), size=(d, d))
 
     def processImage(self):
         # placeholder for how manual vs automatic processing
@@ -208,34 +214,15 @@ class MainScreen(BoxLayout):
         print(f"Clicked Location (x,y): {ix},{iy}")
 
         # rotate the image and update the preview
-        rotatedImage = rotateImage(src_image, h, w, c, ix, iy, mirrorX, mirrorY)
+        rotatedImage = rotateImage(
+            src_image, h, w, c, ix, iy, mirrorX, mirrorY)
 
         print(opfile)
-        print(cv2.imwrite(opfile, rotatedImage, [int(cv2.IMWRITE_JPEG_QUALITY), 100]))
+        print(cv2.imwrite(opfile, rotatedImage, [
+              int(cv2.IMWRITE_JPEG_QUALITY), 100]))
         previewImg.source = opfile
 
         previewImg.reload()
-
-    def saveImage(self):
-        previewImg = self.ids
-
-    '''
-    processFrame
-    takes a bitmaap array and video timing data to process into it's equirotated state
-    frame: a bitmap array of a frame of a video
-    frameNum: the number of the specific frame out of the video
-    interval: the interval in which the horizon location will be recalculated after [interval] frames
-    '''
-    # def processFrame(self,frame,frameNum,interval,rotator):
-    #     frameIntervalProgress = frameNum % interval
-    #
-    #     # when at frame interval
-    #     # find the horizon of the current feame
-    #     if frameIntervalProgress == 0:
-    #         horizonX,horizonY = getHorizonPoint(frame)
-    #
-    #     equiRotateFrame(frame,horizonX,horizonY)
-    #
 
 
 def scaleImage(src_image, imgSize, localX, localY):
