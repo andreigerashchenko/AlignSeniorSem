@@ -203,6 +203,12 @@ class MainScreen(BoxLayout):
 
         previewImg.reload()
 
+    def flipY(self):
+        print("flipY")
+        # flip Y cordinate if mirrorY is active
+        if self.ids.mirrorY_switch.active:
+            self.ids.previewImage = cv2.flip(self.ids.previewImage, 0)
+
 
 def scaleImage(src_image, imgSize, localX, localY):
     h, w, c = src_image.shape

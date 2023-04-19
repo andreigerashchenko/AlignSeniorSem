@@ -39,25 +39,33 @@
                 size_hint: 0.05,0.5
                 pos_hint: {'center_x ': 0.91, 'top': 1}
                 
+        BoxLayout: 
+            orientation: "horizontal"
+            size_hint: 0.75, 0.205
+            padding: 15
+            spacing: 5
+            
+            Label:
+                pos_hint: {'x': 1, 'center_y': 0.5}
+                font_size: 45
+                font:'font/sf-ui-display.otf'
+                text: "Queue"
 
-        ScrollView:
-            #id: imgQueue
-            size_hint: 1, None
-            height: 50
-            do_scroll_y: False
-            BoxLayout:
-                id: imgQueue
-                size_hint_x: None
-                width: self.minimum_width
-                orientation: 'horizontal'
-                padding: 10, 0
-                spacing: 10
+            ScrollView:
+                #id: imgQueue
+                size_hint: 1, None
+                height: 50
+                do_scroll_y: False
+                
+                BoxLayout:
+                    id: imgQueue
+                    size_hint_x: None
+                    width: self.minimum_width
+                    orientation: 'horizontal'
+                    padding: 10, 0
+                    spacing: 10
 
-                Label:
-                    pos_hint: {'x': 1, 'center_y': 0.5}
-                    font_size: 45
-                    font:'font/sf-ui-display.otf'
-                    #text: "Queue"
+                
 
 
         BoxLayout:
@@ -122,6 +130,9 @@
                     active: True
                     disabled: False
                     font_size: 32
+                    on_press: 
+                        self.flipY()
+
                 Label: 
                     text: "Mirror X: "
                 Switch:
