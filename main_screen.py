@@ -191,7 +191,7 @@ class MainScreen(BoxLayout):
         opfile = ".previewImg.jpg"
 
         # open the image to be transformed
-        src_image = cv2.imread(src_path)
+        src_image = cv2.imread(previewImg.source)
 
         # scale touch coordinates to image size
         h, w, c, ix, iy = scaleImage(
@@ -291,6 +291,7 @@ def rotateImage(src_image, h, w, c, ix, iy, mirrorX, mirrorY):
 class MainScreenApp(MDApp):
 
     def build(self):
+
         return MainScreen()
 
 
