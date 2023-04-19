@@ -27,7 +27,7 @@ from plyer import filechooser
 from kivy.core.window import Window
 
 
-Window.size = (1200,750)
+Window.size = (1200, 750)
 kv = Builder.load_file('main_screen.kv')
 
 
@@ -81,7 +81,7 @@ class MainScreen(BoxLayout):
                 im = AsyncImage(source=file, allow_stretch=True,
                                 size_hint=(None, 1), width=100)
                 queueThumbnails.add_widget(im)
-                print("added",im.background_normal)
+                print("added")
 
         # restore original directory
         os.chdir(cwd)
@@ -101,7 +101,6 @@ class MainScreen(BoxLayout):
     def saveImagePopup(self):
         self.popup = DownloadPopup()
         self.popup.open()
-
 
     # replace with the function which does some calculation to maintain progressbar value
 
