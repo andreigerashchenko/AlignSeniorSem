@@ -24,7 +24,7 @@ from kivy.lang import Builder
 from queue import Queue
 import moviepy
 
-Window.size = (1200,750)
+Window.size = (1200, 750)
 kv = Builder.load_file('main_screen.kv')
 
 
@@ -41,9 +41,14 @@ def getHorizonPoint(frame):
 
 
 class DownloadPopup(Popup):
-    def __int__(self,**kwargs):
-        super().__init__()
-        # self.ids.saveFileNameInput.bind(on_text_validate=root.saveImage)
+    pass
+
+
+class HistoryItem():
+    def __init__(self, img, flipV, flipH):
+        self.img = img
+        self.flipV = flipV
+        self.flipH = flipH
 
 
 class MainScreen(BoxLayout):
@@ -51,11 +56,21 @@ class MainScreen(BoxLayout):
 
     def __init__(self, **kwargs):
         super().__init__()
+        self.modifyHistory = True
         self.touchLocalX = None
         self.touchLocalY = None
         self.selectedPoint = None
-        self.fileQueue = []
+        self.fileQueue = []  # the list of files queued to be processed
+        self.mediaPath = None  # the path to the file currently being worked on
 
+        # stack history of transformations applied to the image,
+        # history is reset when a new file is selected
+        self.history = []
+
+        # openCV image array of the current image being previewed, previous  version of  this
+        self.currentImg = None
+
+        self.previewimgPath = ".previewImg.jpg"
 
     def openFileBrowser(self):
         # save original directory to restore at end
@@ -68,24 +83,33 @@ class MainScreen(BoxLayout):
             pass
         else:
             self.fileQueue.extend(file_path)
-            self.ids.previewImage.source = self.fileQueue[0]
+            self.mediaPath = self.fileQueue[0]
+            self.currentImg = cv2.imread(self.mediaPath)
+            self.ids.previewImage.source = self.previewimgPath
+            self.updateImage(self.currentImg)
 
             # load thumbnails to the queue carousel object
             queueThumbnails = self.ids.imgQueue
             for file in file_path:
+                filename = os.path.split(file)[-1]
+
                 # create image button of the selected file
-                im = Button(background_normal=file, size_hint=(None, 1), width=100,
+                im = Button(background_normal=file, size_hint=(None, 1), width=100, text=filename, font_size=10,
                             on_press=lambda image: self.focusImage(image))
 
                 # add the buttonImage to the queue
                 queueThumbnails.add_widget(im)
-                print("added",im.background_normal)
+                print("added", im.background_normal)
 
         # restore original directory
         os.chdir(cwd)
 
     def focusImage(self, img):
-        self.ids.previewImage.source = img.background_normal
+        newImg = cv2.imread(img.background_normal)
+        self.updateImage(newImg)
+
+        # clear history
+        self.history.clear()
 
     def open_Help(self):
         self.popup = HelpPopup()
@@ -100,6 +124,11 @@ class MainScreen(BoxLayout):
         self.popup = DownloadPopup()
         self.popup.open()
 
+    def saveImage(self):
+        popup = self.get_root_window().children[0]
+        outfile = popup.ids.saveFileNameInput.text
+        cv2.imwrite(outfile, self.currentImg, [int(cv2.IMWRITE_JPEG_QUALITY), 100])
+        toast(f"saved as {outfile}")
 
     # replace with the function which does some calculation to maintain progressbar value
 
@@ -159,6 +188,11 @@ class MainScreen(BoxLayout):
         self.touchLocalX = touchLocalX
         self.touchLocalY = touchLocalY
 
+        # if there is no image to be worked on, open file browser
+        if not self.mediaPath:
+            self.openFileBrowser()
+            return
+
         # draw cricle to represent selected area
         with self.canvas:
             # remove selected point from image
@@ -195,28 +229,15 @@ class MainScreen(BoxLayout):
         mirrorY = self.ids.mirrorY_switch.active
 
         # # flip Y cordinate if mirrorY is active
-        if mirrorY:
-            self.touchLocalY = -(self.touchLocalY - imgSize[1])
+        # if not mirrorY:
+        self.touchLocalY = -(self.touchLocalY - imgSize[1])
 
         # get image paths for input and output
         src_path = previewImg.source
-        opfile = ".previewImg.jpg"
+        opfile = self.previewimgPath
 
         # open the image to be transformed
         src_image = cv2.imread(previewImg.source)
-
-
-        # mirror axis WIP
-        flipAxis = 0
-        if mirrorX and not mirrorY:
-            flipAxis = 1
-        if mirrorY and not mirrorX:
-            flipAxis = 0
-        if mirrorX and mirrorY:
-            flipAxis = -1
-
-        if (mirrorX or mirrorY):
-            src_image = cv2.flip(src_image, flipAxis)
 
         # scale touch coordinates to image size
         h, w, c, ix, iy = scaleImage(
@@ -226,22 +247,53 @@ class MainScreen(BoxLayout):
         # rotate the image and update the preview
         rotatedImage = rotateImage(src_image, h, w, c, ix, iy, mirrorX, mirrorY)
 
-        print(opfile)
-        print(cv2.imwrite(opfile, rotatedImage, [int(cv2.IMWRITE_JPEG_QUALITY), 100]))
-        previewImg.source = opfile
+        self.updateImage(rotatedImage)
 
-        previewImg.reload()
 
-    def saveImage(self):
-        infile = self.ids.previewImage.source
-        popup = self.get_root_window().children[0]
-        outfile = popup.ids.saveFileNameInput.text
+    def flipVertical(self):
+        flippedImage = cv2.flip(self.currentImg, 0)
+        self.updateImage(flippedImage)
 
-        saveImg = cv2.imread(infile)
-        save = cv2.imwrite(outfile,saveImg, [int(cv2.IMWRITE_JPEG_QUALITY), 100])
+    def flipHorizontal(self):
+        flippedImage = cv2.flip(self.currentImg, 1)
+        self.updateImage(flippedImage)
 
-        if save:
-            toast(f"saved {outfile} to folder: ")
+    def undo(self):
+        # if history is empty, notify user adn do nothing
+        if len(self.history) == 0:
+            toast("history is empty")
+            return
+
+        self.modifyHistory = False
+
+        # get the last state of the history
+        lastState = self.history.pop()
+
+        # set the switches to reflect the states at that point in history
+        self.ids.mirrorY_switch.active = lastState.flipV
+        self.ids.mirrorX_switch.active = lastState.flipH
+
+        # change the preview image to that of the history frame
+        self.updateImage(lastState.img)
+
+        self.modifyHistory = True
+
+    def updateImage(self, newImg, modifyHistory=True):
+
+        # if modifyHistory, store the current Image in history
+        if self.modifyHistory:
+            flipV = self.ids.mirrorY_switch.active
+            flipH = self.ids.mirrorX_switch.active
+            histItem = HistoryItem(self.currentImg, flipV, flipH)
+
+            self.history.append(histItem)
+
+        # set the current image to the new one
+        self.currentImg = newImg
+
+        # save the previewImage and update the visual
+        cv2.imwrite(self.previewimgPath, newImg, [int(cv2.IMWRITE_JPEG_QUALITY), 100])
+        self.ids.previewImage.reload()
 
     '''
     processFrame
@@ -320,15 +372,13 @@ def rotateImage(src_image, h, w, c, ix, iy, mirrorX, mirrorY):
     #     final_image = rotated_image
     # else:
     #     final_image = cv2.flip(rotated_image, flipAxis)
-    final_image = rotated_image
 
-    return final_image
+    return rotated_image
 
 
 class MainScreenApp(MDApp):
 
     def build(self):
-
         return MainScreen()
 
 
