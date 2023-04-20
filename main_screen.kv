@@ -237,13 +237,17 @@
         Label:
             id: saveFileNameLabel
             text: "Enter a file name: "
+            size_hint_x:.2
         TextInput:
             id: saveFileNameInput
+            size_hint_x: .6
+            font_size: 16
+            multiline: False
+            #on_text_validate = app.root.saveImage()
         Button:
             text: "Enter"
-            on_press: saveImage
-
-
+            size_hint_x: .2
+            on_press: app.root.saveImage()
 
 
 

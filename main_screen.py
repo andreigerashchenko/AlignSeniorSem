@@ -41,7 +41,9 @@ def getHorizonPoint(frame):
 
 
 class DownloadPopup(Popup):
-    pass
+    def __int__(self,**kwargs):
+        super().__init__()
+        # self.ids.saveFileNameInput.bind(on_text_validate=root.saveImage)
 
 
 class MainScreen(BoxLayout):
@@ -53,6 +55,7 @@ class MainScreen(BoxLayout):
         self.touchLocalY = None
         self.selectedPoint = None
         self.fileQueue = []
+
 
     def openFileBrowser(self):
         # save original directory to restore at end
@@ -202,6 +205,19 @@ class MainScreen(BoxLayout):
         # open the image to be transformed
         src_image = cv2.imread(previewImg.source)
 
+
+        # mirror axis WIP
+        flipAxis = 0
+        if mirrorX and not mirrorY:
+            flipAxis = 1
+        if mirrorY and not mirrorX:
+            flipAxis = 0
+        if mirrorX and mirrorY:
+            flipAxis = -1
+
+        if (mirrorX or mirrorY):
+            src_image = cv2.flip(src_image, flipAxis)
+
         # scale touch coordinates to image size
         h, w, c, ix, iy = scaleImage(
             src_image, imgSize, self.touchLocalX, self.touchLocalY)
@@ -217,7 +233,15 @@ class MainScreen(BoxLayout):
         previewImg.reload()
 
     def saveImage(self):
-        previewImg = self.ids
+        infile = self.ids.previewImage.source
+        popup = self.get_root_window().children[0]
+        outfile = popup.ids.saveFileNameInput.text
+
+        saveImg = cv2.imread(infile)
+        save = cv2.imwrite(outfile,saveImg, [int(cv2.IMWRITE_JPEG_QUALITY), 100])
+
+        if save:
+            toast(f"saved {outfile} to folder: ")
 
     '''
     processFrame
@@ -284,18 +308,19 @@ def rotateImage(src_image, h, w, c, ix, iy, mirrorX, mirrorY):
     rotated_image = equirectRot.rotate(src_image)
     ###################################################################
 
-    # mirror axis WIP
-    if mirrorX and not mirrorY:
-        flipAxis = 1
-    if mirrorY and not mirrorX:
-        flipAxis = 0
-    if mirrorX and mirrorY:
-        flipAxis = -1
-
-    if not (mirrorX or mirrorY):
-        final_image = rotated_image
-    else:
-        final_image = cv2.flip(rotated_image, flipAxis)
+    # # mirror axis WIP
+    # if mirrorX and not mirrorY:
+    #     flipAxis = 1
+    # if mirrorY and not mirrorX:
+    #     flipAxis = 0
+    # if mirrorX and mirrorY:
+    #     flipAxis = -1
+    #
+    # if not (mirrorX or mirrorY):
+    #     final_image = rotated_image
+    # else:
+    #     final_image = cv2.flip(rotated_image, flipAxis)
+    final_image = rotated_image
 
     return final_image
 
