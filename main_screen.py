@@ -70,7 +70,7 @@ class MainScreen(BoxLayout):
         # openCV image array of the current image being previewed, previous  version of  this
         self.currentImg = None
 
-        self.previewimgPath = ".previewImg.jpg"
+        self.previewimgPath = os.path.abspath(".previewImg.jpg")
 
         startImg = cv2.imread("no_img.jpg")
         cv2.imwrite(self.previewimgPath, startImg, [int(cv2.IMWRITE_JPEG_QUALITY), 100])
