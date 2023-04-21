@@ -261,11 +261,11 @@ class MainScreen(BoxLayout):
 
     def flipVertical(self):
         flippedImage = cv2.flip(self.currentImg, 0)
-        self.updateImage(flippedImage)
+        self.updateImage(flippedImage,flipV_inverse=True)
 
     def flipHorizontal(self):
         flippedImage = cv2.flip(self.currentImg, 1)
-        self.updateImage(flippedImage)
+        self.updateImage(flippedImage,flipH_inverse=True)
 
     def undo(self):
         # if history is empty, notify user adn do nothing
@@ -278,6 +278,8 @@ class MainScreen(BoxLayout):
         # get the last state of the history
         lastState = self.history.pop()
 
+        print(lastState.flipV, lastState.flipH)
+
         # set the switches to reflect the states at that point in history
         self.ids.mirrorY_switch.active = lastState.flipV
         self.ids.mirrorX_switch.active = lastState.flipH
@@ -287,12 +289,18 @@ class MainScreen(BoxLayout):
 
         self.modifyHistory = True
 
-    def updateImage(self, newImg, modifyHistory=True):
+    def updateImage(self, newImg, flipV_inverse=False, flipH_inverse=False):
 
         # if modifyHistory, store the current Image in history
         if self.modifyHistory:
             flipV = self.ids.mirrorY_switch.active
+            if flipV_inverse:
+                flipV = not flipV
+
             flipH = self.ids.mirrorX_switch.active
+            if flipH_inverse:
+                flipH = not flipH
+
             histItem = HistoryItem(self.currentImg, flipV, flipH)
 
             self.history.append(histItem)
