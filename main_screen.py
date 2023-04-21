@@ -72,6 +72,9 @@ class MainScreen(BoxLayout):
 
         self.previewimgPath = ".previewImg.jpg"
 
+        startImg = cv2.imread("no_img.jpg")
+        cv2.imwrite(self.previewimgPath, startImg, [int(cv2.IMWRITE_JPEG_QUALITY), 100])
+
     def openFileBrowser(self):
         # save original directory to restore at end
         cwd = os.getcwd()
@@ -85,7 +88,6 @@ class MainScreen(BoxLayout):
             self.fileQueue.extend(file_path)
             self.mediaPath = self.fileQueue[0]
             self.currentImg = cv2.imread(self.mediaPath)
-            self.ids.previewImage.source = self.previewimgPath
             self.updateImage(self.currentImg)
 
             # load thumbnails to the queue carousel object
@@ -175,8 +177,14 @@ class MainScreen(BoxLayout):
         imgCords = previewImg.pos
         imgSize = previewImg.size
 
+        # undo width stretch
+        # assumes image width is always 2x image height
+        stretchWidth = imgSize[0]
+        imgSize[0] = imgSize[1] * 2
+        stretchGap = (stretchWidth - imgSize[0])
+
         # get coordinates of mouse click relative to bottom left of image
-        touchLocalX = touch.x - imgCords[0]
+        touchLocalX = touch.x - imgCords[0] - stretchGap/2
         touchLocalY = touch.y - imgCords[1]
 
         # if click is outside of image bounds, disregard it
@@ -223,6 +231,7 @@ class MainScreen(BoxLayout):
 
         previewImg = self.ids.previewImage
         imgSize = previewImg.size
+
 
         # check for mirror X and mirror Y settings
         mirrorX = self.ids.mirrorX_switch.active
