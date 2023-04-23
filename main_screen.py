@@ -126,6 +126,7 @@ class MainScreen(BoxLayout):
         self.popup = DownloadPopup()
         self.popup.open()
 
+    # uses the current preview image and the file name from the popup to save a new image file
     def saveImage(self):
         popup = self.get_root_window().children[0]
         outfile = popup.ids.saveFileNameInput.text
@@ -169,6 +170,13 @@ class MainScreen(BoxLayout):
         # Update the label
         # self.ids.my_label2.text = f'{int(current)}% Progress'
 
+    """
+    What happens when you click on the window (sepcificallly on the image)
+    saves the local coordinates of the user's click on the image.
+    draws a circle around where the user clicked to inform user of click location 
+    Return: None
+    """
+
     def on_touch_up(self, touch):
 
         # touch provides the click's global cords for the entire app
@@ -184,7 +192,7 @@ class MainScreen(BoxLayout):
         stretchGap = (stretchWidth - imgSize[0])
 
         # get coordinates of mouse click relative to bottom left of image
-        touchLocalX = touch.x - imgCords[0] - stretchGap/2
+        touchLocalX = touch.x - imgCords[0] - stretchGap / 2
         touchLocalY = touch.y - imgCords[1]
 
         # if click is outside of image bounds, disregard it
@@ -219,6 +227,11 @@ class MainScreen(BoxLayout):
         if manual:
             self.manualProcess()
 
+    """
+    Uses the point selected  by the user to equirotate the preview Image
+    Return: None
+    """
+
     def manualProcess(self):
         # if no point selected, message the user and return
         if not self.selectedPoint:
@@ -231,7 +244,6 @@ class MainScreen(BoxLayout):
 
         previewImg = self.ids.previewImage
         imgSize = previewImg.size
-
 
         # check for mirror X and mirror Y settings
         mirrorX = self.ids.mirrorX_switch.active
@@ -258,14 +270,25 @@ class MainScreen(BoxLayout):
 
         self.updateImage(rotatedImage)
 
-
+    # flips the current image vertically
     def flipVertical(self):
         flippedImage = cv2.flip(self.currentImg, 0)
-        self.updateImage(flippedImage,flipV_inverse=True)
+        self.updateImage(flippedImage, flipV_inverse=True)
 
+    # flips the current image horizontally
     def flipHorizontal(self):
         flippedImage = cv2.flip(self.currentImg, 1)
-        self.updateImage(flippedImage,flipH_inverse=True)
+        self.updateImage(flippedImage, flipH_inverse=True)
+
+    """
+    undoes the last change the user made the image
+    gets the last frame from the history and restores 
+    image and settings to that of last application frame
+    does nothing if the history is empty
+    history is reset once the image path is changed
+    
+    Return: None
+    """
 
     def undo(self):
         # if history is empty, notify user adn do nothing
@@ -288,6 +311,17 @@ class MainScreen(BoxLayout):
         self.updateImage(lastState.img)
 
         self.modifyHistory = True
+
+    """
+    Takes an image and updates the application preview to display it
+    stores the current state of the app to history
+    Params:
+    newImg - openCV image array of the image to update the preview to
+    flipV_inverse - whether to invert the state of the vertical flip switch
+    flipH_inverse - whether to invert the state of the Horizontal flip switch
+    
+    Return: None
+    """
 
     def updateImage(self, newImg, flipV_inverse=False, flipH_inverse=False):
 
@@ -329,6 +363,20 @@ class MainScreen(BoxLayout):
     #
     #     equiRotateFrame(frame,horizonX,horizonY)
     #
+
+
+"""
+    scales the local coordinates on an image to the size of another image
+    
+    Params:
+    src_image - the target image to scale the coordinates to
+    imgSize - the tuple (h,w) size of the input image
+    localX,localY - the local coordinates of the input image
+    
+    Return: 
+    h,w,c - dimensions of the output image
+    ix,iy - the local coordinates scaled to the output image
+"""
 
 
 def scaleImage(src_image, imgSize, localX, localY):
