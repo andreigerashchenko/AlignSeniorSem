@@ -25,9 +25,16 @@ contours, hierarchy = cv2.findContours(edges, cv2.RETR_EXTERNAL, cv2.CHAIN_APPRO
 # Find the contour with the longest length that can be represented by a spline
 max_length = 0
 horizon_contour = None
+
+# Store all potential contours for debugging
+potential_contours = []
+
 for cnt in contours:
     # Check if the contour has enough points to be represented by a spline
     if len(cnt) >= 50:
+        # Found a contour that might work
+        potential_contours.append(cnt)
+
         # Fit a spline to the contour
         x, y = cnt.squeeze().T
         tck, u = splprep([x, y], s=0, k=min(3, len(x)-1))
@@ -42,9 +49,15 @@ for cnt in contours:
         # Check if the spline is the longest so far and doesn't cross over the same x coordinate more than once
         if length > max_length:
             max_length = length
-            spline_x = splev(np.linspace(0, 1, 1000), tck)[0]
-            if len(spline_x) == len(set(np.round(spline_x, 2))):
-                horizon_contour = cnt
+        # spline_x = splev(np.linspace(0, 1, 1000), tck)[0]
+        # if len(spline_x) == len(set(np.round(spline_x, 2))):
+            horizon_contour = cnt
+
+# Remove found contour from potential contours
+potential_contours.remove(horizon_contour)
+
+# Draw potential contours on the image
+cv2.drawContours(img, potential_contours, -1, (0, 0, 255), 2)
 
 # Draw the contour on the image
 cv2.drawContours(img, [horizon_contour], -1, (0, 255, 0), 2)
