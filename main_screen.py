@@ -71,8 +71,9 @@ class MainScreen(BoxLayout):
         self.currentImg = None
 
         self.previewimgPath = os.path.abspath(".previewImg.jpg")
-
+        print(os.listdir(os.getcwd()))
         startImg = cv2.imread("no_img.png")
+
         cv2.imwrite(self.previewimgPath, startImg, [
                     int(cv2.IMWRITE_JPEG_QUALITY), 100])
 
