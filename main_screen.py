@@ -101,7 +101,8 @@ class MainScreen(BoxLayout):
 
                 # add the buttonImage to the queue
                 queueThumbnails.add_widget(im)
-                print("added", im.background_normal)
+
+                print("added")
 
         # restore original directory
         os.chdir(cwd)
