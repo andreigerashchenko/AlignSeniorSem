@@ -2,15 +2,15 @@ import cv2
 import numpy as np
 from scipy.interpolate import splprep, splev
 
-# Define minimum and maximum average height of the horizon spline (in percent of the image height)
-MIN_HEIGHT = 0.3 # 30%
-MAX_HEIGHT = 0.9 # 90%
+# Define minimum and maximum average height of the horizon spline (in percent of the image height, 0.0-1.0 = 0%-100%)
+MIN_HEIGHT = 0.3
+MAX_HEIGHT = 0.9
 
 # Define roughness threshold
 ROUGHNESS_THRESHOLD = 0.1
 
 # Load the image
-img = cv2.imread('examples\R0011132.JPG')
+img = cv2.imread(r'examples\R0011194_f.jpg')
 
 # Resize the image if it's larger than 1280x720
 if img.shape[0] > 720 or img.shape[1] > 1280:
@@ -45,6 +45,7 @@ x_crossings = 0
 potential_contours = []
 
 for cnt in contours:
+    print(type(cnt))
     # Check if the contour has enough points to be represented by a spline
     if len(cnt) >= 50:
         # Get the average height of the contour
