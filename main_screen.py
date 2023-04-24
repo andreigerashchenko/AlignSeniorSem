@@ -72,8 +72,9 @@ class MainScreen(BoxLayout):
 
         self.previewimgPath = os.path.abspath(".previewImg.jpg")
 
-        startImg = cv2.imread("no_img.jpg")
-        cv2.imwrite(self.previewimgPath, startImg, [int(cv2.IMWRITE_JPEG_QUALITY), 100])
+        startImg = cv2.imread("no_img.png")
+        cv2.imwrite(self.previewimgPath, startImg, [
+                    int(cv2.IMWRITE_JPEG_QUALITY), 100])
 
     def openFileBrowser(self):
         # save original directory to restore at end
@@ -96,8 +97,8 @@ class MainScreen(BoxLayout):
                 filename = os.path.split(file)[-1]
 
                 # create image button of the selected file
-                im = Button(background_normal=file, size_hint=(None, 1), width=100, text=filename, font_size=10,
-                            on_press=lambda image: self.focusImage(image))
+                im = Button(background_normal=file, size_hint=(None, 1), width=100,
+                            text=filename, font_size=10, on_press=lambda image: self.focusImage(image))
 
                 # add the buttonImage to the queue
                 queueThumbnails.add_widget(im)
@@ -131,7 +132,8 @@ class MainScreen(BoxLayout):
     def saveImage(self):
         popup = self.get_root_window().children[0]
         outfile = popup.ids.saveFileNameInput.text
-        cv2.imwrite(outfile, self.currentImg, [int(cv2.IMWRITE_JPEG_QUALITY), 100])
+        cv2.imwrite(outfile, self.currentImg, [
+                    int(cv2.IMWRITE_JPEG_QUALITY), 100])
         toast(f"saved as {outfile}")
 
     # replace with the function which does some calculation to maintain progressbar value
@@ -219,7 +221,8 @@ class MainScreen(BoxLayout):
 
             Color(.75, .3, .3, .6)
             d = 15.
-            self.selectedPoint = Ellipse(pos=(touch.x - d / 2, touch.y - d / 2), size=(d, d))
+            self.selectedPoint = Ellipse(
+                pos=(touch.x - d / 2, touch.y - d / 2), size=(d, d))
 
     def processImage(self):
         # placeholder for how manual vs automatic processing
@@ -267,7 +270,8 @@ class MainScreen(BoxLayout):
         print(f"Clicked Location (x,y): {ix},{iy}")
 
         # rotate the image and update the preview
-        rotatedImage = rotateImage(src_image, h, w, c, ix, iy, mirrorX, mirrorY)
+        rotatedImage = rotateImage(
+            src_image, h, w, c, ix, iy, mirrorX, mirrorY)
 
         self.updateImage(rotatedImage)
 
@@ -344,7 +348,8 @@ class MainScreen(BoxLayout):
         self.currentImg = newImg
 
         # save the previewImage and update the visual
-        cv2.imwrite(self.previewimgPath, newImg, [int(cv2.IMWRITE_JPEG_QUALITY), 100])
+        cv2.imwrite(self.previewimgPath, newImg, [
+                    int(cv2.IMWRITE_JPEG_QUALITY), 100])
         self.ids.previewImage.reload()
 
     '''
