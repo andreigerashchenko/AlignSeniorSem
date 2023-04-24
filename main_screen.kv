@@ -24,15 +24,15 @@
                 on_press: root.open_Help()
 
 
-            Image:
+            AsyncImage:
                 id: previewImage
                 pos_hint: {'center_x': 0.5, 'center_y': 0.5}
                 #size_hint: 0.751,0.651
-                source: "imgassets/r2.jpg"
+                source: ".previewImg.jpg"
                 id: previewImage
                 radius: [5,]
                 #allow_stretch: False
-                #keep_ratio: False
+                keep_ratio: True
 
             Label:
                 text:" "
@@ -120,27 +120,28 @@
                 padding: 10
                 spacing: 15
 
-                Label: 
-                    text: "Mirror Y: "
-                
+                Label:
+                    text: "Flip Vertical"
+
                 Switch:
                     border_radius: 10
                     #size_hint: 0.2,0.425
                     id: mirrorY_switch
-                    active: True
-                    disabled: False
-                    font_size: 32
-                    on_active: 
-                        root.flipY()
+                    active: False
+                    #font_size: dp(16)
+                    on_active: root.flipVertical()
 
-                Label: 
-                    text: "Mirror X: "
+
+                Label:
+                    text: "Flip Horizontal"
                 Switch:
+                    text: "Flip Horizontal"
                     #size_hint: 0.32,0.425
                     id: mirrorX_switch
                     active: False
                     disabled: False
-                    font_size: 32
+                    #font_size: dp(16)
+                    on_active: root.flipHorizontal()
                 Label: 
                     text: "Timelapse: "
                 Switch:
@@ -169,6 +170,14 @@
                     active: True
                     disabled: False
                     font_size: 32
+
+                Button:
+                    text: "Undo"
+                    background_color: 1,0.5,0,0.9
+                    #size_hint: 0.32,0.45
+                    id: undoButton
+                    font_size: 32
+                    on_press: root.undo()
 
 
             GridLayout:
@@ -252,13 +261,17 @@
         Label:
             id: saveFileNameLabel
             text: "Enter a file name: "
+            size_hint_x:.2
         TextInput:
             id: saveFileNameInput
+            size_hint_x: .6
+            font_size: 16
+            multiline: False
+            #on_text_validate = app.root.saveImage()
         Button:
             text: "Enter"
-            on_press: saveImage
-
-
+            size_hint_x: .2
+            on_press: app.root.saveImage()
 
 
 
