@@ -29,7 +29,7 @@ class EquirectRotate:
     Rt = np.transpose(self.R)  # we should fill out the output image, so use R^t.
     self.src_xyz = self.out_xyz @ Rt
 
-    # mapping xyz(sphere) coordinate into LatLon coordinate system
+    # mapping  xyz(sphere) coordinate into LatLon coordinate system
     self.src_LonLat = Sphere2LatLon(self.src_xyz)  # (H, W, 2)
 
     # mapping LatLon coordinate into equirect coordinate system

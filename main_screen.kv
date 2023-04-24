@@ -24,40 +24,48 @@
                 on_press: root.open_Help()
 
 
-            FitImage:
+            Image:
+                id: previewImage
                 pos_hint: {'center_x': 0.5, 'center_y': 0.5}
                 #size_hint: 0.751,0.651
                 source: "imgassets/r2.jpg"
                 id: previewImage
-                radius: [2,]
-                allow_stretch: False
-                keep_ratio: True
+                radius: [5,]
+                #allow_stretch: False
+                #keep_ratio: False
 
             Label:
                 text:" "
                 size_hint: 0.05,0.5
                 pos_hint: {'center_x ': 0.91, 'top': 1}
                 
-
         BoxLayout: 
-
             orientation: "horizontal"
-            size_hint: 1, 0.125
-            padding: 10
-            spacing: 8
+            center: self.parent.center
+            size_hint: 0.85, 0.205
+            padding: 15
+            spacing: 5
+            
             Label:
                 pos_hint: {'x': 1, 'center_y': 0.5}
                 font_size: 45
                 font:'font/sf-ui-display.otf'
                 text: "Queue"
 
-            #include from another kivy file the carousel widget as the queue
+            ScrollView:
+                #id: imgQueue
+                height: 50
+                do_scroll_y: False
                 
-            Label:
-                text: " "
+                BoxLayout:
+                    id: imgQueue
+                    size_hint_x: None
+                    width: self.minimum_width
+                    orientation: 'horizontal'
+                    padding: 10, 0
+                    spacing: 10
 
-            Label:
-                text: " "
+
 
 
         BoxLayout:
@@ -71,47 +79,30 @@
                 orientation: 'vertical'
                 pos_hint: {'x':.5}
                 size_hint: 0.75,1
+                spacing: 10
+                padding: 10
 
-                ProgressBar:
+                #spacing between the progress bars needs to be adjusted here!!
+
+                MDProgressBar:
+                    #value: root.progression_value
                     id: my_progress_bar
-                    # Set Default Value
-                    # value: .25
                     min: 0
                     max: 100
-                    pos_hint: {'x':0.055}
-                    size_hint_x: 0.89
-                    size_hint_y: 0.5
+                    pos_hint: {'x':.055}
+                    color:  2.12, 2.02, 1.63,1
+                    size_hint_y:None
+                    height:dp(12)  
 
-
-                ProgressBar:
+                MDProgressBar:
+                    #value: root.progression_value
                     id: my_progress_bar2
-                    # Set Default Value
-                    # value: .25
                     min: 0
                     max: 100
-                    pos_hint: {'x':0.055}
-                    size_hint_x: 0.89
-                    size_hint_y: 0.5
-
-                CircularProgressBar:
-                    pos: 50, 100 
-                    thickness: 15
-                    cap_style: "round"
-                    progress_colour: "10"
-                    max: 150
-                    min: 100
-                    widget_size: 300
-
-
-                #MDProgressBar:
-                   # value: root.progression_value
-                   # id: my_progress_bar2
-                   # min: 0
-                    #max: 100
-                   # pos_hint: {'x':.1}
-                    #color: 0,1,0,0
-                    #size_hint_y:None
-                    #height:dp(48)  
+                    pos_hint: {'x':.055}
+                    color:  2.12, 2.02, 1.63,1
+                    size_hint_y:None
+                    height:dp(12)  
    
 
                 
@@ -125,7 +116,7 @@
 
             GridLayout:
                 cols: 4
-                rows: 3
+                rows: 4
                 padding: 10
                 spacing: 15
 
@@ -135,16 +126,19 @@
                 Switch:
                     border_radius: 10
                     #size_hint: 0.2,0.425
-                    id: my_switch
+                    id: mirrorY_switch
                     active: True
                     disabled: False
                     font_size: 32
+                    on_active: 
+                        root.flipY()
+
                 Label: 
                     text: "Mirror X: "
                 Switch:
                     #size_hint: 0.32,0.425
-                    id: my_switch
-                    active: True
+                    id: mirrorX_switch
+                    active: False
                     disabled: False
                     font_size: 32
                 Label: 
@@ -158,6 +152,16 @@
                     font_size: 32
                 Label: 
                     text: "VR Support: "
+                Switch:
+                    background_color: 1,0.5,0,0.9
+                    #size_hint: 0.32,0.45
+                    id: my_switch
+                    active: True
+                    disabled: False
+                    font_size: 32
+
+                Label: 
+                    text: "Manual Horizon: "
                 Switch:
                     background_color: 1,0.5,0,0.9
                     #size_hint: 0.32,0.45
@@ -198,10 +202,11 @@
                     size_hint: 0.05,0.2
                     id: increment
                     text: "Process"
-                    on_press: 
+                    on_press:
                     on_release: 
                         self.background_color = (2.85,2.850,2.850,1)
                         self.color= 0,0,0,1
+                        root.processImage()
 
 
                 Button:
@@ -212,8 +217,8 @@
                         self.color = (2.85,2.850,2.850,1)
                     size_hint: 0.05,0.2
                     id: increment
-                    text: "Download"
-                    on_press: 
+                    text: "Save"
+                    on_press: root.saveImagePopup()
                     on_release: 
                         self.background_color = (2.85,2.850,2.850,1)
                         self.color= 0,0,0,1
@@ -231,6 +236,27 @@
                     id: increment
                     text: "Preferences"
                     on_press: root.open_popup()
+
+
+<DownloadPopup>
+    id: downloadPopup
+    size_hint: 0.8,.1
+    auto_dismiss: True
+    title: 'Download: '
+    padding: 40
+    space: 40
+    background_color: 152/255,49/255,49/255,1
+
+    BoxLayout:
+        orientation: "horizontal"
+        Label:
+            id: saveFileNameLabel
+            text: "Enter a file name: "
+        TextInput:
+            id: saveFileNameInput
+        Button:
+            text: "Enter"
+            on_press: saveImage
 
 
 
