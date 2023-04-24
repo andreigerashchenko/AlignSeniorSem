@@ -1,6 +1,8 @@
 import io
 
+from kivy.core.window import Window
 from kivy.graphics import Color, Ellipse
+from kivy.uix.button import Button
 from kivymd.toast import toast
 from plyer import filechooser
 from equirectRotate import EquirectRotate, pointRotate
@@ -20,11 +22,12 @@ from time import sleep
 from kivy.config import Config
 from kivy.lang import Builder
 from queue import Queue
+import moviepy
 from plyer import filechooser
+from kivy.core.window import Window
 
-Config.set('graphics', 'resizable', '0')
-Config.set('graphics', 'width', '2048')
-# Config.set('graphics', 'height', '1280')
+
+Window.size = (1200, 750)
 kv = Builder.load_file('main_screen.kv')
 
 
@@ -33,6 +36,14 @@ class HelpPopup(Popup):
 
 
 class PrefPopup(Popup):
+    pass
+
+
+def getHorizonPoint(frame):
+    pass
+
+
+class DownloadPopup(Popup):
     pass
 
 
@@ -51,8 +62,8 @@ class MainScreen(BoxLayout):
         cwd = os.getcwd()
 
         file_path = ""
-        file_path = filechooser.open_file(title="File Selection", filters=[
-            "*.jpg", "*.png", "*.jpeg"])
+        file_path = filechooser.open_file(title="File Selection", multiple=True, filters=[
+            "*.jpg", "*.png", "*.jpeg", "*.mp4"])
         if file_path == []:
             pass
         else:
@@ -62,16 +73,21 @@ class MainScreen(BoxLayout):
             # load thumbnails to the queue carousel object
             queueThumbnails = self.ids.imgQueue
             for file in file_path:
-                # get extension of the file
-                fExtension = os.path.splitext(file)[1][1:].lower()
-                print(fExtension)
+                # create image button of the selected file
+                im = Button(background_normal=file, size_hint=(None, 1), width=100,
+                            on_press=lambda image: self.focusImage(image))
 
                 data = io.BytesIO(open(file, "rb").read())
-                im = AsyncImage(source= file, allow_stretch=True, size_hint = (None,1), width=100)
+                im = AsyncImage(source=file, allow_stretch=True,
+                                size_hint=(None, 1), width=100)
                 queueThumbnails.add_widget(im)
+                print("added")
 
         # restore original directory
         os.chdir(cwd)
+
+    def focusImage(self, img):
+        self.ids.previewImage.source = img.background_normal
 
     def open_Help(self):
         self.popup = HelpPopup()
@@ -79,6 +95,11 @@ class MainScreen(BoxLayout):
 
     def open_popup(self):
         self.popup = PrefPopup()
+        self.popup.open()
+
+    # pops up a menu for the user to select a file name and save image to that file
+    def saveImagePopup(self):
+        self.popup = DownloadPopup()
         self.popup.open()
 
     # replace with the function which does some calculation to maintain progressbar value
@@ -148,7 +169,8 @@ class MainScreen(BoxLayout):
 
             Color(.75, .3, .3, .6)
             d = 15.
-            self.selectedPoint = Ellipse(pos=(touch.x - d / 2, touch.y - d / 2), size=(d, d))
+            self.selectedPoint = Ellipse(
+                pos=(touch.x - d / 2, touch.y - d / 2), size=(d, d))
 
     def processImage(self):
         # placeholder for how manual vs automatic processing
@@ -175,8 +197,8 @@ class MainScreen(BoxLayout):
         mirrorY = self.ids.mirrorY_switch.active
 
         # # flip Y cordinate if mirrorY is active
-        # if mirrorY:
-        #     self.touchLocalY = -(self.touchLocalY - imgSize[1])
+        if mirrorY:
+            self.touchLocalY = -(self.touchLocalY - imgSize[1])
 
         # get image paths for input and output
         src_path = previewImg.source
@@ -191,10 +213,12 @@ class MainScreen(BoxLayout):
         print(f"Clicked Location (x,y): {ix},{iy}")
 
         # rotate the image and update the preview
-        rotatedImage = rotateImage(src_image, h, w, c, ix, iy, mirrorX, mirrorY)
+        rotatedImage = rotateImage(
+            src_image, h, w, c, ix, iy, mirrorX, mirrorY)
 
         print(opfile)
-        print(cv2.imwrite(opfile, rotatedImage, [int(cv2.IMWRITE_JPEG_QUALITY), 100]))
+        print(cv2.imwrite(opfile, rotatedImage, [
+              int(cv2.IMWRITE_JPEG_QUALITY), 100]))
         previewImg.source = opfile
 
         previewImg.reload()
