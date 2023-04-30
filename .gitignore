@@ -127,3 +127,7 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Project specific
+.previewImg.jpg
+2021-10-11-KAP-OnsetBeach/
