@@ -24,6 +24,8 @@ from kivy.lang import Builder
 from queue import Queue
 import moviepy
 
+from horizonfinder import find_horizon, horizon_critical_points
+
 Window.size = (1200, 750)
 kv = Builder.load_file('main_screen.kv')
 
@@ -226,11 +228,31 @@ class MainScreen(BoxLayout):
                 pos=(touch.x - d / 2, touch.y - d / 2), size=(d, d))
 
     def processImage(self):
-        # placeholder for how manual vs automatic processing
-        # takes place
-        manual = True
+
+        manual = self.ids.manual_switch.active
+
         if manual:
             self.manualProcess()
+        else:
+            self.automaticProcess()
+
+    def automaticProcess(self):
+        img = self.currentImg
+        scale_factor = min(1280 / img.shape[1], 720 / img.shape[0])
+        img = cv2.resize(img, None, fx=scale_factor, fy=scale_factor)
+
+        horizon_contour = find_horizon(img)
+        # Draw the contour on the image
+        cv2.drawContours(img, [horizon_contour], -1, (0, 255, 0), 2)
+
+        critical_points = horizon_critical_points(img,horizon_contour)
+        cx = int(critical_points[0][0])
+        cy = int(critical_points[0][1])
+
+        cv2.circle(img,(cx,cy), 10, (0,0,255), -1)
+
+        self.updateImage(img)
+
 
     """
     Uses the point selected  by the user to equirotate the preview Image
