@@ -1,5 +1,4 @@
 import io
-
 from kivy.core.window import Window
 from kivy.graphics import Color, Ellipse
 from kivy.uix.button import Button
@@ -84,7 +83,7 @@ class MainScreen(BoxLayout):
         file_path = ""
         file_path = filechooser.open_file(title="File Selection", multiple=True, filters=[
             "*.jpg", "*.png", "*.jpeg", "*.mp4"])
-        if file_path == []:
+        if file_path is None or file_path == []:
             pass
         else:
             self.fileQueue.extend(file_path)
@@ -161,18 +160,6 @@ class MainScreen(BoxLayout):
 
     # see doc MDProgress bar
 
-    def press_it2(self):
-        # Grab the current progress bar value
-        current = self.progression_value
-        # If statement to start over after 100
-        if current == 100:
-            current = 0
-
-        # Increment value by .25
-        current += 25
-
-        # Update the label
-        # self.ids.my_label2.text = f'{int(current)}% Progress'
 
     """
     What happens when you click on the window (sepcificallly on the image)

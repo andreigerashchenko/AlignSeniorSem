@@ -50,7 +50,7 @@
                 pos_hint: {'x': 1, 'center_y': 0.5}
                 font_size: 45
                 font:'font/sf-ui-display.otf'
-                text: "Queue"
+                text: "Job Queue: "
 
             ScrollView:
                 #id: imgQueue
@@ -104,15 +104,10 @@
                     size_hint_y:None
                     height:dp(12)  
    
-
-                
-                #delete this button when implementing the progress bar function
-                Button:
-                    pos_hint: {'x':0.25, 'y':0}
-                    size_hint: 0.5,0.2
-                    id: increment
-                    text: "Press Me!"
-                    on_press: root.press_it()
+                Label:
+                    text:" "
+                    size_hint: 0.05,0.5
+                    pos_hint: {'center_x ': 0.91, 'top': 1}
 
             GridLayout:
                 cols: 4
