@@ -74,40 +74,33 @@
             padding: 15
             spacing: 18
 
-            BoxLayout: 
-                #progression_value: 25
-                orientation: 'vertical'
-                pos_hint: {'x':.5}
-                size_hint: 0.75,1
+            GridLayout: 
+                cols: 1
+                rows:2
+                padding: 34
                 spacing: 10
-                padding: 10
-
-                #spacing between the progress bars needs to be adjusted here!!
-
+                
                 MDProgressBar:
                     #value: root.progression_value
                     id: my_progress_bar
                     min: 0
                     max: 100
-                    pos_hint: {'x':.055}
+
                     color:  2.12, 2.02, 1.63,1
-                    size_hint_y:None
-                    height:dp(12)  
+                    size_hint_y: 0.125
+                    height:dp(5)  
 
                 MDProgressBar:
                     #value: root.progression_value
                     id: my_progress_bar2
                     min: 0
                     max: 100
-                    pos_hint: {'x':.055}
+
                     color:  2.12, 2.02, 1.63,1
-                    size_hint_y:None
-                    height:dp(12)  
+                    size_hint_y: 0.125
+                    height:dp(7)  
    
-                Label:
-                    text:" "
-                    size_hint: 0.05,0.5
-                    pos_hint: {'center_x ': 0.91, 'top': 1}
+                
 
             GridLayout:
                 cols: 4
