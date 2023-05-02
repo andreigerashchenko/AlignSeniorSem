@@ -26,12 +26,6 @@ def score_candidate(img, tck, u, x, y, cnt, LENGTH_WEIGHT, SMOOTHNESS_WEIGHT, LI
     return score
 
 def find_horizon_point(img, LENGTH_WEIGHT, SMOOTHNESS_WEIGHT, LINEARITY_WEIGHT, MIN_HEIGHT, MAX_HEIGHT):
-    # Resize the image if it's larger than 1280x720
-    if img.shape[0] > 720 or img.shape[1] > 1280:
-        img = img.copy() # Make a copy of the image so we don't modify the original
-        scale_factor = min(1280 / img.shape[1], 720 / img.shape[0])
-        img = cv2.resize(img, None, fx=scale_factor, fy=scale_factor)
-
     # Convert to grayscale
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
@@ -49,6 +43,8 @@ def find_horizon_point(img, LENGTH_WEIGHT, SMOOTHNESS_WEIGHT, LINEARITY_WEIGHT, 
 
     # Best contour
     horizon_contour = None
+    # Best spline
+    horizon_spline = None
 
     # Store all potential contours as tuple of (contour, score)
     potential_contours = []
@@ -87,21 +83,24 @@ def find_horizon_point(img, LENGTH_WEIGHT, SMOOTHNESS_WEIGHT, LINEARITY_WEIGHT, 
             if score > max_score:
                 max_score = score
                 horizon_contour = cnt
+                horizon_spline = (tck, u)
 
-    # Find and print highest and lowest points of the horizon contour
-    min_y = min(horizon_contour[:, 0, 1])
-    max_y = max(horizon_contour[:, 0, 1])
+    # Check if we found a horizon contour
+    if horizon_contour is None:
+        return None, None, None
 
-    # Find derivative at highest and lowest points
+    # Find highest and lowest points of the horizon spline
     min_x = horizon_contour[np.argmin(horizon_contour[:, 0, 1]), 0, 0]
+    min_y = horizon_contour[np.argmin(horizon_contour[:, 0, 1]), 0, 1]
     max_x = horizon_contour[np.argmax(horizon_contour[:, 0, 1]), 0, 0]
-    min_deriv = splev(min_x, splines[0][0], der=1)
-    max_deriv = splev(max_x, splines[0][0], der=1)
+    max_y = horizon_contour[np.argmax(horizon_contour[:, 0, 1]), 0, 1]
+
+    # Find derivative at highest and lowest points of the horizon spline
+    min_deriv = splev(horizon_spline[1][np.argmin(horizon_spline[1])], horizon_spline[0], der=1)[1]
+    max_deriv = splev(horizon_spline[1][np.argmax(horizon_spline[1])], horizon_spline[0], der=1)[1]
 
     # Choose the point with the derivative closest to 0
     if abs(min_deriv) < abs(max_deriv):
-        print('Lowest point: ({}, {})'.format(min_x, min_y))
-        return min_x, min_y, "lowest"
+        return min_x, min_y, "highest"
     else:
-        print('Highest point: ({}, {})'.format(max_x, max_y))
-        return max_x, max_y, "highest"
+        return max_x, max_y, "lowest"
