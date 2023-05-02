@@ -4,6 +4,8 @@ from kivy.core.window import Window
 from kivy.graphics import Color, Ellipse
 from kivy.uix.button import Button
 from kivymd.toast import toast
+from moviepy.video.io.VideoFileClip import VideoFileClip
+from moviepy.editor import *
 from plyer import filechooser
 from equirectRotate import EquirectRotate, pointRotate
 import cv2
@@ -58,6 +60,9 @@ class MainScreen(BoxLayout):
 
     def __init__(self, **kwargs):
         super().__init__()
+        self.image = 0
+        self.video = 1
+        self.currentMediaType = None
         self.modifyHistory = True
         self.touchLocalX = None
         self.touchLocalY = None
@@ -90,33 +95,80 @@ class MainScreen(BoxLayout):
             pass
         else:
             self.fileQueue.extend(file_path)
-            self.mediaPath = self.fileQueue[0]
-            self.currentImg = cv2.imread(self.mediaPath)
-            self.updateImage(self.currentImg)
+            self.focusMedia(self.fileQueue[0])
+            # self.mediaPath = self.fileQueue[0]
+            # self.currentImg = cv2.imread(self.mediaPath)
+            # self.updateImage(self.currentImg)
 
             # load thumbnails to the queue carousel object
             queueThumbnails = self.ids.imgQueue
             for file in file_path:
                 filename = os.path.split(file)[-1]
+                extenstion = os.path.splitext(filename)[-1][1:]
 
-                # create image button of the selected file
-                im = Button(background_normal=file, size_hint=(None, 1), width=100,
-                            text=filename, font_size=10, on_press=lambda image: self.focusImage(image))
+                # if video, create video button of selected file
+                if extenstion in ["mp4", "mov"]:
+                    im = Button(background_normal="blank_video_logo.png", size_hint=(None, 1), width=100,
+                                text=filename, font_size=10, on_press=lambda vid: self.focusVideo(file))
+
+                # if image, create image button of the selected file
+                else:
+                    im = Button(background_normal=file, size_hint=(None, 1), width=100,
+                                text=filename, font_size=10, on_press=lambda image: self.focusImage(file))
 
                 # add the buttonImage to the queue
                 queueThumbnails.add_widget(im)
 
-                print("added")
-
         # restore original directory
         os.chdir(cwd)
 
+    def focusMedia(self, mediaPath):
+        self.mediaPath = mediaPath
+        extenstion = os.path.splitext(mediaPath)[-1][1:]
+
+        # if video, create video button of selected file
+        if extenstion in ["mp4", "mov"]:
+            self.focusVideo(mediaPath)
+        else:
+            self.focusImage(mediaPath)
+
     def focusImage(self, img):
-        newImg = cv2.imread(img.background_normal)
+        newImg = cv2.imread(img)
         self.updateImage(newImg)
 
         # clear history
         self.history.clear()
+
+        # set current media type to image
+        self.currentMediaType = self.image
+
+        # enable the manual switch
+        self.ids.manual_switch.disabled = False
+
+    def focusVideo(self, vidPath):
+        # get the video from path
+        clip = VideoFileClip(vidPath)
+
+        # getting only first 5 seconds
+        clip = clip.subclip(0, 5)
+
+        # getting frame at time 0
+        frame = clip.get_frame(0)
+
+        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        frame = drawVideoLogo(frame)
+
+        self.updateImage(frame)
+
+        # clear history
+        self.history.clear()
+
+        # set current media type to video
+        self.currentMediaType = self.video
+
+        # disable the manual switch, only automatic can be used for videos
+        self.ids.manual_switch.active = False
+        self.ids.manual_switch.disabled = True
 
     def open_Help(self):
         self.popup = HelpPopup()
@@ -133,8 +185,7 @@ class MainScreen(BoxLayout):
 
     # uses the current preview image and the file name from the popup to save a new image file
     def saveImage(self):
-        popup = self.get_root_window().children[0]
-        outfile = popup.ids.saveFileNameInput.text
+        outfile = file_path = filechooser.open_file(title="Save Image")
         cv2.imwrite(outfile, self.currentImg, [
             int(cv2.IMWRITE_JPEG_QUALITY), 100])
         toast(f"saved as {outfile}")
@@ -184,8 +235,11 @@ class MainScreen(BoxLayout):
     """
 
     def on_touch_up(self, touch):
+        # do nothing if video
+        if self.currentMediaType == self.video:
+            return
 
-        # touch provides the click's global cords for the entire app
+            # touch provides the click's global cords for the entire app
         # localize the touch coordinates to the image
         previewImg = self.ids.previewImage
         imgCords = previewImg.pos
@@ -227,14 +281,36 @@ class MainScreen(BoxLayout):
             self.selectedPoint = Ellipse(
                 pos=(touch.x - d / 2, touch.y - d / 2), size=(d, d))
 
-    def processImage(self):
+    def processMedia(self):
+        if self.currentMediaType == self.video:
+            self.processVideo()
+        else:
+            self.processImage()
 
+    def processImage(self):
         manual = self.ids.manual_switch.active
 
         if manual:
             self.manualProcess()
         else:
             self.automaticProcess()
+
+    def processVideo(self):
+        clip = VideoFileClip(self.mediaPath)
+
+        duration = clip.duration
+        fl = lambda f, t: alignFrame(f(t), t, progress=((t/duration) * 100), interval=5,
+                                     progress_bar=self.ids.my_progress_bar,
+                                     mirrorX=self.ids.mirrorX_switch.active,
+                                     mirrorY=self.ids.mirrorY_switch.active)
+
+        rotatedClip = clip.fl(fl)
+
+        file_chosen = filechooser.open_file(title="Name Rotated Video")
+        if not file_chosen:
+            return
+        outfile = file_chosen[0]
+        rotatedClip.write_videofile(outfile, fps=15)
 
     def automaticProcess(self):
         src_image = self.currentImg
@@ -245,7 +321,7 @@ class MainScreen(BoxLayout):
         # # Draw the contour on the image
         # cv2.drawContours(img, [horizon_contour], -1, (0, 255, 0), 2)
 
-        critical_points = find_horizon_point(img,1,1,1,.3,.7)
+        critical_points = find_horizon_point(img, 1, 1, 1, .3, .7)
         # if no critical points found, use default values
         if not critical_points:
             print('no criticalnpoints found')
@@ -258,10 +334,6 @@ class MainScreen(BoxLayout):
 
         # draw circle on horizon critical point
         cv2.circle(img, (cx, cy), 10, (200, 0, 0), -1)
-
-        # cx = cx // scale_factor
-        # cy = cy // scale_factor
-
 
         cv2.imshow("i", img)
 
@@ -318,11 +390,19 @@ class MainScreen(BoxLayout):
 
     # flips the current image vertically
     def flipVertical(self):
+        # do nothing more if video
+        if self.currentMediaType == self.video:
+            return
+
         flippedImage = cv2.flip(self.currentImg, 0)
         self.updateImage(flippedImage, flipV_inverse=True)
 
     # flips the current image horizontally
     def flipHorizontal(self):
+        # do nothing more if video
+        if self.currentMediaType == self.video:
+            return
+
         flippedImage = cv2.flip(self.currentImg, 1)
         self.updateImage(flippedImage, flipH_inverse=True)
 
@@ -394,22 +474,38 @@ class MainScreen(BoxLayout):
         self.ids.previewImage.reload()
 
     '''
-    processFrame
-    takes a bitmaap array and video timing data to process into it's equirotated state
+    alignFrame
+    takes a bitmap array and video timing data to process into it's equirotated state
     frame: a bitmap array of a frame of a video
     frameNum: the number of the specific frame out of the video
     interval: the interval in which the horizon location will be recalculated after [interval] frames
     '''
-    # def processFrame(self,frame,frameNum,interval,rotator):
-    #     frameIntervalProgress = frameNum % interval
-    #
-    #     # when at frame interval
-    #     # find the horizon of the current feame
-    #     if frameIntervalProgress == 0:
-    #         horizonX,horizonY = getHorizonPoint(frame)
-    #
-    #     equiRotateFrame(frame,horizonX,horizonY)
-    #
+
+
+def alignFrame(get_frame, t, progress,progress_bar=None, interval=(5 / 15), mirrorX=False, mirrorY=False):
+    if progress_bar:
+        progress_bar.value = int(progress)
+
+    global rotator, shiftx
+    frameIntervalProgress = t % interval
+
+    # when at frame interval
+    # use the horizon to find the current rotations of the frame
+    if frameIntervalProgress == 0:
+        rotator, shiftx = getRotator(get_frame, mirrorX, mirrorY)
+
+    # apply rotations to the current frame
+    frame = np.roll(get_frame, shiftx, axis=1)
+    rotated_image = rotator.rotate(frame)
+
+    if mirrorX and not mirrorY:
+        rotated_image = cv2.flip(rotated_image, 0)
+    if mirrorY and not mirrorX:
+        rotated_image = cv2.flip(rotated_image, 1)
+    if mirrorX and mirrorY:
+        rotated_image = cv2.flip(rotated_image, -1)
+
+    return rotated_image
 
 
 """
@@ -470,22 +566,106 @@ def rotateImage(src_image, h, w, c, ix, iy, mirrorX, mirrorY):
     # rotate (yaw, pitch, roll)
     equirectRot = EquirectRotate(h, w, (myY, myP, myR))
     rotated_image = equirectRot.rotate(src_image)
-    ###################################################################
-
-    # # mirror axis WIP
-    # if mirrorX and not mirrorY:
-    #     flipAxis = 1
-    # if mirrorY and not mirrorX:
-    #     flipAxis = 0
-    # if mirrorX and mirrorY:
-    #     flipAxis = -1
-    #
-    # if not (mirrorX or mirrorY):
-    #     final_image = rotated_image
-    # else:
-    #     final_image = cv2.flip(rotated_image, flipAxis)
 
     return rotated_image
+
+
+"""
+takes image frame and returns the equirotate object used to rotate this image
+rotator can be used on multiple frames of similar to image used in this function
+"""
+
+
+def getRotator(src_image, mirrorX, mirrorY):
+    scale_factor = min(1280 / src_image.shape[1], 720 / src_image.shape[0])
+    img = cv2.resize(src_image, None, fx=scale_factor, fy=scale_factor)
+
+    critical_points = find_horizon_point(img, 1, 1, 1, .3, .7)
+
+    # if no critical points found, use default values
+    if not critical_points:
+        cx = img.shape[0] // 2
+        cy = img.shape[1] // 2
+    else:
+        cx = int(critical_points[0])
+        cy = int(critical_points[1])
+
+    # # draw circle on horizon critical point
+    # cv2.circle(img, (cx, cy), 10, (200, 0, 0), -1)
+    #
+    # cv2.imshow("i", img)
+
+    # scale coordinates to image size
+    h, w, c = src_image.shape
+    ix = cx // scale_factor
+    iy = cy // scale_factor
+    print(ix, iy)
+
+    # Do a 'yaw' rotation such that ix position earth-sky horizon is
+    # at the middle column of the image. Fortunately for an equirectangular
+    # image, a yaw is simply sliding the image horizontally, and is done very
+    # fast by np.roll.
+    shiftx = int(w / 2 - ix)
+    src_image = np.roll(src_image, shiftx, axis=1)
+
+    # If iy>0 then the user selected the lowest point of the horizon.
+    # After the above 'yaw', the true horizon at the middle of the image
+    # is still (iy - h/2) pixels below the camera's equator. This is
+    # (iy - h/2)*(180)/h degrees below the camera's equator. So rotate the
+    # pitch of the yaw-ed rectilinear image by this amount to get a nearly
+    # straight horizon.
+    myY, myP, myR = 0, (iy - h / 2) * 180 / h, 0
+
+    # If iy<0 then the user actually recorded the highest point. That
+    # is, the true horizon is (h/2 - |iy|) pixels above the camera's
+    # equator. So rotate the pitch of the yaw-ed rectilinear image by the
+    # amount -(h/2 - |iy|)*180/h to get a nearly straight horizon.
+    if iy < 0:
+        myP = -(h / 2 - np.abs(iy)) * 180 / h
+
+    # rotate (yaw, pitch, roll)
+    rotator = EquirectRotate(h, w, (myY, myP, myR))
+    return rotator, shiftx
+
+
+def useRotator(rotator, img):
+    rotated_image = rotator.rotate(img)
+    return rotated_image
+
+
+def drawVideoLogo(img):
+    midX = img.shape[1] // 2
+    midY = img.shape[0] // 2
+
+    height = int(img.shape[0] * .2)
+    width = int(img.shape[1] * .2)
+
+    # Start coordinate, here (5, 5)
+    # represents the top left corner of rectangle
+    start_point = (midX - (width // 2), midY + (height // 2))
+
+    # Ending coordinate, here (220, 220)
+    # represents the bottom right corner of rectangle
+    end_point = (midX + (width // 2), midY - (height // 2))
+
+    # Black color in BGR
+    color = (0, 0, 0)
+
+    # Line thickness of -1 will fill shape
+    thickness = -1
+
+    # Using cv2.rectangle() method
+    # Draw a rectangle with blue line borders of thickness of 2 px
+    image = cv2.rectangle(img, start_point, end_point, color, thickness)
+
+    pt1 = start_point[0] + int(width * .2), start_point[1] - int(height * .2)
+    pt2 = start_point[0] + int(width * .2), start_point[1] - int(height * .8)
+    pt3 = start_point[0] + int(width * .85), start_point[1] - (height // 2)
+
+    triangle_cnt = np.array([pt1, pt2, pt3])
+    cv2.drawContours(image, [triangle_cnt], 0, (255, 255, 255), -1)
+
+    return image
 
 
 class MainScreenApp(MDApp):
