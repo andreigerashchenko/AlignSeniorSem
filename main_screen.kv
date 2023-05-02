@@ -13,8 +13,13 @@
         BoxLayout: 
             orientation: "horizontal"
             padding: 15
-            spacing: 25
-
+            spacing: 5
+            canvas.before:
+                Color:
+                    rgba: 13/255,29/255,3/255,1
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
             Button:
                 pos_hint: {'center_x ': 0.3, 'top': 1}
                 background_normal: 'images/help button.png'
@@ -27,30 +32,34 @@
             AsyncImage:
                 id: previewImage
                 pos_hint: {'center_x': 0.5, 'center_y': 0.5}
-                #size_hint: 0.751,0.651
+                size_hint: 1,1
                 source: ".previewImg.jpg"
                 id: previewImage
                 radius: [5,]
                 #allow_stretch: False
                 keep_ratio: True
 
-            Label:
-                text:" "
-                size_hint: 0.05,0.5
-                pos_hint: {'center_x ': 0.91, 'top': 1}
+            Button:
+                text: "Undo"
+                background_color: 1,0.5,0,0.9
+                size_hint: 0.150,0.15
+                id: undoButton
+                font_size: 27
+                on_press: root.undo()
                 
         BoxLayout: 
             orientation: "horizontal"
-            center: self.parent.center
-            size_hint: 0.85, 0.205
+            align: 'center'
+            size_hint: 1, 0.205
             padding: 15
             spacing: 5
             
             Label:
-                pos_hint: {'x': 1, 'center_y': 0.5}
+                pos_hint: {'x': 0.78, 'center_y': 0.5}
                 font_size: 45
                 font:'font/sf-ui-display.otf'
                 text: "Job Queue: "
+                size_hint: 0.5,0.5
 
             ScrollView:
                 #id: imgQueue
@@ -159,13 +168,7 @@
                     disabled: False
                     font_size: 32
 
-                Button:
-                    text: "Undo"
-                    background_color: 1,0.5,0,0.9
-                    #size_hint: 0.32,0.45
-                    id: undoButton
-                    font_size: 32
-                    on_press: root.undo()
+                
 
 
             GridLayout:
