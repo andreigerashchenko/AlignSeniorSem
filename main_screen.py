@@ -1,5 +1,6 @@
 import io
 
+from kivy.clock import Clock
 from kivy.core.window import Window
 from kivy.graphics import Color, Ellipse
 from kivy.uix.button import Button
@@ -483,6 +484,7 @@ class MainScreen(BoxLayout):
 
 
 def alignFrame(get_frame, t, progress,progress_bar=None, interval=(5 / 15), mirrorX=False, mirrorY=False):
+    Clock.async_tick()
     if progress_bar:
         progress_bar.value = int(progress)
 
@@ -494,16 +496,20 @@ def alignFrame(get_frame, t, progress,progress_bar=None, interval=(5 / 15), mirr
     if frameIntervalProgress == 0:
         rotator, shiftx = getRotator(get_frame, mirrorX, mirrorY)
 
+
     # apply rotations to the current frame
     frame = np.roll(get_frame, shiftx, axis=1)
     rotated_image = rotator.rotate(frame)
 
     if mirrorX and not mirrorY:
-        rotated_image = cv2.flip(rotated_image, 0)
+        return cv2.flip(rotated_image, 1)
+        print("flipped Horizontal")
     if mirrorY and not mirrorX:
-        rotated_image = cv2.flip(rotated_image, 1)
+        return cv2.flip(rotated_image, 0)
+        print("flipped Vertical")
     if mirrorX and mirrorY:
-        rotated_image = cv2.flip(rotated_image, -1)
+        return cv2.flip(rotated_image, -1)
+        print("flipped Both")
 
     return rotated_image
 
