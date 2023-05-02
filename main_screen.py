@@ -23,6 +23,8 @@ from kivy.lang import Builder
 from queue import Queue
 import moviepy
 
+from horizonfinder import find_horizon_point
+
 Window.size = (1200, 750)
 kv = Builder.load_file('main_screen.kv')
 
@@ -74,7 +76,7 @@ class MainScreen(BoxLayout):
         startImg = cv2.imread("no_img.png")
 
         cv2.imwrite(self.previewimgPath, startImg, [
-                    int(cv2.IMWRITE_JPEG_QUALITY), 100])
+            int(cv2.IMWRITE_JPEG_QUALITY), 100])
 
     def openFileBrowser(self):
         # save original directory to restore at end
@@ -133,7 +135,7 @@ class MainScreen(BoxLayout):
         popup = self.get_root_window().children[0]
         outfile = popup.ids.saveFileNameInput.text
         cv2.imwrite(outfile, self.currentImg, [
-                    int(cv2.IMWRITE_JPEG_QUALITY), 100])
+            int(cv2.IMWRITE_JPEG_QUALITY), 100])
         toast(f"saved as {outfile}")
 
     # replace with the function which does some calculation to maintain progressbar value
@@ -213,11 +215,57 @@ class MainScreen(BoxLayout):
                 pos=(touch.x - d / 2, touch.y - d / 2), size=(d, d))
 
     def processImage(self):
-        # placeholder for how manual vs automatic processing
-        # takes place
-        manual = True
+
+        manual = self.ids.manual_switch.active
+
         if manual:
             self.manualProcess()
+        else:
+            self.automaticProcess()
+
+    def automaticProcess(self):
+        src_image = self.currentImg
+        scale_factor = min(1280 / src_image.shape[1], 720 / src_image.shape[0])
+        img = cv2.resize(src_image, None, fx=scale_factor, fy=scale_factor)
+
+        # horizon_contour = find_horizon(img)
+        # # Draw the contour on the image
+        # cv2.drawContours(img, [horizon_contour], -1, (0, 255, 0), 2)
+
+        critical_points = find_horizon_point(img,1,1,1,.3,.7)
+        # if no critical points found, use default values
+        if not critical_points:
+            print('no criticalnpoints found')
+            cx = img.shape[0] // 2
+            cy = img.shape[1] // 2
+        else:
+            print(critical_points)
+            cx = int(critical_points[0])
+            cy = int(critical_points[1])
+
+        # draw circle on horizon critical point
+        cv2.circle(img, (cx, cy), 10, (200, 0, 0), -1)
+
+        # cx = cx // scale_factor
+        # cy = cy // scale_factor
+
+
+        cv2.imshow("i", img)
+
+        # check for mirror X and mirror Y settings
+        mirrorX = self.ids.mirrorX_switch.active
+        mirrorY = self.ids.mirrorY_switch.active
+
+        # scale touch coordinates to image size
+        h, w, c = src_image.shape
+        ix = cx // scale_factor
+        iy = cy // scale_factor
+        print(ix, iy)
+        # rotate the image and update the preview
+        rotatedImage = rotateImage(
+            src_image, h, w, c, ix, iy, mirrorX, mirrorY)
+
+        self.updateImage(rotatedImage)
 
     """
     Uses the point selected  by the user to equirotate the preview Image
@@ -234,23 +282,15 @@ class MainScreen(BoxLayout):
         self.canvas.remove(self.selectedPoint)
         self.selectedPoint = None
 
-        previewImg = self.ids.previewImage
-        imgSize = previewImg.size
+        src_image = self.currentImg
+        imgSize = self.ids.previewImage.size
 
         # check for mirror X and mirror Y settings
         mirrorX = self.ids.mirrorX_switch.active
         mirrorY = self.ids.mirrorY_switch.active
 
-        # # flip Y cordinate if mirrorY is active
-        # if not mirrorY:
+        # flip Y cordinate
         self.touchLocalY = -(self.touchLocalY - imgSize[1])
-
-        # get image paths for input and output
-        src_path = previewImg.source
-        opfile = self.previewimgPath
-
-        # open the image to be transformed
-        src_image = cv2.imread(previewImg.source)
 
         # scale touch coordinates to image size
         h, w, c, ix, iy = scaleImage(
@@ -337,7 +377,7 @@ class MainScreen(BoxLayout):
 
         # save the previewImage and update the visual
         cv2.imwrite(self.previewimgPath, newImg, [
-                    int(cv2.IMWRITE_JPEG_QUALITY), 100])
+            int(cv2.IMWRITE_JPEG_QUALITY), 100])
         self.ids.previewImage.reload()
 
     '''
