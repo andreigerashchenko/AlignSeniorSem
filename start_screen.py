@@ -9,10 +9,8 @@ from kivy.uix.label import Label
 from kivy.config import Config
 from plyer import filechooser
 from kivy.properties import ListProperty
-Config.set('graphics', 'resizable', '0')
-
-
-Config.set('graphics', 'width', '950')
+Window.borderless = True
+Window.size = (1200, 750)
 
 kv = Builder.load_file('start_screen.kv')
 
@@ -39,7 +37,7 @@ class StartScreen(BoxLayout):
 
 class StartScreenApp(App):
     def build(self):
-        #Window.borderless = True
+        
         return StartScreen()
 
 

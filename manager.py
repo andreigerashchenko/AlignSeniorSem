@@ -14,15 +14,12 @@ Builder.load_file('main_screen.kv')
 
 # Define our different screens
 class startScreen(Screen):
-    pass
+    root = StartScreen()
 
 
 class mainScreen(Screen):
     pass
 
-
-# class pref(ScreenManager):
-    # pass
 
 
 class WindowManager(ScreenManager):
@@ -32,10 +29,9 @@ class WindowManager(ScreenManager):
         # Add the start screen to the screen manager
         self.add_widget(startScreen(name='startScreen'))
 
-        # Add other screens to the screen manager
-
-        # self.add_widget(pref(name='pref'))
         self.current = 'startScreen'
+        print('current after init:', self.current)
+
 
 
 # Designate Our .kv design file
