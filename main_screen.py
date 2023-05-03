@@ -1,3 +1,4 @@
+
 import os
 
 import cv2
@@ -16,6 +17,7 @@ from kivy.uix.image import AsyncImage, Image
 from kivy.uix.popup import Popup
 from kivy.uix.widget import Widget
 from kivymd.app import MDApp
+
 from kivymd.toast import toast
 from kivymd.uix.toolbar import MDTopAppBar
 from moviepy.editor import *
@@ -24,7 +26,6 @@ from plyer import filechooser
 
 from equirectRotate import EquirectRotate
 from horizonfinder import find_horizon_point
-
 Window.size = (1200, 750)
 kv = Builder.load_file("main_screen.kv")
 
@@ -83,6 +84,7 @@ class MainScreen(BoxLayout):
         self.previewimgPath = os.path.abspath(".previewImg.jpg")
         print(os.listdir(os.getcwd()))
         startImg = cv2.imread("no_img.png")
+
 
         cv2.imwrite(self.previewimgPath, startImg, [int(cv2.IMWRITE_JPEG_QUALITY), 100])
 
@@ -285,8 +287,9 @@ class MainScreen(BoxLayout):
             Color(0.75, 0.3, 0.3, 0.6)
             d = 15.0
             self.selectedPoint = Ellipse(
-                pos=(touch.x - d / 2, touch.y - d / 2), size=(d, d)
-            )
+
+                pos=(touch.x - d / 2, touch.y - d / 2), size=(d, d))
+
 
     def processMedia(self):
         if self.currentMediaType == self.video:
@@ -306,6 +309,7 @@ class MainScreen(BoxLayout):
         clip = VideoFileClip(self.mediaPath)
 
         duration = clip.duration
+
         fl = lambda f, t: alignFrame(
             f(t),
             t,
@@ -337,7 +341,8 @@ class MainScreen(BoxLayout):
         # # Draw the contour on the image
         # cv2.drawContours(img, [horizon_contour], -1, (0, 255, 0), 2)
 
-        critical_points = find_horizon_point(img, 1, 1, 1, 0.3, 0.7, debug=True)
+        critical_points = find_horizon_point(
+            img, 1, 1, 1, 0.3, 0.7, debug=True)
 
         # if no critical points found, use default values
         if not critical_points:
@@ -512,6 +517,7 @@ class MainScreen(BoxLayout):
     """
 
 
+
 def alignFrame(
     get_frame,
     t,
@@ -521,6 +527,7 @@ def alignFrame(
     mirrorX=False,
     mirrorY=False,
 ):
+
     Clock.async_tick()
     if progress_bar:
         progress_bar.value = int(progress)
