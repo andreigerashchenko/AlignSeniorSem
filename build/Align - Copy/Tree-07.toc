@@ -1,0 +1,7 @@
+('C:\\Users\\Alex\\git gud\\env\\share\\glew\\bin',
+ None,
+ [],
+ 'DATA',
+ [('glew32.dll',
+   'C:\\Users\\Alex\\git gud\\env\\share\\glew\\bin\\glew32.dll',
+   'DATA')])

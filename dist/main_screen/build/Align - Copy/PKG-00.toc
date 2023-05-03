@@ -1,0 +1,86 @@
+('C:\\Users\\Alex\\git gud\\sonic.exe\\build\\Align - Copy\\main_screen.pkg',
+ {'BINARY': True,
+  'DATA': True,
+  'EXECUTABLE': True,
+  'EXTENSION': True,
+  'PYMODULE': True,
+  'PYSOURCE': True,
+  'PYZ': False,
+  'SPLASH': True},
+ [('PYZ-00.pyz',
+   'C:\\Users\\Alex\\git gud\\sonic.exe\\build\\Align - Copy\\PYZ-00.pyz',
+   'PYZ'),
+  ('struct',
+   'C:\\Users\\Alex\\git gud\\sonic.exe\\build\\Align - '
+   'Copy\\localpycs\\struct.pyc',
+   'PYMODULE'),
+  ('pyimod01_archive',
+   'C:\\Users\\Alex\\git gud\\sonic.exe\\build\\Align - '
+   'Copy\\localpycs\\pyimod01_archive.pyc',
+   'PYMODULE'),
+  ('pyimod02_importers',
+   'C:\\Users\\Alex\\git gud\\sonic.exe\\build\\Align - '
+   'Copy\\localpycs\\pyimod02_importers.pyc',
+   'PYMODULE'),
+  ('pyimod03_ctypes',
+   'C:\\Users\\Alex\\git gud\\sonic.exe\\build\\Align - '
+   'Copy\\localpycs\\pyimod03_ctypes.pyc',
+   'PYMODULE'),
+  ('pyimod04_pywin32',
+   'C:\\Users\\Alex\\git gud\\sonic.exe\\build\\Align - '
+   'Copy\\localpycs\\pyimod04_pywin32.pyc',
+   'PYMODULE'),
+  ('pyiboot01_bootstrap',
+   'C:\\Users\\Alex\\git '
+   'gud\\env\\lib\\site-packages\\PyInstaller\\loader\\pyiboot01_bootstrap.py',
+   'PYSOURCE'),
+  ('pyi_rth_pywintypes',
+   'C:\\Users\\Alex\\git '
+   'gud\\env\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\hooks\\rthooks\\pyi_rth_pywintypes.py',
+   'PYSOURCE'),
+  ('pyi_rth_inspect',
+   'C:\\Users\\Alex\\git '
+   'gud\\env\\Lib\\site-packages\\PyInstaller\\hooks\\rthooks\\pyi_rth_inspect.py',
+   'PYSOURCE'),
+  ('pyi_rth_win32comgenpy',
+   'C:\\Users\\Alex\\git '
+   'gud\\env\\Lib\\site-packages\\PyInstaller\\hooks\\rthooks\\pyi_rth_win32comgenpy.py',
+   'PYSOURCE'),
+  ('pyi_rth_pythoncom',
+   'C:\\Users\\Alex\\git '
+   'gud\\env\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\hooks\\rthooks\\pyi_rth_pythoncom.py',
+   'PYSOURCE'),
+  ('pyi_rth_multiprocessing',
+   'C:\\Users\\Alex\\git '
+   'gud\\env\\Lib\\site-packages\\PyInstaller\\hooks\\rthooks\\pyi_rth_multiprocessing.py',
+   'PYSOURCE'),
+  ('pyi_rth_pkgutil',
+   'C:\\Users\\Alex\\git '
+   'gud\\env\\Lib\\site-packages\\PyInstaller\\hooks\\rthooks\\pyi_rth_pkgutil.py',
+   'PYSOURCE'),
+  ('pyi_rth_kivy',
+   'C:\\Users\\Alex\\git '
+   'gud\\env\\Lib\\site-packages\\PyInstaller\\hooks\\rthooks\\pyi_rth_kivy.py',
+   'PYSOURCE'),
+  ('pyi_rth_gstreamer',
+   'C:\\Users\\Alex\\git '
+   'gud\\env\\Lib\\site-packages\\PyInstaller\\hooks\\rthooks\\pyi_rth_gstreamer.py',
+   'PYSOURCE'),
+  ('pyi_rth_pkgres',
+   'C:\\Users\\Alex\\git '
+   'gud\\env\\Lib\\site-packages\\PyInstaller\\hooks\\rthooks\\pyi_rth_pkgres.py',
+   'PYSOURCE'),
+  ('pyi_rth__tkinter',
+   'C:\\Users\\Alex\\git '
+   'gud\\env\\Lib\\site-packages\\PyInstaller\\hooks\\rthooks\\pyi_rth__tkinter.py',
+   'PYSOURCE'),
+  ('main_screen',
+   'C:\\Users\\Alex\\git gud\\sonic.exe\\main_screen.py',
+   'PYSOURCE')],
+ True,
+ False,
+ False,
+ [],
+ None,
+ None,
+ None)
