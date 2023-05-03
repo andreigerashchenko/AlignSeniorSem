@@ -46,6 +46,9 @@ $venv_python -m venv env
 source env/bin/activate
 pip install -r requirements_linux.txt
 
+# Run chmod +x on run.sh in the project folder
+chmod +x run.sh
+
 # Prompt the user to create a symbolic link to the program on their desktop
 echo "Do you want to create a symbolic link to the program on your desktop? [Y/n]"
 read symlink_answer

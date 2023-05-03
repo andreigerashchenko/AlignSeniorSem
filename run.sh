@@ -12,6 +12,9 @@ if [ ! -d "$HOME/AlignSeniorSem/env" ]; then
     exit 1
 fi
 
+# cd to the directory containing this script
+cd "$(dirname "$0")"
+
 # Activate the virtual environment
 source $HOME/AlignSeniorSem/env/bin/activate
 
