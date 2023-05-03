@@ -1,4 +1,3 @@
-import io
 import os
 
 import cv2
@@ -24,12 +23,13 @@ from moviepy.video.io.VideoFileClip import VideoFileClip
 from plyer import filechooser
 
 from equirectRotate import EquirectRotate
-
-pbcurrent = 0
 from horizonfinder import find_horizon_point
 
 Window.size = (1200, 750)
 kv = Builder.load_file("main_screen.kv")
+
+
+pbcurrent = 0
 
 
 class HelpPopup(Popup):
@@ -87,6 +87,9 @@ class MainScreen(BoxLayout):
         cv2.imwrite(self.previewimgPath, startImg, [int(cv2.IMWRITE_JPEG_QUALITY), 100])
 
         print("Wrote no_img.png to .previewImg.jpg")
+
+        # Fix for blank preview image on first start
+        self.ids.previewImage.reload()
 
     def openFileBrowser(self):
         # save original directory to restore at end
