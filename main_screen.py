@@ -1,35 +1,35 @@
 import io
-from kivy.clock import Clock
-from kivy.core.window import Window
-from kivy.graphics import Color, Ellipse
-from kivy.uix.button import Button
-from kivymd.toast import toast
-from moviepy.video.io.VideoFileClip import VideoFileClip
-from moviepy.editor import *
-from plyer import filechooser
-from equirectRotate import EquirectRotate, pointRotate
+import os
+
 import cv2
 import numpy as np
-import os
-from kivy.uix.boxlayout import BoxLayout
-from kivy.uix.popup import Popup
-from kivy.properties import ObjectProperty
-from kivy.uix.widget import Widget
-from kivy.uix.image import Image, AsyncImage
-from kivy.core.image import Image as CoreImage
-from kivymd.uix.toolbar import MDTopAppBar
-from kivy.uix.carousel import Carousel
-from kivymd.app import MDApp
-from time import sleep
+from kivy.clock import Clock
 from kivy.config import Config
+from kivy.core.image import Image as CoreImage
+from kivy.core.window import Window
+from kivy.graphics import Color, Ellipse
 from kivy.lang import Builder
-from queue import Queue
-import moviepy
-pbcurrent = 0 
+from kivy.properties import ObjectProperty
+from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.button import Button
+from kivy.uix.carousel import Carousel
+from kivy.uix.image import AsyncImage, Image
+from kivy.uix.popup import Popup
+from kivy.uix.widget import Widget
+from kivymd.app import MDApp
+from kivymd.toast import toast
+from kivymd.uix.toolbar import MDTopAppBar
+from moviepy.editor import *
+from moviepy.video.io.VideoFileClip import VideoFileClip
+from plyer import filechooser
+
+from equirectRotate import EquirectRotate
+
+pbcurrent = 0
 from horizonfinder import find_horizon_point
 
 Window.size = (1200, 750)
-kv = Builder.load_file('main_screen.kv')
+kv = Builder.load_file("main_screen.kv")
 
 
 class HelpPopup(Popup):
@@ -48,7 +48,7 @@ class DownloadPopup(Popup):
     pass
 
 
-class HistoryItem():
+class HistoryItem:
     def __init__(self, img, flipV, flipH):
         self.img = img
         self.flipV = flipV
@@ -60,7 +60,6 @@ class MainScreen(BoxLayout):
     popup = ObjectProperty(None)
     if pbcurrent > 100:
         pbcurrent = 0
-   
 
     def __init__(self, **kwargs):
         super().__init__()
@@ -85,9 +84,8 @@ class MainScreen(BoxLayout):
         print(os.listdir(os.getcwd()))
         startImg = cv2.imread("no_img.png")
 
-        cv2.imwrite(self.previewimgPath, startImg, [
-            int(cv2.IMWRITE_JPEG_QUALITY), 100])
-        
+        cv2.imwrite(self.previewimgPath, startImg, [int(cv2.IMWRITE_JPEG_QUALITY), 100])
+
         print("Wrote no_img.png to .previewImg.jpg")
 
     def openFileBrowser(self):
@@ -95,8 +93,11 @@ class MainScreen(BoxLayout):
         cwd = os.getcwd()
 
         file_path = ""
-        file_path = filechooser.open_file(title="File Selection", multiple=True, filters=[
-            "*.jpg", "*.png", "*.jpeg", "*.mp4"])
+        file_path = filechooser.open_file(
+            title="File Selection",
+            multiple=True,
+            filters=["*.jpg", "*.png", "*.jpeg", "*.mp4"],
+        )
         if file_path is None or file_path == []:
             pass
         else:
@@ -114,13 +115,25 @@ class MainScreen(BoxLayout):
 
                 # if video, create video button of selected file
                 if extenstion in ["mp4", "mov"]:
-                    im = Button(background_normal="blank_video_logo.png", size_hint=(None, 1), width=100,
-                                text=filename, font_size=10, on_press=lambda vid: self.focusVideo(file))
+                    im = Button(
+                        background_normal="blank_video_logo.png",
+                        size_hint=(None, 1),
+                        width=100,
+                        text=filename,
+                        font_size=10,
+                        on_press=lambda vid: self.focusVideo(file),
+                    )
 
                 # if image, create image button of the selected file
                 else:
-                    im = Button(background_normal=file, size_hint=(None, 1), width=100,
-                                text=filename, font_size=10, on_press=lambda image: self.focusImage(file))
+                    im = Button(
+                        background_normal=file,
+                        size_hint=(None, 1),
+                        width=100,
+                        text=filename,
+                        font_size=10,
+                        on_press=lambda image: self.focusImage(file),
+                    )
 
                 # add the buttonImage to the queue
                 queueThumbnails.add_widget(im)
@@ -192,16 +205,14 @@ class MainScreen(BoxLayout):
     # uses the current preview image and the file name from the popup to save a new image file
     def saveImage(self):
         outfile = file_path = filechooser.open_file(title="Save Image")
-        cv2.imwrite(outfile, self.currentImg, [
-            int(cv2.IMWRITE_JPEG_QUALITY), 100])
+        cv2.imwrite(outfile, self.currentImg, [int(cv2.IMWRITE_JPEG_QUALITY), 100])
         toast(f"saved as {outfile}")
 
     # replace with the function which does some calculation to maintain progressbar value
 
     def press_it(self):
-
         # Grab the current progress bar value
-       
+
         current2 = self.ids.my_progress_bar.value
         # Increment value by .25
         pbcurrent = self.ids.my_progress_bar.value
@@ -209,7 +220,6 @@ class MainScreen(BoxLayout):
 
         current2 += 29
         # If statement to start over after 100
-        
 
         # Update the progress bar
         self.ids.my_progress_bar.value = pbcurrent
@@ -219,7 +229,6 @@ class MainScreen(BoxLayout):
         # self.ids.my_label.text = f'{int(current)}% Progress'
 
     # see doc MDProgress bar
-
 
     """
     What happens when you click on the window (sepcificallly on the image)
@@ -243,7 +252,7 @@ class MainScreen(BoxLayout):
         # assumes image width is always 2x image height
         stretchWidth = imgSize[0]
         imgSize[0] = imgSize[1] * 2
-        stretchGap = (stretchWidth - imgSize[0])
+        stretchGap = stretchWidth - imgSize[0]
 
         # get coordinates of mouse click relative to bottom left of image
         touchLocalX = touch.x - imgCords[0] - stretchGap / 2
@@ -270,11 +279,11 @@ class MainScreen(BoxLayout):
                 self.canvas.remove(self.selectedPoint)
                 self.selectedPoint = None
 
-            Color(.75, .3, .3, .6)
-            d = 15.
+            Color(0.75, 0.3, 0.3, 0.6)
+            d = 15.0
             self.selectedPoint = Ellipse(
-                pos=(touch.x - d / 2, touch.y - d / 2), size=(d, d))
-
+                pos=(touch.x - d / 2, touch.y - d / 2), size=(d, d)
+            )
 
     def processMedia(self):
         if self.currentMediaType == self.video:
@@ -294,10 +303,15 @@ class MainScreen(BoxLayout):
         clip = VideoFileClip(self.mediaPath)
 
         duration = clip.duration
-        fl = lambda f, t: alignFrame(f(t), t, progress=((t/duration) * 100), interval=5,
-                                     progress_bar=self.ids.my_progress_bar,
-                                     mirrorX=self.ids.mirrorX_switch.active,
-                                     mirrorY=self.ids.mirrorY_switch.active)
+        fl = lambda f, t: alignFrame(
+            f(t),
+            t,
+            progress=((t / duration) * 100),
+            interval=5,
+            progress_bar=self.ids.my_progress_bar,
+            mirrorX=self.ids.mirrorX_switch.active,
+            mirrorY=self.ids.mirrorY_switch.active,
+        )
 
         rotatedClip = clip.fl(fl)
 
@@ -324,7 +338,7 @@ class MainScreen(BoxLayout):
 
         # if no critical points found, use default values
         if not critical_points:
-            print('no criticalnpoints found')
+            print("no criticalnpoints found")
             cx = img.shape[0] // 2
             cy = img.shape[1] // 2
         else:
@@ -342,8 +356,7 @@ class MainScreen(BoxLayout):
         iy = cy // scale_factor
         print(ix, iy)
         # rotate the image and update the preview
-        rotatedImage = rotateImage(
-            src_image, h, w, c, ix, iy, mirrorX, mirrorY)
+        rotatedImage = rotateImage(src_image, h, w, c, ix, iy, mirrorX, mirrorY)
         pbcurrent = self.ids.my_progress_bar.value
         pbcurrent = 79
 
@@ -371,10 +384,10 @@ class MainScreen(BoxLayout):
         # remove selected point from image
         self.canvas.remove(self.selectedPoint)
         self.selectedPoint = None
-        
+
         pbcurrent = 8
         self.ids.my_progress_bar.value = pbcurrent
-        
+
         src_image = self.currentImg
         imgSize = self.ids.previewImage.size
 
@@ -387,14 +400,14 @@ class MainScreen(BoxLayout):
 
         # scale touch coordinates to image size
         h, w, c, ix, iy = scaleImage(
-            src_image, imgSize, self.touchLocalX, self.touchLocalY)
+            src_image, imgSize, self.touchLocalX, self.touchLocalY
+        )
         pbcurrent += 12
         self.ids.my_progress_bar.value = pbcurrent
         print(f"Clicked Location (x,y): {ix},{iy}")
 
         # rotate the image and update the preview
-        rotatedImage = rotateImage(
-            src_image, h, w, c, ix, iy, mirrorX, mirrorY)
+        rotatedImage = rotateImage(src_image, h, w, c, ix, iy, mirrorX, mirrorY)
         pbcurrent += 18
         self.ids.my_progress_bar.value = pbcurrent
 
@@ -463,7 +476,6 @@ class MainScreen(BoxLayout):
     """
 
     def updateImage(self, newImg, flipV_inverse=False, flipH_inverse=False):
-
         # if modifyHistory, store the current Image in history
         if self.modifyHistory:
             flipV = self.ids.mirrorY_switch.active
@@ -483,22 +495,29 @@ class MainScreen(BoxLayout):
         pbcurrent = 79
         self.ids.my_progress_bar.value = pbcurrent
         # save the previewImage and update the visual
-        cv2.imwrite(self.previewimgPath, newImg, [
-            int(cv2.IMWRITE_JPEG_QUALITY), 100])
+        cv2.imwrite(self.previewimgPath, newImg, [int(cv2.IMWRITE_JPEG_QUALITY), 100])
         self.ids.previewImage.reload()
         pbcurrent = 100
         self.ids.my_progress_bar.value = pbcurrent
 
-    '''
+    """
     alignFrame
     takes a bitmap array and video timing data to process into it's equirotated state
     frame: a bitmap array of a frame of a video
     frameNum: the number of the specific frame out of the video
     interval: the interval in which the horizon location will be recalculated after [interval] frames
-    '''
+    """
 
 
-def alignFrame(get_frame, t, progress,progress_bar=None, interval=(5 / 15), mirrorX=False, mirrorY=False):
+def alignFrame(
+    get_frame,
+    t,
+    progress,
+    progress_bar=None,
+    interval=(5 / 15),
+    mirrorX=False,
+    mirrorY=False,
+):
     Clock.async_tick()
     if progress_bar:
         progress_bar.value = int(progress)
@@ -510,7 +529,6 @@ def alignFrame(get_frame, t, progress,progress_bar=None, interval=(5 / 15), mirr
     # use the horizon to find the current rotations of the frame
     if frameIntervalProgress == 0:
         rotator, shiftx = getRotator(get_frame, mirrorX, mirrorY)
-
 
     # apply rotations to the current frame
     frame = np.roll(get_frame, shiftx, axis=1)
@@ -557,7 +575,7 @@ def scaleImage(src_image, imgSize, localX, localY):
 def rotateImage(src_image, h, w, c, ix, iy, mirrorX, mirrorY):
     # everything after this is dipankr's code
     ###################################################################
-    print('\n Now rotating the image to straighten the horizon.')
+    print("\n Now rotating the image to straighten the horizon.")
     print("\n Input file's height, width, colors =", h, w, c)
 
     # Do a 'yaw' rotation such that ix position earth-sky horizon is
@@ -582,8 +600,11 @@ def rotateImage(src_image, h, w, c, ix, iy, mirrorX, mirrorY):
     if iy < 0:
         myP = -(h / 2 - np.abs(iy)) * 180 / h
 
-    print('\n Doing the final rotation (pitch =', str(f'{myP:.2f}'),
-          'deg). This can take a while ...')
+    print(
+        "\n Doing the final rotation (pitch =",
+        str(f"{myP:.2f}"),
+        "deg). This can take a while ...",
+    )
     # rotate (yaw, pitch, roll)
     equirectRot = EquirectRotate(h, w, (myY, myP, myR))
     rotated_image = equirectRot.rotate(src_image)
@@ -601,7 +622,7 @@ def getRotator(src_image, mirrorX, mirrorY):
     scale_factor = min(1280 / src_image.shape[1], 720 / src_image.shape[0])
     img = cv2.resize(src_image, None, fx=scale_factor, fy=scale_factor)
 
-    critical_points = find_horizon_point(img, 1, 1, 1, .3, .7)
+    critical_points = find_horizon_point(img, 1, 1, 1, 0.3, 0.7)
 
     # if no critical points found, use default values
     if not critical_points:
@@ -658,8 +679,8 @@ def drawVideoLogo(img):
     midX = img.shape[1] // 2
     midY = img.shape[0] // 2
 
-    height = int(img.shape[0] * .2)
-    width = int(img.shape[1] * .2)
+    height = int(img.shape[0] * 0.2)
+    width = int(img.shape[1] * 0.2)
 
     # Start coordinate, here (5, 5)
     # represents the top left corner of rectangle
@@ -679,9 +700,9 @@ def drawVideoLogo(img):
     # Draw a rectangle with blue line borders of thickness of 2 px
     image = cv2.rectangle(img, start_point, end_point, color, thickness)
 
-    pt1 = start_point[0] + int(width * .2), start_point[1] - int(height * .2)
-    pt2 = start_point[0] + int(width * .2), start_point[1] - int(height * .8)
-    pt3 = start_point[0] + int(width * .85), start_point[1] - (height // 2)
+    pt1 = start_point[0] + int(width * 0.2), start_point[1] - int(height * 0.2)
+    pt2 = start_point[0] + int(width * 0.2), start_point[1] - int(height * 0.8)
+    pt3 = start_point[0] + int(width * 0.85), start_point[1] - (height // 2)
 
     triangle_cnt = np.array([pt1, pt2, pt3])
     cv2.drawContours(image, [triangle_cnt], 0, (255, 255, 255), -1)
@@ -690,7 +711,6 @@ def drawVideoLogo(img):
 
 
 class MainScreenApp(MDApp):
-
     def build(self):
         return MainScreen()
 
