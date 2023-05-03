@@ -51,8 +51,15 @@ class HelpPopup(Popup):
 
 class PrefPopup(Popup):
     def _init_(self):
-        for key in prefs.keys():
-            self.ids[key].value = prefs[key]
+        self.ids.scaleFactSlider = prefs['scale_factor']
+        self.ids.minHeightSlider = prefs['min_height']
+        self.ids.maxHeightSlider = prefs['max_height']
+        self.ids.lengthWeightSlider = prefs['length_weight']
+        self.ids.smoothWeightSlider = prefs['smoothness_weight']
+        self.ids.linearityWeightSlider = prefs['linearity_weight']
+        self.ids.debugAutoSwitch = prefs['debug_auto']
+        self.ids.fpsSlider = prefs['video_fps']
+        self.ids.hrfi = prefs['video_interval']
 
 
 def getHorizonPoint(frame):
