@@ -85,37 +85,9 @@
 
         BoxLayout:
             orientation: "horizontal"
-            size_hint: 1, 0.60
+            size_hint: 0.75, 0.60
             padding: 15
             spacing: 18
-
-            GridLayout: 
-                cols: 1
-                rows:2
-                padding: 34
-                spacing: 10
-                
-                MDProgressBar:
-                    #value: root.progression_value
-                    id: my_progress_bar
-                    min: 0
-                    max: 100
-
-                    color:  2.12, 2.02, 1.63,1
-                    size_hint_y: 0.125
-                    height:dp(5)  
-
-                MDProgressBar:
-                    #value: root.progression_value
-                    id: my_progress_bar2
-                    min: 0
-                    max: 100
-
-                    color:  2.12, 2.02, 1.63,1
-                    size_hint_y: 0.125
-                    height:dp(7)  
-   
-                
 
             GridLayout:
                 cols: 4
@@ -275,7 +247,7 @@
 
 <PrefPopup>:
     id: pref
-    size_hint: 0.8, 0.8
+    size_hint: 0.75, 0.75
     auto_dismiss: False
     title: 'Preferences: '
     background_color: 152/255,49/255,49/255,1
@@ -283,10 +255,11 @@
 
     BoxLayout:
         orientation: 'vertical'
+        padding: 12
 
         BoxLayout:
             orientation: 'horizontal'
-            #size_hint: 1, 0.1
+            size_hint: 1,1
             padding: 8
             spacing: 8
 
@@ -304,16 +277,107 @@
                         size: self.size
                 Label:
                     text: "General: "
+                    pos_hint: {'x': 0,'center_y': 1}
                 Label:
-                    text: "44"
+                    text: ""
                 Label:
                     text: "Scale Factor: "
-                Label:
-                    text: "feta cheeze "
+                    pos_hint: {'x': 0,'center_y': 1}
+                MDSlider:
+                    id: scaleFactSlider
+                    min: 0
+                    max: 10
+                    value: 5
+                    pos_hint: {'x': 0,'center_y': 1}
 
             GridLayout:
                 cols: 2
-                rows: 2
+                rows: 7
+                padding: 10
+                spacing: 10
+                size_hint: 0.25,1
+                canvas.before:
+                    Color:
+                        rgba: 52/255,49/255,39/255,1
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+
+                Label:
+                    text: "Auto Horizon: "
+                    pos_hint: {'x': 0,'center_y': 1}
+                Label:
+                    text: ""
+                Label:
+                    text: "Min Height "
+                    pos_hint: {'x': 0,'center_y': 1}
+                MDSlider:
+                    id: minHeightSlider
+                    min: 0
+                    max: 10
+                    value: 5
+                    pos_hint: {'x': 0,'center_y': 1}
+                Label:
+                    text: "Max Height "
+                    pos_hint: {'x': 0,'center_y': 1}
+                MDSlider:
+                    id: maxHeightSlider
+                    min: 0
+                    max: 10
+                    value: 5
+                    pos_hint: {'x': 0,'center_y': 1}
+
+                Label:
+                    text: "Length weightt "
+                    pos_hint: {'x': 0,'center_y': 1}
+                MDSlider:
+                    id: lengthWeightSlider
+                    min: 0
+                    max: 10
+                    value: 5
+                    pos_hint: {'x': 0,'center_y': 1}
+                Label:
+                    text: "Smoothness weight"
+                    pos_hint: {'x': 0,'center_y': 1}
+                MDSlider:
+                    id: smoothWeightSlider
+                    min: 0
+                    max: 10
+                    value: 0
+                    pos_hint: {'x': 0,'center_y': 1}
+                Label:
+                    text: "Linearity Weight "
+                    pos_hint: {'x': 0,'center_y': 1}
+                MDSlider:
+                    id: linearityWeightSlider
+                    min: 0
+                    max: 100
+                    value: 0
+                    pos_hint: {'x': 0,'center_y': 1}
+                Label:
+                    text: "Debug mode "
+                    pos_hint: {'x': 0,'center_y': 1}
+                MDSwitch:
+                    active: True
+                    pos_hint: {'x': 0,'center_y': 1}
+                    #size_hint: 0.2, 1
+                    
+                    #on_active: app.root.toggle_debug_mode()
+
+
+
+        BoxLayout:
+            orientation: 'horizontal'
+            padding: 8
+            spacing: 8
+            size_hint: 1,1
+
+
+
+
+            GridLayout:
+                cols: 2
+                rows: 3
                 padding: 10
                 spacing: 10
                 size_hint: 0.25,1
@@ -327,60 +391,14 @@
                 Label:
                     text: "Output: "
                 Label:
-                    text: "22"
+                    text: ""
                 Label:
                     text: "Default Directory "
                 Label:
-                    text: "xxxxxxx "
-
-
-
-
-        BoxLayout:
-            orientation: 'horizontal'
-            padding: 8
-            spacing: 8
-
-            GridLayout:
-                cols: 2
-                rows: 5
-                padding: 10
-                spacing: 10
-                size_hint: 0.25,1
-                canvas.before:
-                    Color:
-                        rgba: 52/255,49/255,39/255,1
-                    Rectangle:
-                        pos: self.pos
-                        size: self.size
+                    text: "add file browser image here "
 
                 Label:
-                    text: "Auto Horizon: "
-                Label:
-                    text: "come and rescue me"
-                Label:
-                    text: "Min Height "
-                Label:
-                    text: "xxxxxxx "
-                Label:
-                    text: "Min Height "
-                Label:
-                    text: "xxxxxxx "
-
-                Label:
-                    text: "length weightt "
-                Label:
-                    text: "xxxxxxx "
-                Label:
-                    text: "smoothness weight"
-                Label:
-                    text: "xxxxxxx "
-                Label:
-                    text: "linearity weight "
-                Label:
-                    text: "xxxxxxx "
-                Label:
-                    text: "Debug mode "
+                    text: "Default output suffix "
                 Label:
                     text: "xxxxxxx "
 
@@ -403,12 +421,20 @@
                     text: "22"
                 Label:
                     text: "FPS: "
-                Label:
-                    text: "xxxxxxx "
+                MDSlider:
+                    id: fpsSlider
+                    min: 0
+                    max: 100
+                    value: 0
+                    pos_hint: {'x': 0,'center_y': 1}
                 Label:
                     text: "horizon recalculation\nframe interval "
-                Label:
-                    text: "xxxxxxx "
+                TextInput:
+                    id: hrfi
+                    hint_text: '10'
+                    font_size: 20
+                    size_hint: 0.2, 0.2
+                    multiline: False
 
  
         Button:
