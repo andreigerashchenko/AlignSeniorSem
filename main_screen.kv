@@ -10,6 +10,7 @@
                 pos: self.pos
                 size: self.size
 
+
         BoxLayout: 
             orientation: "horizontal"
             padding: 8
@@ -34,7 +35,12 @@
                 keep_ratio: True
 
             
-                
+        ProgressBar:
+            id:my_progress_bar
+            size_hint: 1,None
+            allow_stretch: True
+            height:10
+
         BoxLayout: 
             orientation: "horizontal"
             align: 'center'
@@ -80,6 +86,7 @@
                 on_release: 
                     self.background_color = (2.85,2.850,2.850,1)
                     self.color= 0,0,0,1
+
 
 
 

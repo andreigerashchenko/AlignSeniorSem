@@ -1,5 +1,6 @@
 import shutil
 import os
+import threading
 
 import cv2
 import numpy as np
@@ -424,7 +425,11 @@ class MainScreen(BoxLayout):
             return
 
         if self.currentMediaType == self.video:
-            self.processVideo()
+            vidThread = threading.Thread(target=self.processVideo)
+            vidThread.start()
+            # vidThread.join()
+            # self.vidPreview()
+
         else:
             self.processImage()
 
@@ -446,7 +451,7 @@ class MainScreen(BoxLayout):
             t,
             progress=((t / duration) * 100),
             interval=float(prefs["video_interval"]),
-            # progress_bar=self.ids.my_progress_bar,
+            progress_bar=self.ids.my_progress_bar,
             mirrorX=self.ids.mirrorX_switch.active,
             mirrorY=self.ids.mirrorY_switch.active,
         )
@@ -461,7 +466,8 @@ class MainScreen(BoxLayout):
         # outfile = file_chosen[0]
         outfile = self.vidPreviewPath
         rotatedClip.write_videofile(outfile, fps=int(prefs["video_fps"]))
-        self.vidPreview()
+        self.ids.my_progress_bar.value = 0
+        Clock.schedule_once(lambda vid: self.vidPreview())
 
     def automaticProcess(self):
         src_image = self.currentImg
@@ -682,8 +688,8 @@ def alignFrame(
 ):
 
     Clock.async_tick()
-    # if progress_bar:
-        # progress_bar.value = int(progress)
+    if progress_bar:
+        progress_bar.value = int(progress)
 
     global rotator, shiftx
     frameIntervalProgress = t % interval
