@@ -1,0 +1,37 @@
+name: Package and Publish Windows Executable
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Install Python 3.10.11
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.10.11
+
+    - name: Create virtual environment
+      run: python -m venv env
+
+    - name: Activate virtual environment
+      run: .\env\Scripts\activate
+
+    - name: Install build requirements
+      run: pip install -r build_requirements_windows.txt
+
+    - name: Build executable
+      run: pyinstaller Align.spec
+
+    - name: Archive executable
+      uses: actions/upload-artifact@v2
+      with:
+        name: align-windows-executable
+        path: dist/
