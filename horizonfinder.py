@@ -114,24 +114,27 @@ def find_horizon_point(img, LENGTH_WEIGHT, SMOOTHNESS_WEIGHT, LINEARITY_WEIGHT, 
     if debug:
         temp = thresh.copy()
 
+        # Convert temp to color
+        temp = cv2.cvtColor(temp, cv2.COLOR_GRAY2BGR)
+
         # Draw all detected contours as red
         cv2.drawContours(temp, [cnt for cnt, score in potential_contours], -1, (0, 0, 255), 4)
         # Draw all splines as yellow
         for tck, u in splines:
             x, y = splev(u, tck)
             pts = np.array([x, y]).T.reshape((-1, 1, 2)).astype(np.int32)
-            cv2.polylines(temp, [pts], False, (0, 255, 255), 4)
+            cv2.polylines(temp, [pts], False, (0, 255, 255), 2)
         # Draw the best contour as blue
-        cv2.drawContours(temp, [horizon_contour], -1, (255, 0, 0), 4)
+        cv2.drawContours(temp, [horizon_contour], -1, (255, 0, 0), 2)
         # Draw the best spline as green
         x, y = splev(horizon_spline[1], horizon_spline[0])
         pts = np.array([x, y]).T.reshape((-1, 1, 2)).astype(np.int32)
-        cv2.polylines(temp, [pts], False, (0, 255, 0), 4)
+        cv2.polylines(temp, [pts], False, (0, 255, 0), 2)
         # Draw the scores of all contours
         for cnt, score in potential_contours:
-            cv2.putText(temp, str(round(score, 2)), (cnt[0, 0, 0], cnt[0, 0, 1]), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 3)
+            cv2.putText(temp, str(round(score, 2)), (cnt[0, 0, 0], cnt[0, 0, 1]), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
         # Draw the best score in blue
-        cv2.putText(temp, str(round(max_score, 2)), (horizon_contour[0, 0, 0], horizon_contour[0, 0, 1]), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 3)
+        cv2.putText(temp, str(round(max_score, 2)), (horizon_contour[0, 0, 0], horizon_contour[0, 0, 1]), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)
         # Draw an orange circle at the horizon point
         cv2.circle(temp, (int(result_x), int(result_y)), 10, (0, 165, 255), -1)
 
