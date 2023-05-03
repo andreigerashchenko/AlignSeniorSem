@@ -29,9 +29,6 @@ from horizonfinder import find_horizon_point
 Window.size = (1200, 750)
 kv = Builder.load_file("main_screen.kv")
 
-
-pbcurrent = 0
-
 # Preferences dictionary
 prefs = {
     'scale_factor': 1.0,
@@ -135,10 +132,9 @@ class HistoryItem:
 
 
 class MainScreen(BoxLayout):
-    global pbcurrent
+
     popup = ObjectProperty(None)
-    if pbcurrent > 100:
-        pbcurrent = 0
+
 
     def __init__(self, **kwargs):
         super().__init__()
@@ -208,8 +204,12 @@ class MainScreen(BoxLayout):
 
                 # if image, create image button of the selected file
                 else:
-                    im = Button(background_normal=file, size_hint=(None, 1), width=100,
-                                text=filename, font_size=10, on_press=lambda image: self.focusImage(image.background_normal,image))
+                    im = Button(background_normal=file, 
+                                size_hint=(None, 1), 
+                                width=225,
+                                text=filename, 
+                                font_size=10, 
+                                on_press=lambda image: self.focusImage(image.background_normal,image))
 
 
                 # add the buttonImage to the queue
@@ -578,9 +578,7 @@ class MainScreen(BoxLayout):
         # set the switches to reflect the states at that point in history
         self.ids.mirrorY_switch.active = lastState.flipV
         self.ids.mirrorX_switch.active = lastState.flipH
-        # if pbcurrent:
-        #     pbcurrent -= 18
-        # self.ids.my_progress_bar.value = pbcurrent
+
         # change the preview image to that of the history frame
         self.updateImage(lastState.img)
 

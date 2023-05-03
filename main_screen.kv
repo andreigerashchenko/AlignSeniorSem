@@ -3,6 +3,7 @@
         orientation: "vertical"
         padding: 12
         spacing: 10
+        font:'font/sf-ui-display.otf'
         canvas.before:
             Color:
                 rgba: 132/255,39/255,39/255,1
@@ -40,17 +41,19 @@
             align: 'center'
             size_hint: 1, 0.205
             pos_hint: {'center_x': 0.5,'center_y': 1}
-            padding: 18
-            spacing: 18
+            padding: 10
+            spacing: 14
+
+
             
             
             
             Label:
-                pos_hint: { 'center_y': 0.5}
+                pos_hint: {'center_y': 0.5}
                 font_size: 45
                 font:'font/sf-ui-display.otf'
                 text: "  Job Queue:"
-                size_hint: 0.38,0.5
+                size_hint: 0.35,0.5
 
             ScrollView:
                 #id: imgQueue
@@ -72,9 +75,9 @@
                 background_color: 2.85,2.850,2.850,1
                 color: 0,0,0,1
                 size_hint: 0.24,1
-                pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+                font_size: 32
+                pos_hint: {'center_x':0 ,'center_y': 0.5}
                 id: undoButton
-                font_size: 24
                 on_press: 
                     root.undo()
                     self.background_color = (0,0,0,1)
