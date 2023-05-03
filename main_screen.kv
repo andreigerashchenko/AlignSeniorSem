@@ -212,7 +212,7 @@
                     on_release: 
                         self.background_color = (2.85,2.850,2.850,1)
                         self.color= 0,0,0,1
-                        root.processMedia()
+                        root.processImage()
 
 
                 Button:
@@ -224,7 +224,7 @@
                     size_hint: 0.05,0.2
                     id: increment
                     text: "Save"
-                    on_press: root.saveImage()
+                    on_press: root.saveImagePopup()
                     on_release: 
                         self.background_color = (2.85,2.850,2.850,1)
                         self.color= 0,0,0,1
@@ -278,8 +278,6 @@
     size_hint: 0.8, 0.8
     auto_dismiss: False
     title: 'Preferences: '
-    padding: 40
-    space: 40
     background_color: 152/255,49/255,49/255,1
     
 
@@ -289,52 +287,96 @@
         BoxLayout:
             orientation: 'horizontal'
             #size_hint: 1, 0.1
-            padding: 19
+            padding: 8
             spacing: 8
-            BoxLayout:
-                orientation: 'vertical'
+            canvas.before:
+                Color:
+                    rgba: 12/255,19/255,39/255,1
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
 
-                Switch:
-                    #size_hint: 0.2,0.425
-                    id: my_switch
-                    active: True
-                    disabled: False
-                    font_size: 32
+            GridLayout:
+                cols: 2
+                rows: 2
+                padding: 10
+                spacing: 0
+                size_hint: 0.25,1
+                canvas.before:
+                    Color:
+                        rgba: 12/255,49/255,139/255,1
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                Label:
+                    text: "General: "
+                Label:
+                    text: "44"
+                Label:
+                    text: "Scale Factor: "
+                Label:
+                    text: "feta cheeze "
 
-                Switch:
-                    #size_hint: 0.32,0.425
-                    id: my_switch
-                    active: True
-                    disabled: False
-                    font_size: 32
+            GridLayout:
+                cols: 2
+                rows: 2
+                padding: 10
+                spacing: 10
+                size_hint: 0.25,1
+                canvas.before:
+                    Color:
+                        rgba: 12/255,49/255,139/255,1
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
 
-            BoxLayout:
-                orientation: 'vertical'
+                Label:
+                    text: "Output: "
+                Label:
+                    text: "22"
+                Label:
+                    text: "Default Directory "
+                Label:
+                    text: "xxxxxxx "
 
-                Switch:
-                    border_radius: 10
-                    #size_hint: 0.2,0.425
-                    id: my_switch
-                    active: True
-                    disabled: False
-                    font_size: 32
 
-                Switch:
-                    #size_hint: 0.32,0.425
-                    id: my_switch
-                    active: True
-                    disabled: False
-                    font_size: 32
-        Label:
-            text: 'More settings to be added'
+
+
+        BoxLayout:
+            orientation: 'horizontal'
+
+            GridLayout:
+                cols: 1
+                rows: 2
+                padding: 10
+                spacing: 10
+                size_hint: 0.25,1
+
+                Label:
+                    text: "Auto Horizon: "
+                Label:
+                    text: "search: "
+
+            GridLayout:
+                cols: 1
+                rows: 2
+                padding: 10
+                spacing: 10
+                size_hint: 0.25,1
+
+                Label:
+                    text: "Video: "
+                Label:
+                    text: "and rescue: "
+
+ 
         Button:
             text: 'Close'
             size_hint: 0.2, 0.2
             pos_hint: {'center_x': 0.5, 'center_y': 1}
             on_press: root.dismiss()
 
-        Label:
-            text: ''
+
 
 
 
