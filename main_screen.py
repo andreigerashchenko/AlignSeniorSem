@@ -65,7 +65,7 @@ class PrefPopup(Popup):
         self.ids.linearityWeightSlider.value = prefs['linearity_weight']
         self.ids.debugAutoSwitch.value = prefs['debug_auto']
         self.ids.fpsSlider.value = prefs['video_fps']
-        #self.ids.hrfi.text = prefs['video_interval']
+        self.ids.hrfi.text = str(prefs['video_interval'])
 
     def save_preferences(self):
         prefs['scale_factor'] = self.ids.scaleFactSlider.value
