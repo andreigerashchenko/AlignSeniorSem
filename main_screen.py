@@ -30,7 +30,6 @@ from horizonfinder import find_horizon_point
 Window.size = (1200, 750)
 kv = Builder.load_file("main_screen.kv")
 
-
 pbcurrent = 0
 
 # Preferences dictionary
@@ -50,6 +49,7 @@ vidPreviewPath = os.path.abspath(".vidPreview.mp4")
 # previewimgPath = os.path.abspath(".previewImg.jpg")
 origin_directory = os.getcwd()
 
+
 class HelpPopup(Popup):
     pass
 
@@ -58,6 +58,8 @@ class PrefPopup(Popup):
     def __init__(self, **kwargs):
         super().__init__()
         print("PrefPopup init")
+        self._keyboard = Window.request_keyboard(self._keyboard_closed, self)
+        self._keyboard.bind(on_key_down=self._on_keyboard_down)
         self.ids.scaleFactSlider.value = prefs['scale_factor']
         self.ids.minHeightSlider.value = prefs['min_height']
         self.ids.maxHeightSlider.value = prefs['max_height']
@@ -67,6 +69,15 @@ class PrefPopup(Popup):
         self.ids.debugAutoSwitch.value = prefs['debug_auto']
         self.ids.fpsSlider.value = prefs['video_fps']
         self.ids.hrfi.text = str(prefs['video_interval'])
+
+    def _keyboard_closed(self):
+        self._keyboard.unbind(on_key_down=self._on_keyboard_down)
+        self._keyboard = None
+
+    def _on_keyboard_down(self, keyboard, keycode, text, modifiers):
+        # process if enter is pressed
+        if keycode[1] == "enter":
+            self.save_preferences()
 
     def save_preferences(self):
         prefs['scale_factor'] = self.ids.scaleFactSlider.value
@@ -84,6 +95,20 @@ class VidPreviewPopup(Popup):
     def __init__(self, **kwargs):
         super().__init__()
         self.vidPreviewPath = os.path.abspath(".vidPreview.mp4")
+        self._keyboard = Window.request_keyboard(self._keyboard_closed, self)
+        self._keyboard.bind(on_key_down=self._on_keyboard_down)
+
+    def _keyboard_closed(self):
+        self._keyboard.unbind(on_key_down=self._on_keyboard_down)
+        self._keyboard = None
+
+    def _on_keyboard_down(self, keyboard, keycode, text, modifiers):
+        # process if enter is pressed
+        if keycode[1] == "enter":
+            self.saveVideo()
+
+
+
     def browseFile(self):
         file_select = filechooser.open_file(title="Save Video")
         os.chdir(origin_directory)
@@ -112,7 +137,7 @@ class VidPreviewPopup(Popup):
             outfile_name += ".mp4"
 
         # save preview video to outfile
-        shutil.copy(vidPreviewPath,outfile_name)
+        shutil.copy(vidPreviewPath, outfile_name)
         toast(f"saved as {outfile_name}")
         self.dismiss()
         self.queue.remove_widget(self.qButton)
@@ -144,6 +169,8 @@ class MainScreen(BoxLayout):
 
     def __init__(self, **kwargs):
         super().__init__()
+        self._keyboard = Window.request_keyboard(self._keyboard_closed, self)
+        self._keyboard.bind(on_key_down=self._on_keyboard_down)
         self.image = 0
         self.video = 1
         self.currentMediaType = None
@@ -168,13 +195,16 @@ class MainScreen(BoxLayout):
         print(os.listdir(os.getcwd()))
         startImg = cv2.imread("no_img.png")
 
-
         cv2.imwrite(self.previewimgPath, startImg, [int(cv2.IMWRITE_JPEG_QUALITY), 100])
 
         print("Wrote no_img.png to .previewImg.jpg")
 
         # Fix for blank preview image on first start
         self.ids.previewImage.reload()
+
+    def _keyboard_closed(self):
+        self._keyboard.unbind(on_key_down=self._on_keyboard_down)
+        self._keyboard = None
 
     def openFileBrowser(self):
         # save original directory to restore at end
@@ -206,34 +236,34 @@ class MainScreen(BoxLayout):
 
                 if extenstion.lower().endswith("mp4"):
                     im = Button(background_normal="blank_video_logo.png", size_hint=(None, 1), width=100,
-                                text=filename, font_size=10, on_press=lambda vid: self.focusVideo(file,vid))
+                                text=filename, font_size=10, on_press=lambda vid: self.focusVideo(file, vid))
 
                 # if image, create image button of the selected file
                 else:
                     im = Button(background_normal=file, size_hint=(None, 1), width=100,
-                                text=filename, font_size=10, on_press=lambda image: self.focusImage(image.background_normal,image))
-
+                                text=filename, font_size=10,
+                                on_press=lambda image: self.focusImage(image.background_normal, image))
 
                 # add the buttonImage to the queue
                 queueThumbnails.add_widget(im)
                 buttons.append(im)
 
-            self.focusMedia(file_path[0],buttons[0])
+            self.focusMedia(file_path[0], buttons[0])
 
         # restore original directory
         os.chdir(cwd)
 
-    def focusMedia(self, mediaPath,button):
+    def focusMedia(self, mediaPath, button):
         self.mediaPath = mediaPath
         extenstion = os.path.splitext(mediaPath)[-1][1:]
 
         # if video, create video button of selected file
         if extenstion in ["mp4", "mov"]:
-            self.focusVideo(mediaPath,button)
+            self.focusVideo(mediaPath, button)
         else:
-            self.focusImage(mediaPath,button)
+            self.focusImage(mediaPath, button)
 
-    def focusImage(self, img,button=None):
+    def focusImage(self, img, button=None):
         newImg = cv2.imread(img)
         self.updateImage(newImg)
 
@@ -256,7 +286,7 @@ class MainScreen(BoxLayout):
         self.ids.mirrorX_switch.active = False
         self.ids.mirrorY_switch.active = False
 
-    def focusVideo(self, vidPath,button=None):
+    def focusVideo(self, vidPath, button=None):
         # get the video from path
         clip = VideoFileClip(vidPath)
 
@@ -418,6 +448,32 @@ class MainScreen(BoxLayout):
 
                 pos=(touch.x - d / 2, touch.y - d / 2), size=(d, d))
 
+    def _on_keyboard_down(self, keyboard, keycode, text, modifiers):
+        # process if enter is pressed
+        if keycode[1] == "enter":
+            self.processMedia()
+
+        # undo on ctrl-Z
+        if modifiers == ["ctrl"] and text == "z":
+            self.undo()
+
+        # save image on ctrl-S
+        if modifiers == ["ctrl"] and text == "s" and self.currentMediaType == self.image:
+            self.saveImage()
+
+        # open preferences on ctrl-P
+        if modifiers == ["ctrl"] and text == "p":
+            self.open_popup()
+
+        # open help on ctrl-H
+        if modifiers == ["ctrl"] and text == "h":
+            self.open_Help()
+
+        # close on ctrl-W
+        if modifiers == ["ctrl"] and text == "w":
+            Window.close()
+
+
 
     def processMedia(self):
         if self.mediaPath is None:
@@ -456,7 +512,6 @@ class MainScreen(BoxLayout):
             mirrorY=self.ids.mirrorY_switch.active,
         )
 
-
         rotatedClip = clip.fl(fl)
 
         # file_chosen = filechooser.open_file(title="Name Rotated Video")
@@ -488,20 +543,18 @@ class MainScreen(BoxLayout):
         linearity_weight = prefs['linearity_weight']
         auto_scale_factor = prefs['scale_factor']
         debug = prefs['debug_auto']
-        print(prefs)
 
         critical_points = find_horizon_point(img, length_weight, smoothness_weight, linearity_weight, min_height,
-                                             max_height,auto_scale_factor, debug)
+                                             max_height, auto_scale_factor, debug)
 
         # critical_points = find_horizon_point(img, 1, 1, 1, 0.3, 0.7, debug=True)
 
         # if no critical points found, use default values
         if not critical_points:
-            print("no criticalnpoints found")
+            print("no critical points found")
             cx = img.shape[0] // 2
             cy = img.shape[1] // 2
         else:
-            print(critical_points)
             cx = int(critical_points[0])
             cy = int(critical_points[1])
 
@@ -678,15 +731,14 @@ class MainScreen(BoxLayout):
 
 
 def alignFrame(
-    get_frame,
-    t,
-    progress,
-    progress_bar=None,
-    interval=(5 / 15),
-    mirrorX=False,
-    mirrorY=False,
+        get_frame,
+        t,
+        progress,
+        progress_bar=None,
+        interval=(5 / 15),
+        mirrorX=False,
+        mirrorY=False,
 ):
-
     Clock.async_tick()
     if progress_bar:
         progress_bar.value = int(progress)

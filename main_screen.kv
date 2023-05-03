@@ -240,7 +240,7 @@
 <PrefPopup>:
     id: pref
     size_hint: 0.35, 0.85
-    auto_dismiss: True
+    auto_dismiss: False
     title: 'Preferences: '
     background_color: 152/255,49/255,49/255,1
     
@@ -389,7 +389,7 @@
 <HelpPopup>:
     id: help
     size_hint: 0.8, 0.8
-    auto_dismiss: False
+    auto_dismiss: True
     title: ''
     padding: 40
     space: 40
@@ -398,12 +398,15 @@
         orientation: 'vertical'
     
         Label:
-            size_hint_y: 0.65
-            text_size: self.width, None
-            text: 'Usage:\n\n 1. Click on the Add Files button to select images or videos to add to the queue.\n\n2. Select whether the images need to be flipped horizontally or vertically.\n\n3. Select whether you would like to use the automatic horizon detection feature. Automatic horizon detection is always enabled for videos.\n\n4. If Manual Horizon is enabled, click on the lowest point of the horizon, and then click process.'
+            size_hint: 1,None
+            height:450
+            pos_hint: {'center_x': 0.5, 'y': 0}
+            text: 'Usage:\n\n 1. Click on the Add Files button to select images or videos to add to the queue.\n\n2. Select whether the images need to be flipped horizontally or vertically.\n\n3. Select whether you would like to use the automatic horizon detection feature. Automatic horizon detection is always enabled for videos.\n\n4. If Manual Horizon is enabled, click on the lowest point of the horizon, and then click process.\n\n\nControls:\n\n Enter: process image\n\n ctrl+z:undo\n\n ctrl+s:save\n\n ctrl+h:help\n\n ctrl+p:preferences\n\n esc,ctrl+w:close'
+
         Button:
             text: 'Close'
-            size_hint: 0.2, 0.2
+            size_hint: 0.2, None
+            height:50
             pos_hint: {'center_x': 0.5, 'center_y': 1}
             on_press: root.dismiss()
 
