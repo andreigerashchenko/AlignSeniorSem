@@ -36,12 +36,7 @@
                 keep_ratio: True
 
             
-        ProgressBar:
-            id:my_progress_bar
-            size_hint: 1,None
-            allow_stretch: True
-            height:10
-
+       
         BoxLayout: 
             orientation: "horizontal"
             align: 'center'
@@ -93,6 +88,12 @@
                     self.color= 0,0,0,1
 
 
+        MDProgressBar:
+            id:my_progress_bar
+            size_hint: 0.7,None
+            allow_stretch: True
+            height:10
+            pos_hint: {'center_x': 0.5}
 
 
 
