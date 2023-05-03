@@ -1,4 +1,6 @@
 import io
+import shutil
+
 from kivy.clock import Clock
 from kivy.core.window import Window
 from kivy.graphics import Color, Ellipse
@@ -23,20 +25,61 @@ from kivymd.app import MDApp
 from time import sleep
 from kivy.config import Config
 from kivy.lang import Builder
+from kivy.uix.videoplayer import VideoPlayer
 from queue import Queue
 import moviepy
-pbcurrent = 0 
+
+pbcurrent = 0
 from horizonfinder import find_horizon_point
 
 Window.size = (1200, 750)
 kv = Builder.load_file('main_screen.kv')
 
+vidPreviewPath = os.path.abspath(".vidPreview.mp4")
+previewimgPath = os.path.abspath(".previewImg.jpg")
 
 class HelpPopup(Popup):
     pass
 
 
 class PrefPopup(Popup):
+    pass
+
+
+class VidPreviewPopup(Popup):
+    def __init__(self, **kwargs):
+        super().__init__()
+        self.vidPreviewPath = os.path.abspath(".vidPreview.mp4")
+    def browseFile(self):
+        file_select = filechooser.open_file(title="Save Video")
+        if not file_select:
+            return
+        filename = file_select[0]
+        self.ids.saveFileNameInput.text = filename
+
+    def saveVideo(self):
+        outfile_name = self.ids.saveFileNameInput.text
+
+        # do not accept empty path
+        if outfile_name == "":
+            toast("no file path")
+            return
+
+        # check if the file path exists
+        file_dir = os.path.dirname(outfile_name)
+        if not os.path.exists(file_dir):
+            toast("invalid file path")
+            return
+
+        # add mp4 extension if not present
+        if not outfile_name.lower().endswith(".mp4"):
+            outfile_name += ".mp4"
+
+        # save preview video to outfile
+        shutil.copy(vidPreviewPath,outfile_name)
+        toast(f"saved as {outfile_name}")
+        self.dismiss()
+
     pass
 
 
@@ -60,7 +103,6 @@ class MainScreen(BoxLayout):
     popup = ObjectProperty(None)
     if pbcurrent > 100:
         pbcurrent = 0
-   
 
     def __init__(self, **kwargs):
         super().__init__()
@@ -82,12 +124,14 @@ class MainScreen(BoxLayout):
         self.currentImg = None
 
         self.previewimgPath = os.path.abspath(".previewImg.jpg")
+        self.vidPreviewPath = os.path.abspath(".vidPreview.mp4")
+
         print(os.listdir(os.getcwd()))
         startImg = cv2.imread("no_img.png")
 
         cv2.imwrite(self.previewimgPath, startImg, [
             int(cv2.IMWRITE_JPEG_QUALITY), 100])
-        
+
         print("Wrote no_img.png to .previewImg.jpg")
 
     def openFileBrowser(self):
@@ -145,7 +189,8 @@ class MainScreen(BoxLayout):
         # clear history
         self.history.clear()
 
-        # set current media type to image
+        # set current media to image
+        self.mediaPath = img
         self.currentMediaType = self.image
 
         # enable the manual switch
@@ -169,7 +214,8 @@ class MainScreen(BoxLayout):
         # clear history
         self.history.clear()
 
-        # set current media type to video
+        # set current media to video
+        self.mediaPath = vidPath
         self.currentMediaType = self.video
 
         # disable the manual switch, only automatic can be used for videos
@@ -178,6 +224,10 @@ class MainScreen(BoxLayout):
 
     def open_Help(self):
         self.popup = HelpPopup()
+        self.popup.open()
+
+    def vidPreview(self):
+        self.popup = VidPreviewPopup()
         self.popup.open()
 
     def open_popup(self):
@@ -201,7 +251,7 @@ class MainScreen(BoxLayout):
     def press_it(self):
 
         # Grab the current progress bar value
-       
+
         current2 = self.ids.my_progress_bar.value
         # Increment value by .25
         pbcurrent = self.ids.my_progress_bar.value
@@ -209,7 +259,6 @@ class MainScreen(BoxLayout):
 
         current2 += 29
         # If statement to start over after 100
-        
 
         # Update the progress bar
         self.ids.my_progress_bar.value = pbcurrent
@@ -219,7 +268,6 @@ class MainScreen(BoxLayout):
         # self.ids.my_label.text = f'{int(current)}% Progress'
 
     # see doc MDProgress bar
-
 
     """
     What happens when you click on the window (sepcificallly on the image)
@@ -275,7 +323,6 @@ class MainScreen(BoxLayout):
             self.selectedPoint = Ellipse(
                 pos=(touch.x - d / 2, touch.y - d / 2), size=(d, d))
 
-
     def processMedia(self):
         if self.currentMediaType == self.video:
             self.processVideo()
@@ -294,18 +341,20 @@ class MainScreen(BoxLayout):
         clip = VideoFileClip(self.mediaPath)
 
         duration = clip.duration
-        fl = lambda f, t: alignFrame(f(t), t, progress=((t/duration) * 100), interval=5,
+        fl = lambda f, t: alignFrame(f(t), t, progress=((t / duration) * 100), interval=5,
                                      progress_bar=self.ids.my_progress_bar,
                                      mirrorX=self.ids.mirrorX_switch.active,
                                      mirrorY=self.ids.mirrorY_switch.active)
 
         rotatedClip = clip.fl(fl)
 
-        file_chosen = filechooser.open_file(title="Name Rotated Video")
-        if not file_chosen:
-            return
-        outfile = file_chosen[0]
+        # file_chosen = filechooser.open_file(title="Name Rotated Video")
+        # if not file_chosen:
+        #     return
+        # outfile = file_chosen[0]
+        outfile = self.vidPreviewPath
         rotatedClip.write_videofile(outfile, fps=15)
+        self.vidPreview()
 
     def automaticProcess(self):
         src_image = self.currentImg
@@ -371,10 +420,10 @@ class MainScreen(BoxLayout):
         # remove selected point from image
         self.canvas.remove(self.selectedPoint)
         self.selectedPoint = None
-        
+
         pbcurrent = 8
         self.ids.my_progress_bar.value = pbcurrent
-        
+
         src_image = self.currentImg
         imgSize = self.ids.previewImage.size
 
@@ -498,7 +547,7 @@ class MainScreen(BoxLayout):
     '''
 
 
-def alignFrame(get_frame, t, progress,progress_bar=None, interval=(5 / 15), mirrorX=False, mirrorY=False):
+def alignFrame(get_frame, t, progress, progress_bar=None, interval=(5 / 15), mirrorX=False, mirrorY=False):
     Clock.async_tick()
     if progress_bar:
         progress_bar.value = int(progress)
@@ -510,7 +559,6 @@ def alignFrame(get_frame, t, progress,progress_bar=None, interval=(5 / 15), mirr
     # use the horizon to find the current rotations of the frame
     if frameIntervalProgress == 0:
         rotator, shiftx = getRotator(get_frame, mirrorX, mirrorY)
-
 
     # apply rotations to the current frame
     frame = np.roll(get_frame, shiftx, axis=1)

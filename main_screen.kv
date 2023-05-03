@@ -224,6 +224,7 @@
                     size_hint: 0.05,0.2
                     id: increment
                     text: "Save"
+                    id: save_button
                     on_press: root.saveImage()
                     on_release: 
                         self.background_color = (2.85,2.850,2.850,1)
@@ -361,3 +362,70 @@
 
         Label:
             text: ''
+
+
+<VidPreviewPopup>:
+    title: "Save Video"
+    auto_dismiss: False
+    size_hint: 0.9, 0.9
+    BoxLayout:
+        orientation: "vertical"
+        padding: 12
+        spacing: 10
+
+        BoxLayout:
+            orientation: "horizontal"
+            size_hint: 1,None
+            height: 30
+
+            Label:
+                id: saveFileNameLabel
+                text: "Name: "
+                size_hint_x: None
+                width: 50
+            TextInput:
+                id: saveFileNameInput
+                size_hint_x: .8
+                font_size: 16
+                multiline: False
+                #on_text_validate = root.saveImage()
+            Button:
+                text: "Browse"
+                size_hint_x: None
+                width: 65
+                on_press: root.browseFile()
+
+
+        VideoPlayer:
+            id: vidPreview
+            allow_stretch:True
+            size_hint_y: .8
+            source:".vidPreview.mp4"
+            #options: {'eos': 'loop'}
+
+        BoxLayout:
+            size_hint: 1,.1
+            pos_hint: {'center_x': 0.5, 'center_y': 1}
+
+            Button:
+                size_hint: .8,1
+                color: 0,0,0,1
+                background_color: 2.85,2.850,2.850,1
+                on_press:
+                    self.background_color = (0,0,0,1)
+                    self.color = (2.85,2.850,2.850,1)
+                allow_stretch: True
+                id: increment
+                text: "Save"
+                id: save_button
+                on_press: root.saveVideo()
+                on_release:
+                    self.background_color = (2.85,2.850,2.850,1)
+                    self.color= 0,0,0,1
+            Button:
+                text: 'Cancel'
+                size_hint: 0.2, 1
+                on_press: root.dismiss()
+
+
+
