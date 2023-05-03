@@ -56,14 +56,13 @@ class HelpPopup(Popup):
 class PrefPopup(Popup):
     def __init__(self, **kwargs):
         super(PrefPopup, self).__init__(**kwargs)
-        print("PrefPopup init")
         self.ids.scaleFactSlider.value = prefs['scale_factor']
         self.ids.minHeightSlider.value = prefs['min_height']
         self.ids.maxHeightSlider.value = prefs['max_height']
         self.ids.lengthWeightSlider.value = prefs['length_weight']
         self.ids.smoothWeightSlider.value = prefs['smoothness_weight']
         self.ids.linearityWeightSlider.value = prefs['linearity_weight']
-        self.ids.debugAutoSwitch.value = prefs['debug_auto']
+        self.ids.debugAutoSwitch.active = prefs['debug_auto']
         self.ids.fpsSlider.value = prefs['video_fps']
         self.ids.hrfi.text = str(prefs['video_interval'])
 

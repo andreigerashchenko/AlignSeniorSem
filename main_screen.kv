@@ -39,8 +39,10 @@
             orientation: "horizontal"
             align: 'center'
             size_hint: 1, 0.205
+            pos_hint: {'center_x': 0.5,'center_y': 1}
             padding: 18
             spacing: 18
+            
             
             
             Label:
@@ -86,9 +88,10 @@
 
         BoxLayout:
             orientation: "horizontal"
-            size_hint: 0.75, 0.60
+            size_hint: 0.75, 0.75
             padding: 15
             spacing: 18
+            pos_hint: {'center_x': 0.5,'center_y': 1}
 
             GridLayout:
                 cols: 4
@@ -218,6 +221,8 @@
                     on_press: root.open_popup()
 
 
+
+
 <DownloadPopup>
     id: downloadPopup
     size_hint: 0.8,.1
@@ -252,7 +257,7 @@
     size_hint: 0.75, 0.75
     auto_dismiss: False
     title: 'Preferences: '
-    background_color: 152/255,49/255,49/255,1
+    background_color: 152/255,171/255,171/255,1
     
 
     BoxLayout:
@@ -269,7 +274,7 @@
                 cols: 2
                 rows: 2
                 padding: 10
-                spacing: 0
+                spacing: -1
                 size_hint: 0.25,1
                 
                 Label:
