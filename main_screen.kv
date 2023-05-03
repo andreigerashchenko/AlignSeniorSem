@@ -296,13 +296,7 @@
                 padding: 10
                 spacing: 10
                 size_hint: 0.25,1
-                canvas.before:
-                    Color:
-                        rgba: 52/255,49/255,39/255,1
-                    Rectangle:
-                        pos: self.pos
-                        size: self.size
-
+                
                 Label:
                     text: "Auto Horizon: "
                     pos_hint: {'x': 0,'center_y': 1}
@@ -382,12 +376,7 @@
                 padding: 10
                 spacing: 10
                 size_hint: 0.25,1
-                canvas.before:
-                    Color:
-                        rgba: 12/255,49/255,139/255,1
-                    Rectangle:
-                        pos: self.pos
-                        size: self.size
+                
 
                 Label:
                     text: "Output: "
@@ -400,8 +389,14 @@
 
                 Label:
                     text: "Default output suffix "
-                Label:
-                    text: "xxxxxxx "
+                TextInput:
+                    id: outputsuffix
+                    hint_text: '10'
+                    size_hint: (None, None)
+                    height: 50
+                    width: 45
+                    pos_hint: {'center_x': 1,'center_y': 1}
+                    multiline: False
 
             GridLayout:
                 cols: 2
@@ -409,17 +404,12 @@
                 padding: 10
                 spacing: 10
                 size_hint: 0.25,1
-                canvas.before:
-                    Color:
-                        rgba: 112/255,19/255,139/255,1
-                    Rectangle:
-                        pos: self.pos
-                        size: self.size
+                
 
                 Label:
                     text: "Video: "
                 Label:
-                    text: "22"
+                    text: ""
                 Label:
                     text: "FPS: "
                 MDSlider:
