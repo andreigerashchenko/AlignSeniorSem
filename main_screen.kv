@@ -289,12 +289,6 @@
             #size_hint: 1, 0.1
             padding: 8
             spacing: 8
-            canvas.before:
-                Color:
-                    rgba: 12/255,19/255,39/255,1
-                Rectangle:
-                    pos: self.pos
-                    size: self.size
 
             GridLayout:
                 cols: 2
@@ -344,30 +338,77 @@
 
         BoxLayout:
             orientation: 'horizontal'
+            padding: 8
+            spacing: 8
 
             GridLayout:
-                cols: 1
-                rows: 2
+                cols: 2
+                rows: 5
                 padding: 10
                 spacing: 10
                 size_hint: 0.25,1
+                canvas.before:
+                    Color:
+                        rgba: 52/255,49/255,39/255,1
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
 
                 Label:
                     text: "Auto Horizon: "
                 Label:
-                    text: "search: "
+                    text: "come and rescue me"
+                Label:
+                    text: "Min Height "
+                Label:
+                    text: "xxxxxxx "
+                Label:
+                    text: "Min Height "
+                Label:
+                    text: "xxxxxxx "
+
+                Label:
+                    text: "length weightt "
+                Label:
+                    text: "xxxxxxx "
+                Label:
+                    text: "smoothness weight"
+                Label:
+                    text: "xxxxxxx "
+                Label:
+                    text: "linearity weight "
+                Label:
+                    text: "xxxxxxx "
+                Label:
+                    text: "Debug mode "
+                Label:
+                    text: "xxxxxxx "
 
             GridLayout:
-                cols: 1
-                rows: 2
+                cols: 2
+                rows: 3
                 padding: 10
                 spacing: 10
                 size_hint: 0.25,1
+                canvas.before:
+                    Color:
+                        rgba: 112/255,19/255,139/255,1
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
 
                 Label:
                     text: "Video: "
                 Label:
-                    text: "and rescue: "
+                    text: "22"
+                Label:
+                    text: "FPS: "
+                Label:
+                    text: "xxxxxxx "
+                Label:
+                    text: "horizon recalculation\nframe interval "
+                Label:
+                    text: "xxxxxxx "
 
  
         Button:

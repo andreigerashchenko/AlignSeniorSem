@@ -1,3 +1,4 @@
+from horizonfinder import find_horizon_point
 import io
 from kivy.clock import Clock
 from kivy.core.window import Window
@@ -25,8 +26,7 @@ from kivy.config import Config
 from kivy.lang import Builder
 from queue import Queue
 import moviepy
-pbcurrent = 0 
-from horizonfinder import find_horizon_point
+pbcurrent = 0
 
 Window.size = (1200, 750)
 kv = Builder.load_file('main_screen.kv')
@@ -60,7 +60,6 @@ class MainScreen(BoxLayout):
     popup = ObjectProperty(None)
     if pbcurrent > 100:
         pbcurrent = 0
-   
 
     def __init__(self, **kwargs):
         super().__init__()
@@ -87,7 +86,7 @@ class MainScreen(BoxLayout):
 
         cv2.imwrite(self.previewimgPath, startImg, [
             int(cv2.IMWRITE_JPEG_QUALITY), 100])
-        
+
         print("Wrote no_img.png to .previewImg.jpg")
 
     def openFileBrowser(self):
@@ -201,7 +200,7 @@ class MainScreen(BoxLayout):
     def press_it(self):
 
         # Grab the current progress bar value
-       
+
         current2 = self.ids.my_progress_bar.value
         # Increment value by .25
         pbcurrent = self.ids.my_progress_bar.value
@@ -209,7 +208,6 @@ class MainScreen(BoxLayout):
 
         current2 += 29
         # If statement to start over after 100
-        
 
         # Update the progress bar
         self.ids.my_progress_bar.value = pbcurrent
@@ -219,7 +217,6 @@ class MainScreen(BoxLayout):
         # self.ids.my_label.text = f'{int(current)}% Progress'
 
     # see doc MDProgress bar
-
 
     """
     What happens when you click on the window (sepcificallly on the image)
@@ -275,7 +272,6 @@ class MainScreen(BoxLayout):
             self.selectedPoint = Ellipse(
                 pos=(touch.x - d / 2, touch.y - d / 2), size=(d, d))
 
-
     def processMedia(self):
         if self.currentMediaType == self.video:
             self.processVideo()
@@ -294,10 +290,11 @@ class MainScreen(BoxLayout):
         clip = VideoFileClip(self.mediaPath)
 
         duration = clip.duration
-        fl = lambda f, t: alignFrame(f(t), t, progress=((t/duration) * 100), interval=5,
-                                     progress_bar=self.ids.my_progress_bar,
-                                     mirrorX=self.ids.mirrorX_switch.active,
-                                     mirrorY=self.ids.mirrorY_switch.active)
+
+        def fl(f, t): return alignFrame(f(t), t, progress=((t/duration) * 100), interval=5,
+                                        progress_bar=self.ids.my_progress_bar,
+                                        mirrorX=self.ids.mirrorX_switch.active,
+                                        mirrorY=self.ids.mirrorY_switch.active)
 
         rotatedClip = clip.fl(fl)
 
@@ -320,7 +317,8 @@ class MainScreen(BoxLayout):
         # # Draw the contour on the image
         # cv2.drawContours(img, [horizon_contour], -1, (0, 255, 0), 2)
 
-        critical_points = find_horizon_point(img, 1, 1, 1, 0.3, 0.7, debug=True)
+        critical_points = find_horizon_point(
+            img, 1, 1, 1, 0.3, 0.7, debug=True)
 
         # if no critical points found, use default values
         if not critical_points:
@@ -371,10 +369,10 @@ class MainScreen(BoxLayout):
         # remove selected point from image
         self.canvas.remove(self.selectedPoint)
         self.selectedPoint = None
-        
+
         pbcurrent = 8
         self.ids.my_progress_bar.value = pbcurrent
-        
+
         src_image = self.currentImg
         imgSize = self.ids.previewImage.size
 
@@ -498,7 +496,7 @@ class MainScreen(BoxLayout):
     '''
 
 
-def alignFrame(get_frame, t, progress,progress_bar=None, interval=(5 / 15), mirrorX=False, mirrorY=False):
+def alignFrame(get_frame, t, progress, progress_bar=None, interval=(5 / 15), mirrorX=False, mirrorY=False):
     Clock.async_tick()
     if progress_bar:
         progress_bar.value = int(progress)
@@ -510,7 +508,6 @@ def alignFrame(get_frame, t, progress,progress_bar=None, interval=(5 / 15), mirr
     # use the horizon to find the current rotations of the frame
     if frameIntervalProgress == 0:
         rotator, shiftx = getRotator(get_frame, mirrorX, mirrorY)
-
 
     # apply rotations to the current frame
     frame = np.roll(get_frame, shiftx, axis=1)
