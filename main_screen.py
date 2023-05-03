@@ -50,16 +50,28 @@ class HelpPopup(Popup):
 
 
 class PrefPopup(Popup):
-    def _init_(self):
-        self.ids.scaleFactSlider = prefs['scale_factor']
-        self.ids.minHeightSlider = prefs['min_height']
-        self.ids.maxHeightSlider = prefs['max_height']
-        self.ids.lengthWeightSlider = prefs['length_weight']
-        self.ids.smoothWeightSlider = prefs['smoothness_weight']
-        self.ids.linearityWeightSlider = prefs['linearity_weight']
-        self.ids.debugAutoSwitch = prefs['debug_auto']
-        self.ids.fpsSlider = prefs['video_fps']
-        self.ids.hrfi = prefs['video_interval']
+    def __init__(self):
+        print("PrefPopup init")
+        self.ids.scaleFactSlider.value = prefs['scale_factor']
+        self.ids.minHeightSlider.value = prefs['min_height']
+        self.ids.maxHeightSlider.value = prefs['max_height']
+        self.ids.lengthWeightSlider.value = prefs['length_weight']
+        self.ids.smoothWeightSlider.value = prefs['smoothness_weight']
+        self.ids.linearityWeightSlider.value = prefs['linearity_weight']
+        self.ids.debugAutoSwitch.value = prefs['debug_auto']
+        self.ids.fpsSlider.value = prefs['video_fps']
+        self.ids.hrfi.text = prefs['video_interval']
+
+    def save_preferences(self):
+        prefs['scale_factor'] = self.ids.scaleFactSlider.value
+        prefs['min_height'] = self.ids.minHeightSlider.value
+        prefs['max_height'] = self.ids.maxHeightSlider.value
+        prefs['length_weight'] = self.ids.lengthWeightSlider.value
+        prefs['smoothness_weight'] = self.ids.smoothWeightSlider.value
+        prefs['linearity_weight'] = self.ids.linearityWeightSlider.value
+        prefs['debug_auto'] = self.ids.debugAutoSwitch.active
+        prefs['video_fps'] = self.ids.fpsSlider.value
+        prefs['video_interval'] = self.ids.hrfi.text
 
 
 def getHorizonPoint(frame):
