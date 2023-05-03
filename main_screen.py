@@ -81,6 +81,8 @@ class MainScreen(BoxLayout):
 
         cv2.imwrite(self.previewimgPath, startImg, [
             int(cv2.IMWRITE_JPEG_QUALITY), 100])
+        
+        print("Wrote no_img.png to .previewImg.jpg")
 
     def openFileBrowser(self):
         # save original directory to restore at end
@@ -245,7 +247,7 @@ class MainScreen(BoxLayout):
         # # Draw the contour on the image
         # cv2.drawContours(img, [horizon_contour], -1, (0, 255, 0), 2)
 
-        critical_points = find_horizon_point(img,1,1,1,.3,.7)
+        critical_points = find_horizon_point(img, 1, 1, 1, 0.3, 0.7, debug=True)
         # if no critical points found, use default values
         if not critical_points:
             print('no criticalnpoints found')
@@ -256,14 +258,8 @@ class MainScreen(BoxLayout):
             cx = int(critical_points[0])
             cy = int(critical_points[1])
 
-        # draw circle on horizon critical point
-        cv2.circle(img, (cx, cy), 10, (200, 0, 0), -1)
-
         # cx = cx // scale_factor
         # cy = cy // scale_factor
-
-
-        cv2.imshow("i", img)
 
         # check for mirror X and mirror Y settings
         mirrorX = self.ids.mirrorX_switch.active
