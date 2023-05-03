@@ -1,5 +1,4 @@
 import io
-
 from kivy.clock import Clock
 from kivy.core.window import Window
 from kivy.graphics import Color, Ellipse
@@ -26,7 +25,7 @@ from kivy.config import Config
 from kivy.lang import Builder
 from queue import Queue
 import moviepy
-
+pbcurrent = 0 
 from horizonfinder import find_horizon_point
 
 Window.size = (1200, 750)
@@ -57,7 +56,11 @@ class HistoryItem():
 
 
 class MainScreen(BoxLayout):
+    global pbcurrent
     popup = ObjectProperty(None)
+    if pbcurrent > 100:
+        pbcurrent = 0
+   
 
     def __init__(self, **kwargs):
         super().__init__()
@@ -84,6 +87,8 @@ class MainScreen(BoxLayout):
 
         cv2.imwrite(self.previewimgPath, startImg, [
             int(cv2.IMWRITE_JPEG_QUALITY), 100])
+        
+        print("Wrote no_img.png to .previewImg.jpg")
 
     def openFileBrowser(self):
         # save original directory to restore at end
@@ -92,7 +97,7 @@ class MainScreen(BoxLayout):
         file_path = ""
         file_path = filechooser.open_file(title="File Selection", multiple=True, filters=[
             "*.jpg", "*.png", "*.jpeg", "*.mp4"])
-        if file_path == []:
+        if file_path is None or file_path == []:
             pass
         else:
             self.fileQueue.extend(file_path)
@@ -194,39 +199,27 @@ class MainScreen(BoxLayout):
     # replace with the function which does some calculation to maintain progressbar value
 
     def press_it(self):
-        print(self.ids.mirrorX_switch.active)
+
         # Grab the current progress bar value
-        current = self.ids.my_progress_bar.value
+       
         current2 = self.ids.my_progress_bar.value
         # Increment value by .25
-        current += 25
+        pbcurrent = self.ids.my_progress_bar.value
+        pbcurrent += 25
 
         current2 += 29
         # If statement to start over after 100
-        if current > 100:
-            current = 0
-            current2 = 0
+        
+
         # Update the progress bar
-        self.ids.my_progress_bar.value = current
-        sleep(0.31)
+        self.ids.my_progress_bar.value = pbcurrent
+
         self.ids.my_progress_bar2.value = current2
         # Update the label
         # self.ids.my_label.text = f'{int(current)}% Progress'
 
     # see doc MDProgress bar
 
-    def press_it2(self):
-        # Grab the current progress bar value
-        current = self.progression_value
-        # If statement to start over after 100
-        if current == 100:
-            current = 0
-
-        # Increment value by .25
-        current += 25
-
-        # Update the label
-        # self.ids.my_label2.text = f'{int(current)}% Progress'
 
     """
     What happens when you click on the window (sepcificallly on the image)
@@ -282,6 +275,7 @@ class MainScreen(BoxLayout):
             self.selectedPoint = Ellipse(
                 pos=(touch.x - d / 2, touch.y - d / 2), size=(d, d))
 
+
     def processMedia(self):
         if self.currentMediaType == self.video:
             self.processVideo()
@@ -317,12 +311,17 @@ class MainScreen(BoxLayout):
         src_image = self.currentImg
         scale_factor = min(1280 / src_image.shape[1], 720 / src_image.shape[0])
         img = cv2.resize(src_image, None, fx=scale_factor, fy=scale_factor)
+        pbcurrent = self.ids.my_progress_bar.value
+        pbcurrent += 12
+
+        self.ids.my_progress_bar.value = pbcurrent
 
         # horizon_contour = find_horizon(img)
         # # Draw the contour on the image
         # cv2.drawContours(img, [horizon_contour], -1, (0, 255, 0), 2)
 
-        critical_points = find_horizon_point(img, 1, 1, 1, .3, .7)
+        critical_points = find_horizon_point(img, 1, 1, 1, 0.3, 0.7, debug=True)
+
         # if no critical points found, use default values
         if not critical_points:
             print('no criticalnpoints found')
@@ -332,11 +331,6 @@ class MainScreen(BoxLayout):
             print(critical_points)
             cx = int(critical_points[0])
             cy = int(critical_points[1])
-
-        # draw circle on horizon critical point
-        cv2.circle(img, (cx, cy), 10, (200, 0, 0), -1)
-
-        cv2.imshow("i", img)
 
         # check for mirror X and mirror Y settings
         mirrorX = self.ids.mirrorX_switch.active
@@ -350,8 +344,14 @@ class MainScreen(BoxLayout):
         # rotate the image and update the preview
         rotatedImage = rotateImage(
             src_image, h, w, c, ix, iy, mirrorX, mirrorY)
+        pbcurrent = self.ids.my_progress_bar.value
+        pbcurrent = 79
 
+        self.ids.my_progress_bar.value = pbcurrent
         self.updateImage(rotatedImage)
+        pbcurrent = 100
+
+        self.ids.my_progress_bar.value = pbcurrent
 
     """
     Uses the point selected  by the user to equirotate the preview Image
@@ -362,12 +362,19 @@ class MainScreen(BoxLayout):
         # if no point selected, message the user and return
         if not self.selectedPoint:
             toast("no point selected")
+            pbcurrent = self.ids.my_progress_bar.value
+            pbcurrent = 0
+
+            self.ids.my_progress_bar.value = pbcurrent
             return
 
         # remove selected point from image
         self.canvas.remove(self.selectedPoint)
         self.selectedPoint = None
-
+        
+        pbcurrent = 8
+        self.ids.my_progress_bar.value = pbcurrent
+        
         src_image = self.currentImg
         imgSize = self.ids.previewImage.size
 
@@ -381,11 +388,15 @@ class MainScreen(BoxLayout):
         # scale touch coordinates to image size
         h, w, c, ix, iy = scaleImage(
             src_image, imgSize, self.touchLocalX, self.touchLocalY)
+        pbcurrent += 12
+        self.ids.my_progress_bar.value = pbcurrent
         print(f"Clicked Location (x,y): {ix},{iy}")
 
         # rotate the image and update the preview
         rotatedImage = rotateImage(
             src_image, h, w, c, ix, iy, mirrorX, mirrorY)
+        pbcurrent += 18
+        self.ids.my_progress_bar.value = pbcurrent
 
         self.updateImage(rotatedImage)
 
@@ -433,7 +444,8 @@ class MainScreen(BoxLayout):
         # set the switches to reflect the states at that point in history
         self.ids.mirrorY_switch.active = lastState.flipV
         self.ids.mirrorX_switch.active = lastState.flipH
-
+        pbcurrent -= 18
+        self.ids.my_progress_bar.value = pbcurrent
         # change the preview image to that of the history frame
         self.updateImage(lastState.img)
 
@@ -468,11 +480,14 @@ class MainScreen(BoxLayout):
 
         # set the current image to the new one
         self.currentImg = newImg
-
+        pbcurrent = 79
+        self.ids.my_progress_bar.value = pbcurrent
         # save the previewImage and update the visual
         cv2.imwrite(self.previewimgPath, newImg, [
             int(cv2.IMWRITE_JPEG_QUALITY), 100])
         self.ids.previewImage.reload()
+        pbcurrent = 100
+        self.ids.my_progress_bar.value = pbcurrent
 
     '''
     alignFrame

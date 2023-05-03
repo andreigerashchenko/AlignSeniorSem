@@ -12,9 +12,9 @@
 
         BoxLayout: 
             orientation: "horizontal"
-            padding: 15
-            spacing: 25
-
+            padding: 8
+            spacing: 4
+            
             Button:
                 pos_hint: {'center_x ': 0.3, 'top': 1}
                 background_normal: 'images/help button.png'
@@ -27,30 +27,28 @@
             AsyncImage:
                 id: previewImage
                 pos_hint: {'center_x': 0.5, 'center_y': 0.5}
-                #size_hint: 0.751,0.651
+                size_hint: 1,1
                 source: ".previewImg.jpg"
                 id: previewImage
-                radius: [5,]
-                #allow_stretch: False
+                radius: [8,]
                 keep_ratio: True
 
-            Label:
-                text:" "
-                size_hint: 0.05,0.5
-                pos_hint: {'center_x ': 0.91, 'top': 1}
+            
                 
         BoxLayout: 
             orientation: "horizontal"
-            center: self.parent.center
-            size_hint: 0.85, 0.205
-            padding: 15
-            spacing: 5
+            align: 'center'
+            size_hint: 1, 0.205
+            padding: 18
+            spacing: 18
+            
             
             Label:
-                pos_hint: {'x': 1, 'center_y': 0.5}
+                pos_hint: { 'center_y': 0.5}
                 font_size: 45
                 font:'font/sf-ui-display.otf'
-                text: "Queue"
+                text: "  Job Queue:"
+                size_hint: 0.38,0.5
 
             ScrollView:
                 #id: imgQueue
@@ -65,6 +63,23 @@
                     padding: 10, 0
                     spacing: 10
 
+            
+            Button:
+                text: "Undo"
+                background_color: 2.85,2.850,2.850,1
+                color: 0,0,0,1
+                size_hint: 0.24,1
+                pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+                id: undoButton
+                font_size: 24
+                on_press: 
+                    root.undo()
+                    self.background_color = (0,0,0,1)
+                    self.color = (2.85,2.850,2.850,1)
+                on_release: 
+                    self.background_color = (2.85,2.850,2.850,1)
+                    self.color= 0,0,0,1
+
 
 
 
@@ -74,45 +89,33 @@
             padding: 15
             spacing: 18
 
-            BoxLayout: 
-                #progression_value: 25
-                orientation: 'vertical'
-                pos_hint: {'x':.5}
-                size_hint: 0.75,1
+            GridLayout: 
+                cols: 1
+                rows:2
+                padding: 34
                 spacing: 10
-                padding: 10
-
-                #spacing between the progress bars needs to be adjusted here!!
-
+                
                 MDProgressBar:
                     #value: root.progression_value
                     id: my_progress_bar
                     min: 0
                     max: 100
-                    pos_hint: {'x':.055}
+
                     color:  2.12, 2.02, 1.63,1
-                    size_hint_y:None
-                    height:dp(12)  
+                    size_hint_y: 0.125
+                    height:dp(5)  
 
                 MDProgressBar:
                     #value: root.progression_value
                     id: my_progress_bar2
                     min: 0
                     max: 100
-                    pos_hint: {'x':.055}
-                    color:  2.12, 2.02, 1.63,1
-                    size_hint_y:None
-                    height:dp(12)  
-   
 
+                    color:  2.12, 2.02, 1.63,1
+                    size_hint_y: 0.125
+                    height:dp(7)  
+   
                 
-                #delete this button when implementing the progress bar function
-                Button:
-                    pos_hint: {'x':0.25, 'y':0}
-                    size_hint: 0.5,0.2
-                    id: increment
-                    text: "Press Me!"
-                    on_press: root.press_it()
 
             GridLayout:
                 cols: 4
@@ -171,13 +174,7 @@
                     disabled: False
                     font_size: 32
 
-                Button:
-                    text: "Undo"
-                    background_color: 1,0.5,0,0.9
-                    #size_hint: 0.32,0.45
-                    id: undoButton
-                    font_size: 32
-                    on_press: root.undo()
+                
 
 
             GridLayout:

@@ -25,7 +25,7 @@ def score_candidate(img, tck, u, x, y, cnt, LENGTH_WEIGHT, SMOOTHNESS_WEIGHT, LI
 
     return score
 
-def find_horizon_point(img, LENGTH_WEIGHT, SMOOTHNESS_WEIGHT, LINEARITY_WEIGHT, MIN_HEIGHT, MAX_HEIGHT):
+def find_horizon_point(img, LENGTH_WEIGHT, SMOOTHNESS_WEIGHT, LINEARITY_WEIGHT, MIN_HEIGHT, MAX_HEIGHT, scale_factor=1.0, debug=False):
     # Convert to grayscale
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
@@ -34,6 +34,17 @@ def find_horizon_point(img, LENGTH_WEIGHT, SMOOTHNESS_WEIGHT, LINEARITY_WEIGHT, 
 
     # Apply thresholding
     ret, thresh = cv2.threshold(gray, 127, 255, cv2.THRESH_BINARY+cv2.THRESH_OTSU)
+
+    # Debugging - Show the thresholded image
+    if debug:
+        temp = thresh.copy()
+        # Resize the image if it's larger than 1280x720
+        if temp.shape[0] > 720 or temp.shape[1] > 1280:
+            scale_factor = min(1280 / temp.shape[1], 720 / temp.shape[0])
+            temp = cv2.resize(temp, None, fx=scale_factor, fy=scale_factor)
+        cv2.imshow("HorizonFinder Debugging - Thresholding", temp)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
 
     # Apply canny edge detection
     edges = cv2.Canny(thresh, 50, 150, apertureSize=3)
@@ -101,6 +112,48 @@ def find_horizon_point(img, LENGTH_WEIGHT, SMOOTHNESS_WEIGHT, LINEARITY_WEIGHT, 
 
     # Choose the point with the derivative closest to 0
     if abs(min_deriv) < abs(max_deriv):
-        return min_x, min_y, "highest"
+        result_x = min_x/scale_factor
+        result_y = min_y/scale_factor
+        result_type = "highest"
     else:
-        return max_x, max_y, "lowest"
+        result_x = max_x/scale_factor
+        result_y = max_y/scale_factor
+        result_type = "lowest"
+
+
+    # Debugging - Draw all contours, splines, and contour scores
+    if debug:
+        # Draw all detected contours as red
+        cv2.drawContours(img, [cnt for cnt, score in potential_contours], -1, (0, 0, 255), 1)
+        # Draw all splines as yellow
+        for tck, u in splines:
+            x, y = splev(u, tck)
+            pts = np.array([x, y]).T.reshape((-1, 1, 2)).astype(np.int32)
+            cv2.polylines(img, [pts], False, (0, 255, 255), 1)
+        # Draw the best contour as blue
+        cv2.drawContours(img, [horizon_contour], -1, (255, 0, 0), 1)
+        # Draw the best spline as green
+        x, y = splev(horizon_spline[1], horizon_spline[0])
+        pts = np.array([x, y]).T.reshape((-1, 1, 2)).astype(np.int32)
+        cv2.polylines(img, [pts], False, (0, 255, 0), 1)
+        # Draw the scores of all contours
+        for cnt, score in potential_contours:
+            cv2.putText(img, str(round(score, 2)), (cnt[0, 0, 0], cnt[0, 0, 1]), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
+        # Draw the best score in blue
+        cv2.putText(img, str(round(max_score, 2)), (horizon_contour[0, 0, 0], horizon_contour[0, 0, 1]), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 1)
+        # Draw an orange circle at the horizon point
+        cv2.circle(img, (int(result_x), int(result_y)), 25, (0, 165, 255), -1)
+
+
+        temp = img.copy()
+        # Resize the image if it's larger than 1280x720
+        if temp.shape[0] > 720 or temp.shape[1] > 1280:
+            scale_factor = min(1280 / temp.shape[1], 720 / temp.shape[0])
+            temp = cv2.resize(temp, None, fx=scale_factor, fy=scale_factor)
+        # Show the image
+        cv2.imshow("HorizonFinder Debugging - Contours", temp)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
+
+
+    return result_x, result_y, result_type

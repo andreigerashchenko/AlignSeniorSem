@@ -13,9 +13,9 @@ SMOOTHNESS_WEIGHT = 1.0
 LINEARITY_WEIGHT = 1.0
 
 # Load the image
-img = cv2.imread(r'examples\R0011200.JPG')
+img = cv2.imread('examples/R0011200.JPG')
 
-point_x, point_y, point_type = find_horizon_point(img, LENGTH_WEIGHT, SMOOTHNESS_WEIGHT, LINEARITY_WEIGHT, MIN_HEIGHT, MAX_HEIGHT)
+point_x, point_y, point_type = find_horizon_point(img, LENGTH_WEIGHT, SMOOTHNESS_WEIGHT, LINEARITY_WEIGHT, MIN_HEIGHT, MAX_HEIGHT, debug=True)
 
 print(point_x, point_y, point_type)
 
