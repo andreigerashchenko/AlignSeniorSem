@@ -50,7 +50,9 @@ class HelpPopup(Popup):
 
 
 class PrefPopup(Popup):
-    pass
+    def _init_(self):
+        for key in prefs.keys():
+            self.ids[key].value = prefs[key]
 
 
 def getHorizonPoint(frame):
