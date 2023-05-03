@@ -11,6 +11,7 @@
                 pos: self.pos
                 size: self.size
 
+
         BoxLayout: 
             orientation: "horizontal"
             padding: 8
@@ -35,7 +36,12 @@
                 keep_ratio: True
 
             
-                
+        ProgressBar:
+            id:my_progress_bar
+            size_hint: 1,None
+            allow_stretch: True
+            height:10
+
         BoxLayout: 
             orientation: "horizontal"
             align: 'center'
@@ -89,6 +95,7 @@
 
 
 
+
         BoxLayout:
             orientation: "horizontal"
             size_hint: 0.75, 0.75
@@ -97,17 +104,17 @@
             pos_hint: {'center_x': 0.5,'center_y': 1}
 
             GridLayout:
-                cols: 4
-                rows: 4
-                padding: 10
-                spacing: 15
+                cols: 2
+                rows: 3
+                #padding: 10
+                #spacing: 15
 
                 Label:
                     text: "Flip Vertical"
 
                 Switch:
                     border_radius: 10
-                    #size_hint: 0.2,0.425
+                    size_hint: 0.2,0.425
                     id: mirrorY_switch
                     active: False
                     #font_size: dp(16)
@@ -124,32 +131,15 @@
                     disabled: False
                     #font_size: dp(16)
                     on_active: root.flipHorizontal()
-                Label: 
-                    text: "Timelapse: "
-                Switch:
-                    background_color: 1,0.5,1,0.9
-                    #size_hint: 0.32,0.425
-                    id: my_switch
-                    active: True
-                    disabled: False
-                    font_size: 32
-                Label: 
-                    text: "VR Support: "
-                Switch:
-                    background_color: 1,0.5,0,0.9
-                    #size_hint: 0.32,0.45
-                    id: my_switch
-                    active: True
-                    disabled: False
-                    font_size: 32
 
-                Label: 
+
+                Label:
                     text: "Manual Horizon: "
                 Switch:
                     background_color: 1,0.5,0,0.9
                     #size_hint: 0.32,0.45
                     id: manual_switch
-                    active: True
+                    active: False
                     disabled: False
                     font_size: 32
 
@@ -191,7 +181,7 @@
                     on_release: 
                         self.background_color = (2.85,2.850,2.850,1)
                         self.color= 0,0,0,1
-                        root.processImage()
+                        root.processMedia()
 
 
                 Button:
@@ -204,7 +194,7 @@
                     size_hint: 0.05,0.2
                     id: saveButton
                     text: "Save"
-                    on_press: root.saveImagePopup()
+                    on_press: root.saveImage()
                     on_release: 
                         self.background_color = (2.85,2.850,2.850,1)
                         self.color= 0,0,0,1
@@ -257,8 +247,8 @@
 
 <PrefPopup>:
     id: pref
-    size_hint: 0.75, 0.75
-    auto_dismiss: False
+    size_hint: 0.35, 0.85
+    auto_dismiss: True
     title: 'Preferences: '
     background_color: 152/255,186/255,186/255,1
     
@@ -268,44 +258,21 @@
         padding: 12
 
         BoxLayout:
-            orientation: 'horizontal'
-            size_hint: 1,1
-            padding: 8
-            spacing: 8
+
+
 
             GridLayout:
                 cols: 2
-                rows: 2
-                padding: 10
-                spacing: -1
-                size_hint: 0.25,1
-                
-                Label:
-                    text: "General: "
-                    font_size: 40
-                    
-                Label:
-                    text: ""
-                Label:
-                    text: "Scale Factor: "
-                    pos_hint: {'x': 0,'center_y': 1}
-                MDSlider:
-                    id: scaleFactSlider
-                    min: 0
-                    max: 10
-                    value: 5
-                    pos_hint: {'x': 0,'center_y': 1}
-
-            GridLayout:
-                cols: 2
-                rows: 7
+                rows: 8
                 padding: 10
                 spacing: 10
                 size_hint: 0.25,1
-                
+
                 Label:
                     text: "Auto Horizon: "
-                    font_size: 40
+                    font_size: 20
+                    pos_hint: {'x': 0,'center_y': 1}
+
                 Label:
                     text: ""
                 Label:
@@ -314,17 +281,17 @@
                 MDSlider:
                     id: minHeightSlider
                     min: 0
-                    max: 10
-                    value: 5
+                    max: 0.5
+                    value: 0.3
                     pos_hint: {'x': 0,'center_y': 1}
                 Label:
                     text: "Max Height "
                     pos_hint: {'x': 0,'center_y': 1}
                 MDSlider:
                     id: maxHeightSlider
-                    min: 0
-                    max: 10
-                    value: 5
+                    min: 0.5
+                    max: 1
+                    value: .7
                     pos_hint: {'x': 0,'center_y': 1}
 
                 Label:
@@ -333,8 +300,8 @@
                 MDSlider:
                     id: lengthWeightSlider
                     min: 0
-                    max: 10
-                    value: 5
+                    max: 5
+                    value: 1
                     pos_hint: {'x': 0,'center_y': 1}
                 Label:
                     text: "Smoothness weight"
@@ -342,18 +309,28 @@
                 MDSlider:
                     id: smoothWeightSlider
                     min: 0
-                    max: 10
-                    value: 0
-                    #pos_hint: {'x': 0,'center_y': 1}
+                    max: 5
+                    value: 1
+                    pos_hint: {'x': 0,'center_y': 1}
                 Label:
                     text: "Linearity Weight "
                     #pos_hint: {'x': 0,'center_y': 1}
                 MDSlider:
                     id: linearityWeightSlider
                     min: 0
-                    max: 100
-                    value: 0
-                    #pos_hint: {'x': 0,'center_y': 1}
+                    max: 5
+                    value: 1
+                    pos_hint: {'x': 0,'center_y': 1}
+                Label:
+                    text: "Scale Factor: "
+                    pos_hint: {'x': 0,'center_y': 1}
+                MDSlider:
+                    id: scaleFactSlider
+                    min: 0
+                    max: 1
+                    value: 1
+                    pos_hint: {'x': 0,'center_y': 1}
+
                 Label:
                     text: "Debug mode "
                     #pos_hint: {'x': 0,'center_y': 1}
@@ -362,7 +339,7 @@
                     #active: True
                     #pos_hint: {'x': 0,'center_y': 1}
                     #size_hint: 0.2, 1
-                    
+
                     #on_active: app.root.toggle_debug_mode()
 
 
@@ -373,34 +350,6 @@
             spacing: 8
             size_hint: 1,1
 
-            GridLayout:
-                cols: 2
-                rows: 3
-                padding: 10
-                spacing: 10
-                size_hint: 0.25,1
-                
-
-                Label:
-                    text: "Output: "
-                    font_size: 40
-                Label:
-                    text: ""
-                Label:
-                    text: "Default Directory "
-                Label:
-                    text: "add file browser image here "
-
-                Label:
-                    text: "Default output suffix "
-                TextInput:
-                    id: outputsuffix
-                    hint_text: '.jpg'
-                    size_hint: (None, None)
-                    height: 50
-                    width: 145
-                    #pos_hint: {'center_x': 1,'center_y': 0.5}
-                    multiline: False
 
             GridLayout:
                 cols: 2
@@ -408,11 +357,12 @@
                 padding: 10
                 spacing: 10
                 size_hint: 0.25,1
-                
+
 
                 Label:
                     text: "Video: "
-                    font_size: 40
+                    font_size: 20
+
                 Label:
                     text: ""
                 Label:
@@ -427,6 +377,7 @@
                     text: "horizon recalculation\nframe interval "
                 TextInput:
                     id: hrfi
+                    input_type: 'number'
                     hint_text: '10'
                     size_hint: (None, None)
                     height: 50
@@ -434,12 +385,12 @@
                     #pos_hint: {'center_x': 1,'center_y': 1}
                     multiline: False
 
- 
+
         Button:
             text: 'Close'
             size_hint: 0.2, 0.2
             pos_hint: {'center_x': 0.5, 'center_y': 1}
-            on_press: 
+            on_press:
                 root.save_preferences()
                 root.dismiss()
 
