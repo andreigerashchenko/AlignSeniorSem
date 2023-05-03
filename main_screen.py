@@ -37,9 +37,9 @@ prefs = {
     'scale_factor': 1.0,
     'min_height': 0.3,
     'max_height': 0.7,
-    'length_weight': 0.5,
-    'smoothness_weight': 0.3,
-    'linearity_weight': 0.2,
+    'length_weight': 1,
+    'smoothness_weight': 1,
+    'linearity_weight': 1,
     'debug_auto': False,
     'video_fps': 22,
     'video_interval': 10
@@ -54,7 +54,8 @@ class HelpPopup(Popup):
 
 
 class PrefPopup(Popup):
-    def __init__(self):
+    def __init__(self, **kwargs):
+        super().__init__()
         print("PrefPopup init")
         self.ids.scaleFactSlider.value = prefs['scale_factor']
         self.ids.minHeightSlider.value = prefs['min_height']
@@ -64,7 +65,7 @@ class PrefPopup(Popup):
         self.ids.linearityWeightSlider.value = prefs['linearity_weight']
         self.ids.debugAutoSwitch.value = prefs['debug_auto']
         self.ids.fpsSlider.value = prefs['video_fps']
-        self.ids.hrfi.text = prefs['video_interval']
+        self.ids.hrfi.text = str(prefs['video_interval'])
 
     def save_preferences(self):
         prefs['scale_factor'] = self.ids.scaleFactSlider.value
@@ -251,6 +252,9 @@ class MainScreen(BoxLayout):
         self.ids.undoButton.disabled = False
         self.ids.saveButton.disabled = False
 
+        self.ids.mirrorX_switch.active = False
+        self.ids.mirrorY_switch.active = False
+
     def focusVideo(self, vidPath,button=None):
         # get the video from path
         clip = VideoFileClip(vidPath)
@@ -350,7 +354,7 @@ class MainScreen(BoxLayout):
         # If statement to start over after 100
 
         # Update the progress bar
-        self.ids.my_progress_bar.value = pbcurrent
+        # self.ids.my_progress_bar.value = pbcurrent
 
         self.ids.my_progress_bar2.value = current2
         # Update the label
@@ -441,8 +445,8 @@ class MainScreen(BoxLayout):
             f(t),
             t,
             progress=((t / duration) * 100),
-            interval=5,
-            progress_bar=self.ids.my_progress_bar,
+            interval=float(prefs["video_interval"]),
+            # progress_bar=self.ids.my_progress_bar,
             mirrorX=self.ids.mirrorX_switch.active,
             mirrorY=self.ids.mirrorY_switch.active,
         )
@@ -456,23 +460,34 @@ class MainScreen(BoxLayout):
         #     return
         # outfile = file_chosen[0]
         outfile = self.vidPreviewPath
-        rotatedClip.write_videofile(outfile, fps=15)
+        rotatedClip.write_videofile(outfile, fps=int(prefs["video_fps"]))
         self.vidPreview()
 
     def automaticProcess(self):
         src_image = self.currentImg
         scale_factor = min(1280 / src_image.shape[1], 720 / src_image.shape[0])
         img = cv2.resize(src_image, None, fx=scale_factor, fy=scale_factor)
-        pbcurrent = self.ids.my_progress_bar.value
-        pbcurrent += 12
+        # pbcurrent = self.ids.my_progress_bar.value
+        # pbcurrent += 12
 
-        self.ids.my_progress_bar.value = pbcurrent
+        # self.ids.my_progress_bar.value = pbcurrent
 
         # horizon_contour = find_horizon(img)
         # # Draw the contour on the image
         # cv2.drawContours(img, [horizon_contour], -1, (0, 255, 0), 2)
+        min_height = prefs["min_height"]
+        max_height = prefs["max_height"]
+        length_weight = prefs['length_weight']
+        smoothness_weight = prefs['smoothness_weight']
+        linearity_weight = prefs['linearity_weight']
+        auto_scale_factor = prefs['scale_factor']
+        debug = prefs['debug_auto']
+        print(prefs)
 
-        critical_points = find_horizon_point(img, 1, 1, 1, 0.3, 0.7, debug=True)
+        critical_points = find_horizon_point(img, length_weight, smoothness_weight, linearity_weight, min_height,
+                                             max_height,auto_scale_factor, debug)
+
+        # critical_points = find_horizon_point(img, 1, 1, 1, 0.3, 0.7, debug=True)
 
         # if no critical points found, use default values
         if not critical_points:
@@ -495,14 +510,14 @@ class MainScreen(BoxLayout):
         print(ix, iy)
         # rotate the image and update the preview
         rotatedImage = rotateImage(src_image, h, w, c, ix, iy, mirrorX, mirrorY)
-        pbcurrent = self.ids.my_progress_bar.value
+        # pbcurrent = self.ids.my_progress_bar.value
         pbcurrent = 79
 
-        self.ids.my_progress_bar.value = pbcurrent
+        # self.ids.my_progress_bar.value = pbcurrent
         self.updateImage(rotatedImage)
         pbcurrent = 100
 
-        self.ids.my_progress_bar.value = pbcurrent
+        # self.ids.my_progress_bar.value = pbcurrent
 
     """
     Uses the point selected  by the user to equirotate the preview Image
@@ -513,10 +528,10 @@ class MainScreen(BoxLayout):
         # if no point selected, message the user and return
         if not self.selectedPoint:
             toast("no point selected")
-            pbcurrent = self.ids.my_progress_bar.value
+            # pbcurrent = self.ids.my_progress_bar.value
             pbcurrent = 0
 
-            self.ids.my_progress_bar.value = pbcurrent
+            # self.ids.my_progress_bar.value = pbcurrent
             return
 
         # remove selected point from image
@@ -524,7 +539,7 @@ class MainScreen(BoxLayout):
         self.selectedPoint = None
 
         pbcurrent = 8
-        self.ids.my_progress_bar.value = pbcurrent
+        # self.ids.my_progress_bar.value = pbcurrent
 
         src_image = self.currentImg
         imgSize = self.ids.previewImage.size
@@ -541,18 +556,22 @@ class MainScreen(BoxLayout):
             src_image, imgSize, self.touchLocalX, self.touchLocalY
         )
         pbcurrent += 12
-        self.ids.my_progress_bar.value = pbcurrent
+        # self.ids.my_progress_bar.value = pbcurrent
         print(f"Clicked Location (x,y): {ix},{iy}")
 
         # rotate the image and update the preview
         rotatedImage = rotateImage(src_image, h, w, c, ix, iy, mirrorX, mirrorY)
         pbcurrent += 18
-        self.ids.my_progress_bar.value = pbcurrent
+        # self.ids.my_progress_bar.value = pbcurrent
 
         self.updateImage(rotatedImage)
 
     # flips the current image vertically
     def flipVertical(self):
+        # stop if nothing is selected
+        if self.mediaPath is None:
+            return
+
         # do nothing more if video
         if self.currentMediaType == self.video:
             return
@@ -562,6 +581,10 @@ class MainScreen(BoxLayout):
 
     # flips the current image horizontally
     def flipHorizontal(self):
+        # stop if nothing is selected
+        if self.mediaPath is None:
+            return
+
         # do nothing more if video
         if self.currentMediaType == self.video:
             return
@@ -632,12 +655,12 @@ class MainScreen(BoxLayout):
         # set the current image to the new one
         self.currentImg = newImg
         pbcurrent = 79
-        self.ids.my_progress_bar.value = pbcurrent
+        # self.ids.my_progress_bar.value = pbcurrent
         # save the previewImage and update the visual
         cv2.imwrite(self.previewimgPath, newImg, [int(cv2.IMWRITE_JPEG_QUALITY), 100])
         self.ids.previewImage.reload()
         pbcurrent = 100
-        self.ids.my_progress_bar.value = pbcurrent
+        # self.ids.my_progress_bar.value = pbcurrent
 
     """
     alignFrame
@@ -659,8 +682,8 @@ def alignFrame(
 ):
 
     Clock.async_tick()
-    if progress_bar:
-        progress_bar.value = int(progress)
+    # if progress_bar:
+        # progress_bar.value = int(progress)
 
     global rotator, shiftx
     frameIntervalProgress = t % interval
@@ -668,6 +691,7 @@ def alignFrame(
     # when at frame interval
     # use the horizon to find the current rotations of the frame
     if frameIntervalProgress == 0:
+        print(progress)
         rotator, shiftx = getRotator(get_frame, mirrorX, mirrorY)
 
     # apply rotations to the current frame
@@ -676,13 +700,10 @@ def alignFrame(
 
     if mirrorX and not mirrorY:
         return cv2.flip(rotated_image, 1)
-        print("flipped Horizontal")
     if mirrorY and not mirrorX:
         return cv2.flip(rotated_image, 0)
-        print("flipped Vertical")
     if mirrorX and mirrorY:
         return cv2.flip(rotated_image, -1)
-        print("flipped Both")
 
     return rotated_image
 
@@ -781,7 +802,6 @@ def getRotator(src_image, mirrorX, mirrorY):
     h, w, c = src_image.shape
     ix = cx // scale_factor
     iy = cy // scale_factor
-    print(ix, iy)
 
     # Do a 'yaw' rotation such that ix position earth-sky horizon is
     # at the middle column of the image. Fortunately for an equirectangular
