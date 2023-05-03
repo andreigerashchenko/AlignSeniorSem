@@ -37,6 +37,7 @@ kv = Builder.load_file('main_screen.kv')
 
 vidPreviewPath = os.path.abspath(".vidPreview.mp4")
 # previewimgPath = os.path.abspath(".previewImg.jpg")
+origin_directory = os.getcwd()
 
 class HelpPopup(Popup):
     pass
@@ -52,6 +53,8 @@ class VidPreviewPopup(Popup):
         self.vidPreviewPath = os.path.abspath(".vidPreview.mp4")
     def browseFile(self):
         file_select = filechooser.open_file(title="Save Video")
+        os.chdir(origin_directory)
+
         if not file_select:
             return
         filename = file_select[0]
@@ -79,6 +82,8 @@ class VidPreviewPopup(Popup):
         shutil.copy(vidPreviewPath,outfile_name)
         toast(f"saved as {outfile_name}")
         self.dismiss()
+        self.queue.remove_widget(self.qButton)
+        self.main_screen.checkQueue()
 
     pass
 
@@ -115,6 +120,7 @@ class MainScreen(BoxLayout):
         self.selectedPoint = None
         self.fileQueue = []  # the list of files queued to be processed
         self.mediaPath = None  # the path to the file currently being worked on
+        self.currentQueueButton = None
 
         # stack history of transformations applied to the image,
         # history is reset when a new file is selected
@@ -142,47 +148,51 @@ class MainScreen(BoxLayout):
         file_path = filechooser.open_file(title="File Selection", multiple=True, filters=[
             "*.jpg", "*.png", "*.jpeg", "*.mp4"])
         if file_path is None or file_path == []:
-            pass
+            return
         else:
             self.fileQueue.extend(file_path)
-            self.focusMedia(self.fileQueue[0])
+
             # self.mediaPath = self.fileQueue[0]
             # self.currentImg = cv2.imread(self.mediaPath)
             # self.updateImage(self.currentImg)
 
             # load thumbnails to the queue carousel object
             queueThumbnails = self.ids.imgQueue
+            buttons = []
             for file in file_path:
                 filename = os.path.split(file)[-1]
                 extenstion = os.path.splitext(filename)[-1][1:]
 
                 # if video, create video button of selected file
-                if extenstion.lower() == "mp4":
+                if extenstion.lower().endswith("mp4"):
                     im = Button(background_normal="blank_video_logo.png", size_hint=(None, 1), width=100,
-                                text=filename, font_size=10, on_press=lambda vid: self.focusVideo(vid))
+                                text=filename, font_size=10, on_press=lambda vid: self.focusVideo(file,vid))
 
                 # if image, create image button of the selected file
                 else:
                     im = Button(background_normal=file, size_hint=(None, 1), width=100,
-                                text=filename, font_size=10, on_press=lambda image: self.focusImage(image.background_normal))
+                                text=filename, font_size=10, on_press=lambda image: self.focusImage(image.background_normal,image))
 
                 # add the buttonImage to the queue
                 queueThumbnails.add_widget(im)
+                buttons.append(im)
+
+            self.focusMedia(file_path[0],buttons[0])
 
         # restore original directory
         os.chdir(cwd)
 
-    def focusMedia(self, mediaPath):
+    def focusMedia(self, mediaPath,button):
         self.mediaPath = mediaPath
         extenstion = os.path.splitext(mediaPath)[-1][1:]
 
         # if video, create video button of selected file
         if extenstion in ["mp4", "mov"]:
-            self.focusVideo(mediaPath)
+            self.focusVideo(mediaPath,button)
         else:
-            self.focusImage(mediaPath)
+            self.focusImage(mediaPath,button)
 
-    def focusImage(self, img):
+    def focusImage(self, img,button=None):
         newImg = cv2.imread(img)
         self.updateImage(newImg)
 
@@ -193,10 +203,16 @@ class MainScreen(BoxLayout):
         self.mediaPath = img
         self.currentMediaType = self.image
 
-        # enable the manual switch
-        self.ids.manual_switch.disabled = False
+        # select queue button
+        if Button:
+            self.currentQueueButton = button
 
-    def focusVideo(self, vidPath):
+        # re-enable manual options
+        self.ids.manual_switch.disabled = False
+        self.ids.undoButton.disabled = False
+        self.ids.saveButton.disabled = False
+
+    def focusVideo(self, vidPath,button=None):
         # get the video from path
         clip = VideoFileClip(vidPath)
 
@@ -218,9 +234,15 @@ class MainScreen(BoxLayout):
         self.mediaPath = vidPath
         self.currentMediaType = self.video
 
-        # disable the manual switch, only automatic can be used for videos
+        # select queue button
+        if Button:
+            self.currentQueueButton = button
+
+        # disable manual options
         self.ids.manual_switch.active = False
         self.ids.manual_switch.disabled = True
+        self.ids.undoButton.disabled = True
+        self.ids.saveButton.disabled = True
 
     def open_Help(self):
         self.popup = HelpPopup()
@@ -229,6 +251,9 @@ class MainScreen(BoxLayout):
     def vidPreview(self):
         self.popup = VidPreviewPopup()
         self.popup.open()
+        self.popup.queue = self.ids.imgQueue
+        self.popup.qButton = self.currentQueueButton
+        self.popup.main_screen = self
 
     def open_popup(self):
         self.popup = PrefPopup()
@@ -241,10 +266,34 @@ class MainScreen(BoxLayout):
 
     # uses the current preview image and the file name from the popup to save a new image file
     def saveImage(self):
-        outfile = file_path = filechooser.open_file(title="Save Image")
+        if self.mediaPath is None:
+            toast("no file selected")
+            return
+
+        file_select = filechooser.open_file(title="Save Image")
+        os.chdir(origin_directory)
+
+        if not file_select:
+            return
+
+        outfile = file_select[0]
+
         cv2.imwrite(outfile, self.currentImg, [
             int(cv2.IMWRITE_JPEG_QUALITY), 100])
         toast(f"saved as {outfile}")
+
+        self.ids.imgQueue.remove_widget(self.currentQueueButton)
+        self.checkQueue()
+
+    def checkQueue(self):
+        if not self.ids.imgQueue.children:
+            startImg = cv2.imread("no_img.png")
+
+            cv2.imwrite(self.previewimgPath, startImg, [
+                int(cv2.IMWRITE_JPEG_QUALITY), 100])
+
+            self.updateImage(startImg)
+            self.mediaPath = None
 
     # replace with the function which does some calculation to maintain progressbar value
 
@@ -324,6 +373,10 @@ class MainScreen(BoxLayout):
                 pos=(touch.x - d / 2, touch.y - d / 2), size=(d, d))
 
     def processMedia(self):
+        if self.mediaPath is None:
+            toast("no file selected")
+            return
+
         if self.currentMediaType == self.video:
             self.processVideo()
         else:
@@ -349,6 +402,7 @@ class MainScreen(BoxLayout):
         rotatedClip = clip.fl(fl)
 
         # file_chosen = filechooser.open_file(title="Name Rotated Video")
+        # os.chdir(origin_directory)
         # if not file_chosen:
         #     return
         # outfile = file_chosen[0]
@@ -493,9 +547,9 @@ class MainScreen(BoxLayout):
         # set the switches to reflect the states at that point in history
         self.ids.mirrorY_switch.active = lastState.flipV
         self.ids.mirrorX_switch.active = lastState.flipH
-        if pbcurrent:
-            pbcurrent -= 18
-        self.ids.my_progress_bar.value = pbcurrent
+        # if pbcurrent:
+        #     pbcurrent -= 18
+        # self.ids.my_progress_bar.value = pbcurrent
         # change the preview image to that of the history frame
         self.updateImage(lastState.img)
 
