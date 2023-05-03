@@ -86,37 +86,9 @@
 
         BoxLayout:
             orientation: "horizontal"
-            size_hint: 1, 0.60
+            size_hint: 0.75, 0.60
             padding: 15
             spacing: 18
-
-            GridLayout: 
-                cols: 1
-                rows:2
-                padding: 34
-                spacing: 10
-                
-                MDProgressBar:
-                    #value: root.progression_value
-                    id: my_progress_bar
-                    min: 0
-                    max: 100
-
-                    color:  2.12, 2.02, 1.63,1
-                    size_hint_y: 0.125
-                    height:dp(5)  
-
-                MDProgressBar:
-                    #value: root.progression_value
-                    id: my_progress_bar2
-                    min: 0
-                    max: 100
-
-                    color:  2.12, 2.02, 1.63,1
-                    size_hint_y: 0.125
-                    height:dp(7)  
-   
-                
 
             GridLayout:
                 cols: 4
@@ -213,7 +185,7 @@
                     on_release: 
                         self.background_color = (2.85,2.850,2.850,1)
                         self.color= 0,0,0,1
-                        root.processMedia()
+                        root.processImage()
 
 
                 Button:
@@ -226,7 +198,7 @@
                     size_hint: 0.05,0.2
                     id: saveButton
                     text: "Save"
-                    on_press: root.saveImage()
+                    on_press: root.saveImagePopup()
                     on_release: 
                         self.background_color = (2.85,2.850,2.850,1)
                         self.color= 0,0,0,1
@@ -277,66 +249,190 @@
 
 <PrefPopup>:
     id: pref
-    size_hint: 0.8, 0.8
+    size_hint: 0.75, 0.75
     auto_dismiss: False
     title: 'Preferences: '
-    padding: 40
-    space: 40
     background_color: 152/255,49/255,49/255,1
     
 
     BoxLayout:
         orientation: 'vertical'
+        padding: 12
 
         BoxLayout:
             orientation: 'horizontal'
-            #size_hint: 1, 0.1
-            padding: 19
+            size_hint: 1,1
+            padding: 8
             spacing: 8
-            BoxLayout:
-                orientation: 'vertical'
 
-                Switch:
-                    #size_hint: 0.2,0.425
-                    id: my_switch
+            GridLayout:
+                cols: 2
+                rows: 2
+                padding: 10
+                spacing: 0
+                size_hint: 0.25,1
+                
+                Label:
+                    text: "General: "
+                    pos_hint: {'x': 0,'center_y': 1}
+                Label:
+                    text: ""
+                Label:
+                    text: "Scale Factor: "
+                    pos_hint: {'x': 0,'center_y': 1}
+                MDSlider:
+                    id: scaleFactSlider
+                    min: 0
+                    max: 10
+                    value: 5
+                    pos_hint: {'x': 0,'center_y': 1}
+
+            GridLayout:
+                cols: 2
+                rows: 7
+                padding: 10
+                spacing: 10
+                size_hint: 0.25,1
+                
+                Label:
+                    text: "Auto Horizon: "
+                    pos_hint: {'x': 0,'center_y': 1}
+                Label:
+                    text: ""
+                Label:
+                    text: "Min Height "
+                    pos_hint: {'x': 0,'center_y': 1}
+                MDSlider:
+                    id: minHeightSlider
+                    min: 0
+                    max: 10
+                    value: 5
+                    pos_hint: {'x': 0,'center_y': 1}
+                Label:
+                    text: "Max Height "
+                    pos_hint: {'x': 0,'center_y': 1}
+                MDSlider:
+                    id: maxHeightSlider
+                    min: 0
+                    max: 10
+                    value: 5
+                    pos_hint: {'x': 0,'center_y': 1}
+
+                Label:
+                    text: "Length weight "
+                    pos_hint: {'x': 0,'center_y': 1}
+                MDSlider:
+                    id: lengthWeightSlider
+                    min: 0
+                    max: 10
+                    value: 5
+                    pos_hint: {'x': 0,'center_y': 1}
+                Label:
+                    text: "Smoothness weight"
+                    pos_hint: {'x': 0,'center_y': 1}
+                MDSlider:
+                    id: smoothWeightSlider
+                    min: 0
+                    max: 10
+                    value: 0
+                    pos_hint: {'x': 0,'center_y': 1}
+                Label:
+                    text: "Linearity Weight "
+                    pos_hint: {'x': 0,'center_y': 1}
+                MDSlider:
+                    id: linearityWeightSlider
+                    min: 0
+                    max: 100
+                    value: 0
+                    pos_hint: {'x': 0,'center_y': 1}
+                Label:
+                    text: "Debug mode "
+                    pos_hint: {'x': 0,'center_y': 1}
+                MDSwitch:
+                    id: debugAutoSwitch
                     active: True
-                    disabled: False
-                    font_size: 32
+                    pos_hint: {'x': 0,'center_y': 1}
+                    #size_hint: 0.2, 1
+                    
+                    #on_active: app.root.toggle_debug_mode()
 
-                Switch:
-                    #size_hint: 0.32,0.425
-                    id: my_switch
-                    active: True
-                    disabled: False
-                    font_size: 32
 
-            BoxLayout:
-                orientation: 'vertical'
 
-                Switch:
-                    border_radius: 10
-                    #size_hint: 0.2,0.425
-                    id: my_switch
-                    active: True
-                    disabled: False
-                    font_size: 32
+        BoxLayout:
+            orientation: 'horizontal'
+            padding: 8
+            spacing: 8
+            size_hint: 1,1
 
-                Switch:
-                    #size_hint: 0.32,0.425
-                    id: my_switch
-                    active: True
-                    disabled: False
-                    font_size: 32
-        Label:
-            text: 'More settings to be added'
+            GridLayout:
+                cols: 2
+                rows: 3
+                padding: 10
+                spacing: 10
+                size_hint: 0.25,1
+                
+
+                Label:
+                    text: "Output: "
+                Label:
+                    text: ""
+                Label:
+                    text: "Default Directory "
+                Label:
+                    text: "add file browser image here "
+
+                Label:
+                    text: "Default output suffix "
+                TextInput:
+                    id: outputsuffix
+                    hint_text: '10'
+                    size_hint: (None, None)
+                    height: 50
+                    width: 45
+                    pos_hint: {'center_x': 1,'center_y': 1}
+                    multiline: False
+
+            GridLayout:
+                cols: 2
+                rows: 3
+                padding: 10
+                spacing: 10
+                size_hint: 0.25,1
+                
+
+                Label:
+                    text: "Video: "
+                Label:
+                    text: ""
+                Label:
+                    text: "FPS: "
+                MDSlider:
+                    id: fpsSlider
+                    min: 0
+                    max: 100
+                    value: 0
+                    pos_hint: {'x': 0,'center_y': 1}
+                Label:
+                    text: "horizon recalculation\nframe interval "
+                TextInput:
+                    id: hrfi
+                    hint_text: '10'
+                    size_hint: (None, None)
+                    height: 50
+                    width: 45
+                    pos_hint: {'center_x': 1,'center_y': 1}
+                    multiline: False
+
+ 
         Button:
             text: 'Close'
             size_hint: 0.2, 0.2
             pos_hint: {'center_x': 0.5, 'center_y': 1}
-            on_press: root.dismiss()
+            on_press: 
+                root.save_preferences()
+                root.dismiss()
 
-        Label:
-            text: ''
+
 
 
 
