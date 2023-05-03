@@ -1,5 +1,31 @@
 #!/bin/bash
 
+# Check if the script is being run as root
+if [[ $EUID -eq 0 ]]; then
+   echo "This script should not be run as root" 
+   exit 1
+fi
+
+# Check if the AlignSeniorSem directory already exists
+if [ -d "$HOME/AlignSeniorSem" ]; then
+    echo "AlignSeniorSem is already installed. Do you want to uninstall it? [Y/n]"
+    read uninstall_answer
+    if [[ $uninstall_answer =~ ^[Yy]$ ]]; then
+        echo "Uninstalling AlignSeniorSem"
+        rm -rf $HOME/AlignSeniorSem
+        # Remove the symbolic link on the desktop if it exists
+        desktop_path="$HOME/Desktop/AlignSeniorSem.desktop"
+        if [ -f "$desktop_path" ]; then
+            rm $desktop_path
+            echo "Removed symbolic link from desktop"
+        fi
+        exit 0
+    else
+        echo "Aborting uninstallation"
+        exit 1
+    fi
+fi
+
 # Display a message explaining what the script does
 echo "This script will download and install AlignSeniorSem."
 echo "Do you want to continue? [Y/n]"
@@ -9,12 +35,6 @@ read answer
 if [[ ! $answer =~ ^[Yy]$ ]]; then
     echo "Aborting installation"
     exit 1
-fi
-
-# Check if the script is being run as root
-if [[ $EUID -eq 0 ]]; then
-   echo "This script should not be run as root" 
-   exit 1
 fi
 
 # Check for Python installation and version
