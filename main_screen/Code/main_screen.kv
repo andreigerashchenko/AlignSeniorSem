@@ -1,0 +1,363 @@
+<MainScreen>:
+    BoxLayout:
+        orientation: "vertical"
+        padding: 12
+        spacing: 10
+        canvas.before:
+            Color:
+                rgba: 132/255,39/255,39/255,1
+            Rectangle:
+                pos: self.pos
+                size: self.size
+
+        BoxLayout: 
+            orientation: "horizontal"
+            padding: 8
+            spacing: 4
+            
+            Button:
+                pos_hint: {'center_x ': 0.3, 'top': 1}
+                background_normal: 'images/help button.png'
+                background_down: 'images/help buttonDown.png'
+                size_hint: None, None
+                size: 50, 50    
+                on_press: root.open_Help()
+
+
+            AsyncImage:
+                id: previewImage
+                pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+                size_hint: 1,1
+                source: ".previewImg.jpg"
+                id: previewImage
+                radius: [8,]
+                keep_ratio: True
+
+            
+                
+        BoxLayout: 
+            orientation: "horizontal"
+            align: 'center'
+            size_hint: 1, 0.205
+            padding: 18
+            spacing: 18
+            
+            
+            Label:
+                pos_hint: { 'center_y': 0.5}
+                font_size: 45
+                font:'font/sf-ui-display.otf'
+                text: "  Job Queue:"
+                size_hint: 0.38,0.5
+
+            ScrollView:
+                #id: imgQueue
+                height: 50
+                do_scroll_y: False
+                
+                BoxLayout:
+                    id: imgQueue
+                    size_hint_x: None
+                    width: self.minimum_width
+                    orientation: 'horizontal'
+                    padding: 10, 0
+                    spacing: 10
+
+            
+            Button:
+                text: "Undo"
+                background_color: 2.85,2.850,2.850,1
+                color: 0,0,0,1
+                size_hint: 0.24,1
+                pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+                id: undoButton
+                font_size: 24
+                on_press: 
+                    root.undo()
+                    self.background_color = (0,0,0,1)
+                    self.color = (2.85,2.850,2.850,1)
+                on_release: 
+                    self.background_color = (2.85,2.850,2.850,1)
+                    self.color= 0,0,0,1
+
+
+
+
+        BoxLayout:
+            orientation: "horizontal"
+            size_hint: 1, 0.60
+            padding: 15
+            spacing: 18
+
+            GridLayout: 
+                cols: 1
+                rows:2
+                padding: 34
+                spacing: 10
+                
+                MDProgressBar:
+                    #value: root.progression_value
+                    id: my_progress_bar
+                    min: 0
+                    max: 100
+
+                    color:  2.12, 2.02, 1.63,1
+                    size_hint_y: 0.125
+                    height:dp(5)  
+
+                MDProgressBar:
+                    #value: root.progression_value
+                    id: my_progress_bar2
+                    min: 0
+                    max: 100
+
+                    color:  2.12, 2.02, 1.63,1
+                    size_hint_y: 0.125
+                    height:dp(7)  
+   
+                
+
+            GridLayout:
+                cols: 4
+                rows: 4
+                padding: 10
+                spacing: 15
+
+                Label:
+                    text: "Flip Vertical"
+
+                Switch:
+                    border_radius: 10
+                    #size_hint: 0.2,0.425
+                    id: mirrorY_switch
+                    active: False
+                    #font_size: dp(16)
+                    on_active: root.flipVertical()
+
+
+                Label:
+                    text: "Flip Horizontal"
+                Switch:
+                    text: "Flip Horizontal"
+                    #size_hint: 0.32,0.425
+                    id: mirrorX_switch
+                    active: False
+                    disabled: False
+                    #font_size: dp(16)
+                    on_active: root.flipHorizontal()
+                Label: 
+                    text: "Timelapse: "
+                Switch:
+                    background_color: 1,0.5,1,0.9
+                    #size_hint: 0.32,0.425
+                    id: my_switch
+                    active: True
+                    disabled: False
+                    font_size: 32
+                Label: 
+                    text: "VR Support: "
+                Switch:
+                    background_color: 1,0.5,0,0.9
+                    #size_hint: 0.32,0.45
+                    id: my_switch
+                    active: True
+                    disabled: False
+                    font_size: 32
+
+                Label: 
+                    text: "Manual Horizon: "
+                Switch:
+                    background_color: 1,0.5,0,0.9
+                    #size_hint: 0.32,0.45
+                    id: manual_switch
+                    active: True
+                    disabled: False
+                    font_size: 32
+
+                
+
+
+            GridLayout:
+                cols: 1
+                rows: 4
+                padding: 10
+                spacing: 10
+                size_hint: 0.75,1
+
+                Button:
+                    background_color: 2.85,2.850,2.850,1
+                    color: 0,0,0,1
+                    on_press: 
+                        #root.ids.previewImage.source = "imgassets/r4.jpg"
+                        root.openFileBrowser()
+                        self.background_color = (0,0,0,1)
+                        self.color = (2.85,2.850,2.850,1)
+                    size_hint: 0.1,0.2
+                    id: increment
+                    text: "Add Files"
+                    on_release: 
+                        self.background_color= (2.85,2.850,2.850,1)
+                        self.color= 0,0,0,1
+
+                Button:
+                    color: 0,0,0,1
+                    background_color: 2.85,2.850,2.850,1
+                    on_press: 
+                        self.background_color = (0,0,0,1)
+                        self.color = (2.85,2.850,2.850,1)
+                    size_hint: 0.05,0.2
+                    id: increment
+                    text: "Process"
+                    on_press:
+                    on_release: 
+                        self.background_color = (2.85,2.850,2.850,1)
+                        self.color= 0,0,0,1
+                        root.processMedia()
+
+
+                Button:
+                    color: 0,0,0,1
+                    background_color: 2.85,2.850,2.850,1
+                    on_press: 
+                        self.background_color = (0,0,0,1)
+                        self.color = (2.85,2.850,2.850,1)
+                    size_hint: 0.05,0.2
+                    id: increment
+                    text: "Save"
+                    on_press: root.saveImage()
+                    on_release: 
+                        self.background_color = (2.85,2.850,2.850,1)
+                        self.color= 0,0,0,1
+
+                Button:
+                    background_color: 2.85,2.850,2.850,1
+                    color: 0,0,0,1
+                    on_release: 
+                        self.background_color = (2.85,2.850,2.850,1)
+                        self.color= 0,0,0,1
+                    on_press: 
+                        self.background_color = (0,0,0,1)
+                        self.color = (2.85,2.850,2.850,1)
+                    size_hint: 0.025,0.2
+                    id: increment
+                    text: "Preferences"
+                    on_press: root.open_popup()
+
+
+<DownloadPopup>
+    id: downloadPopup
+    size_hint: 0.8,.1
+    auto_dismiss: True
+    title: 'Download: '
+    padding: 40
+    space: 40
+    background_color: 152/255,49/255,49/255,1
+
+    BoxLayout:
+        orientation: "horizontal"
+        Label:
+            id: saveFileNameLabel
+            text: "Enter a file name: "
+            size_hint_x:.2
+        TextInput:
+            id: saveFileNameInput
+            size_hint_x: .6
+            font_size: 16
+            multiline: False
+            #on_text_validate = app.root.saveImage()
+        Button:
+            text: "Enter"
+            size_hint_x: .2
+            on_press: app.root.saveImage()
+
+
+
+
+<PrefPopup>:
+    id: pref
+    size_hint: 0.8, 0.8
+    auto_dismiss: False
+    title: 'Preferences: '
+    padding: 40
+    space: 40
+    background_color: 152/255,49/255,49/255,1
+    
+
+    BoxLayout:
+        orientation: 'vertical'
+
+        BoxLayout:
+            orientation: 'horizontal'
+            #size_hint: 1, 0.1
+            padding: 19
+            spacing: 8
+            BoxLayout:
+                orientation: 'vertical'
+
+                Switch:
+                    #size_hint: 0.2,0.425
+                    id: my_switch
+                    active: True
+                    disabled: False
+                    font_size: 32
+
+                Switch:
+                    #size_hint: 0.32,0.425
+                    id: my_switch
+                    active: True
+                    disabled: False
+                    font_size: 32
+
+            BoxLayout:
+                orientation: 'vertical'
+
+                Switch:
+                    border_radius: 10
+                    #size_hint: 0.2,0.425
+                    id: my_switch
+                    active: True
+                    disabled: False
+                    font_size: 32
+
+                Switch:
+                    #size_hint: 0.32,0.425
+                    id: my_switch
+                    active: True
+                    disabled: False
+                    font_size: 32
+        Label:
+            text: 'More settings to be added'
+        Button:
+            text: 'Close'
+            size_hint: 0.2, 0.2
+            pos_hint: {'center_x': 0.5, 'center_y': 1}
+            on_press: root.dismiss()
+
+        Label:
+            text: ''
+
+
+
+<HelpPopup>:
+    id: help
+    size_hint: 0.8, 0.8
+    auto_dismiss: False
+    title: 'Help: '
+    padding: 40
+    space: 40
+    background_color: 152/255,49/255,49/255,1
+    BoxLayout:
+        orientation: 'vertical'
+    
+        Label:
+            size_hint_y: 0.65
+            text_size: self.width, None
+            text: 'This is the help section. More information will be added here.'
+        Button:
+            text: 'Close'
+            size_hint: 0.2, 0.2
+            pos_hint: {'center_x': 0.5, 'center_y': 1}
+            on_press: root.dismiss()
+
+        Label:
+            text: ''
