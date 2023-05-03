@@ -54,17 +54,17 @@ class HelpPopup(Popup):
 
 
 class PrefPopup(Popup):
-    def __init__(self):
-        print("PrefPopup init")
-        self.ids.scaleFactSlider.value = prefs['scale_factor']
-        self.ids.minHeightSlider.value = prefs['min_height']
-        self.ids.maxHeightSlider.value = prefs['max_height']
-        self.ids.lengthWeightSlider.value = prefs['length_weight']
-        self.ids.smoothWeightSlider.value = prefs['smoothness_weight']
-        self.ids.linearityWeightSlider.value = prefs['linearity_weight']
-        self.ids.debugAutoSwitch.value = prefs['debug_auto']
-        self.ids.fpsSlider.value = prefs['video_fps']
-        self.ids.hrfi.text = prefs['video_interval']
+    #def __init__(self):
+        #print("PrefPopup init")
+        #self.ids.scaleFactSlider.value = prefs['scale_factor']
+        #self.ids.minHeightSlider.value = prefs['min_height']
+        #self.ids.maxHeightSlider.value = prefs['max_height']
+        #self.ids.lengthWeightSlider.value = prefs['length_weight']
+        #self.ids.smoothWeightSlider.value = prefs['smoothness_weight']
+        #self.ids.linearityWeightSlider.value = prefs['linearity_weight']
+        #self.ids.debugAutoSwitch.value = prefs['debug_auto']
+        #self.ids.fpsSlider.value = prefs['video_fps']
+        #self.ids.hrfi.text = prefs['video_interval']
 
     def save_preferences(self):
         prefs['scale_factor'] = self.ids.scaleFactSlider.value
@@ -338,7 +338,7 @@ class MainScreen(BoxLayout):
 
     # replace with the function which does some calculation to maintain progressbar value
 
-    def press_it(self):
+    """ def press_it(self):
         # Grab the current progress bar value
 
         current2 = self.ids.my_progress_bar.value
@@ -357,8 +357,8 @@ class MainScreen(BoxLayout):
         # self.ids.my_label.text = f'{int(current)}% Progress'
 
     # see doc MDProgress bar
-
-    """
+  
+    
     What happens when you click on the window (sepcificallly on the image)
     saves the local coordinates of the user's click on the image.
     draws a circle around where the user clicked to inform user of click location 
@@ -463,10 +463,7 @@ class MainScreen(BoxLayout):
         src_image = self.currentImg
         scale_factor = min(1280 / src_image.shape[1], 720 / src_image.shape[0])
         img = cv2.resize(src_image, None, fx=scale_factor, fy=scale_factor)
-        pbcurrent = self.ids.my_progress_bar.value
-        pbcurrent += 12
-
-        self.ids.my_progress_bar.value = pbcurrent
+        
 
         # horizon_contour = find_horizon(img)
         # # Draw the contour on the image
@@ -495,14 +492,9 @@ class MainScreen(BoxLayout):
         print(ix, iy)
         # rotate the image and update the preview
         rotatedImage = rotateImage(src_image, h, w, c, ix, iy, mirrorX, mirrorY)
-        pbcurrent = self.ids.my_progress_bar.value
-        pbcurrent = 79
-
-        self.ids.my_progress_bar.value = pbcurrent
+        
         self.updateImage(rotatedImage)
-        pbcurrent = 100
-
-        self.ids.my_progress_bar.value = pbcurrent
+        
 
     """
     Uses the point selected  by the user to equirotate the preview Image
@@ -513,18 +505,11 @@ class MainScreen(BoxLayout):
         # if no point selected, message the user and return
         if not self.selectedPoint:
             toast("no point selected")
-            pbcurrent = self.ids.my_progress_bar.value
-            pbcurrent = 0
-
-            self.ids.my_progress_bar.value = pbcurrent
             return
 
         # remove selected point from image
         self.canvas.remove(self.selectedPoint)
-        self.selectedPoint = None
 
-        pbcurrent = 8
-        self.ids.my_progress_bar.value = pbcurrent
 
         src_image = self.currentImg
         imgSize = self.ids.previewImage.size
@@ -540,14 +525,12 @@ class MainScreen(BoxLayout):
         h, w, c, ix, iy = scaleImage(
             src_image, imgSize, self.touchLocalX, self.touchLocalY
         )
-        pbcurrent += 12
-        self.ids.my_progress_bar.value = pbcurrent
+        
         print(f"Clicked Location (x,y): {ix},{iy}")
 
         # rotate the image and update the preview
         rotatedImage = rotateImage(src_image, h, w, c, ix, iy, mirrorX, mirrorY)
-        pbcurrent += 18
-        self.ids.my_progress_bar.value = pbcurrent
+        
 
         self.updateImage(rotatedImage)
 
@@ -630,14 +613,11 @@ class MainScreen(BoxLayout):
             self.history.append(histItem)
 
         # set the current image to the new one
-        self.currentImg = newImg
-        pbcurrent = 79
-        self.ids.my_progress_bar.value = pbcurrent
+        
         # save the previewImage and update the visual
         cv2.imwrite(self.previewimgPath, newImg, [int(cv2.IMWRITE_JPEG_QUALITY), 100])
         self.ids.previewImage.reload()
-        pbcurrent = 100
-        self.ids.my_progress_bar.value = pbcurrent
+        
 
     """
     alignFrame
