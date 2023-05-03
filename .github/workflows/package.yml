@@ -13,6 +13,27 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
+     - name: Check OpenGL version
+        run: |
+          echo "Checking OpenGL version..."
+          $gl_info = wmic path win32_videocontroller get VideoMemoryType /value
+          if ($gl_info -match "OpenGL") {
+            $gl_version = glxinfo -B | Select-String -Pattern 'OpenGL version string'
+            if ($gl_version -match '\d+\.\d+') {
+              $gl_major = [double]::Parse($matches[0])
+              if ($gl_major -ge 2.0) {
+                echo "OpenGL version is 2.0 or higher"
+                exit 0
+              }
+            }
+          }
+          echo "OpenGL version is less than 2.0"
+          echo "Installing Mesa 3D..."
+          Invoke-WebRequest -Uri https://www.mesa3d.org/binary/win64/mesa-dist-x64.exe -OutFile mesa-dist-x64.exe
+          Start-Process -FilePath mesa-dist-x64.exe -ArgumentList /S, /D=C:\Mesa3D
+          $env:Path += ";C:\Mesa3D\bin"
+        shell: powershell
+
     - name: Install Python 3.10.11
       uses: actions/setup-python@v2
       with:
