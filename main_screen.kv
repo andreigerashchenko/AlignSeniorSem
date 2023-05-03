@@ -3,6 +3,7 @@
         orientation: "vertical"
         padding: 12
         spacing: 10
+        font:'font/sf-ui-display.otf'
         canvas.before:
             Color:
                 rgba: 132/255,39/255,39/255,1
@@ -45,16 +46,20 @@
             orientation: "horizontal"
             align: 'center'
             size_hint: 1, 0.205
-            padding: 18
-            spacing: 18
+            pos_hint: {'center_x': 0.5,'center_y': 1}
+            padding: 10
+            spacing: 14
+
+
+            
             
             
             Label:
-                pos_hint: { 'center_y': 0.5}
+                pos_hint: {'center_y': 0.5}
                 font_size: 45
                 font:'font/sf-ui-display.otf'
                 text: "  Job Queue:"
-                size_hint: 0.38,0.5
+                size_hint: 0.35,0.5
 
             ScrollView:
                 #id: imgQueue
@@ -76,9 +81,9 @@
                 background_color: 2.85,2.850,2.850,1
                 color: 0,0,0,1
                 size_hint: 0.24,1
-                pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+                font_size: 32
+                pos_hint: {'center_x':0 ,'center_y': 0.5}
                 id: undoButton
-                font_size: 24
                 on_press: 
                     root.undo()
                     self.background_color = (0,0,0,1)
@@ -93,9 +98,10 @@
 
         BoxLayout:
             orientation: "horizontal"
-            size_hint: 0.75, 0.60
+            size_hint: 0.75, 0.75
             padding: 15
             spacing: 18
+            pos_hint: {'center_x': 0.5,'center_y': 1}
 
             GridLayout:
                 cols: 2
@@ -208,6 +214,8 @@
                     on_press: root.open_popup()
 
 
+
+
 <DownloadPopup>
     id: downloadPopup
     size_hint: 0.8,.1
@@ -242,7 +250,7 @@
     size_hint: 0.35, 0.85
     auto_dismiss: True
     title: 'Preferences: '
-    background_color: 152/255,49/255,49/255,1
+    background_color: 152/255,186/255,186/255,1
     
 
     BoxLayout:
@@ -250,6 +258,7 @@
         padding: 12
 
         BoxLayout:
+
 
 
             GridLayout:
@@ -263,6 +272,7 @@
                     text: "Auto Horizon: "
                     font_size: 20
                     pos_hint: {'x': 0,'center_y': 1}
+
                 Label:
                     text: ""
                 Label:
@@ -304,7 +314,7 @@
                     pos_hint: {'x': 0,'center_y': 1}
                 Label:
                     text: "Linearity Weight "
-                    pos_hint: {'x': 0,'center_y': 1}
+                    #pos_hint: {'x': 0,'center_y': 1}
                 MDSlider:
                     id: linearityWeightSlider
                     min: 0
@@ -320,13 +330,14 @@
                     max: 1
                     value: 1
                     pos_hint: {'x': 0,'center_y': 1}
+
                 Label:
                     text: "Debug mode "
-                    pos_hint: {'x': 0,'center_y': 1}
+                    #pos_hint: {'x': 0,'center_y': 1}
                 MDSwitch:
                     id: debugAutoSwitch
-                    active: True
-                    pos_hint: {'x': 0,'center_y': 1}
+                    #active: True
+                    #pos_hint: {'x': 0,'center_y': 1}
                     #size_hint: 0.2, 1
 
                     #on_active: app.root.toggle_debug_mode()
@@ -351,6 +362,7 @@
                 Label:
                     text: "Video: "
                     font_size: 20
+
                 Label:
                     text: ""
                 Label:
@@ -360,7 +372,7 @@
                     min: 0
                     max: 100
                     value: 0
-                    pos_hint: {'x': 0,'center_y': 1}
+                    #pos_hint: {'x': 0,'center_y': 1}
                 Label:
                     text: "horizon recalculation\nframe interval "
                 TextInput:
@@ -370,7 +382,7 @@
                     size_hint: (None, None)
                     height: 50
                     width: 45
-                    pos_hint: {'center_x': 1,'center_y': 1}
+                    #pos_hint: {'center_x': 1,'center_y': 1}
                     multiline: False
 
 
