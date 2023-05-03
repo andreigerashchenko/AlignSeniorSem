@@ -343,7 +343,7 @@
     id: help
     size_hint: 0.8, 0.8
     auto_dismiss: False
-    title: 'Help: '
+    title: ''
     padding: 40
     space: 40
     background_color: 152/255,49/255,49/255,1
@@ -353,7 +353,7 @@
         Label:
             size_hint_y: 0.65
             text_size: self.width, None
-            text: 'This is the help section. More information will be added here.'
+            text: 'Usage:\n\n 1. Click on the Add Files button to select images or videos to add to the queue.\n\n2. Select whether the images need to be flipped horizontally or vertically.\n\n3. Select whether you would like to use the automatic horizon detection feature. Automatic horizon detection is always enabled for videos.\n\n4. If Manual Horizon is enabled, click on the lowest point of the horizon, and then click process.'
         Button:
             text: 'Close'
             size_hint: 0.2, 0.2
