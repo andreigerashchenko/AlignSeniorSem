@@ -260,7 +260,7 @@
     size_hint: 0.75, 0.75
     auto_dismiss: False
     title: 'Preferences: '
-    background_color: 152/255,171/255,171/255,1
+    background_color: 152/255,186/255,186/255,1
     
 
     BoxLayout:
@@ -343,23 +343,23 @@
                     min: 0
                     max: 10
                     value: 0
-                    pos_hint: {'x': 0,'center_y': 1}
+                    #pos_hint: {'x': 0,'center_y': 1}
                 Label:
                     text: "Linearity Weight "
-                    pos_hint: {'x': 0,'center_y': 1}
+                    #pos_hint: {'x': 0,'center_y': 1}
                 MDSlider:
                     id: linearityWeightSlider
                     min: 0
                     max: 100
                     value: 0
-                    pos_hint: {'x': 0,'center_y': 1}
+                    #pos_hint: {'x': 0,'center_y': 1}
                 Label:
                     text: "Debug mode "
-                    pos_hint: {'x': 0,'center_y': 1}
+                    #pos_hint: {'x': 0,'center_y': 1}
                 MDSwitch:
                     id: debugAutoSwitch
                     #active: True
-                    pos_hint: {'x': 0,'center_y': 1}
+                    #pos_hint: {'x': 0,'center_y': 1}
                     #size_hint: 0.2, 1
                     
                     #on_active: app.root.toggle_debug_mode()
@@ -393,11 +393,11 @@
                     text: "Default output suffix "
                 TextInput:
                     id: outputsuffix
-                    hint_text: '10'
+                    hint_text: '.jpg'
                     size_hint: (None, None)
                     height: 50
-                    width: 45
-                    pos_hint: {'center_x': 1,'center_y': 1}
+                    width: 145
+                    #pos_hint: {'center_x': 1,'center_y': 0.5}
                     multiline: False
 
             GridLayout:
@@ -419,7 +419,7 @@
                     min: 0
                     max: 100
                     value: 0
-                    pos_hint: {'x': 0,'center_y': 1}
+                    #pos_hint: {'x': 0,'center_y': 1}
                 Label:
                     text: "horizon recalculation\nframe interval "
                 TextInput:
@@ -428,7 +428,7 @@
                     size_hint: (None, None)
                     height: 50
                     width: 45
-                    pos_hint: {'center_x': 1,'center_y': 1}
+                    #pos_hint: {'center_x': 1,'center_y': 1}
                     multiline: False
 
  
