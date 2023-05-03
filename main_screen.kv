@@ -269,12 +269,7 @@
                 padding: 10
                 spacing: 0
                 size_hint: 0.25,1
-                canvas.before:
-                    Color:
-                        rgba: 12/255,49/255,139/255,1
-                    Rectangle:
-                        pos: self.pos
-                        size: self.size
+                
                 Label:
                     text: "General: "
                     pos_hint: {'x': 0,'center_y': 1}
@@ -367,9 +362,6 @@
             spacing: 8
             size_hint: 1,1
 
-
-
-
             GridLayout:
                 cols: 2
                 rows: 3
@@ -434,7 +426,9 @@
             text: 'Close'
             size_hint: 0.2, 0.2
             pos_hint: {'center_x': 0.5, 'center_y': 1}
-            on_press: root.dismiss()
+            on_press: 
+                root.save_preferences()
+                root.dismiss()
 
 
 
