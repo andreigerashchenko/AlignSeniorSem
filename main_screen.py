@@ -36,7 +36,7 @@ Window.size = (1200, 750)
 kv = Builder.load_file('main_screen.kv')
 
 vidPreviewPath = os.path.abspath(".vidPreview.mp4")
-previewimgPath = os.path.abspath(".previewImg.jpg")
+# previewimgPath = os.path.abspath(".previewImg.jpg")
 
 class HelpPopup(Popup):
     pass
@@ -157,14 +157,14 @@ class MainScreen(BoxLayout):
                 extenstion = os.path.splitext(filename)[-1][1:]
 
                 # if video, create video button of selected file
-                if extenstion in ["mp4", "mov"]:
+                if extenstion.lower() == "mp4":
                     im = Button(background_normal="blank_video_logo.png", size_hint=(None, 1), width=100,
-                                text=filename, font_size=10, on_press=lambda vid: self.focusVideo(file))
+                                text=filename, font_size=10, on_press=lambda vid: self.focusVideo(vid))
 
                 # if image, create image button of the selected file
                 else:
                     im = Button(background_normal=file, size_hint=(None, 1), width=100,
-                                text=filename, font_size=10, on_press=lambda image: self.focusImage(file))
+                                text=filename, font_size=10, on_press=lambda image: self.focusImage(image.background_normal))
 
                 # add the buttonImage to the queue
                 queueThumbnails.add_widget(im)
@@ -493,7 +493,8 @@ class MainScreen(BoxLayout):
         # set the switches to reflect the states at that point in history
         self.ids.mirrorY_switch.active = lastState.flipV
         self.ids.mirrorX_switch.active = lastState.flipH
-        pbcurrent -= 18
+        if pbcurrent:
+            pbcurrent -= 18
         self.ids.my_progress_bar.value = pbcurrent
         # change the preview image to that of the history frame
         self.updateImage(lastState.img)
