@@ -375,7 +375,7 @@
                     value: 0
                     #pos_hint: {'x': 0,'center_y': 1}
                 Label:
-                    text: "horizon recalculation\nframe interval "
+                    text: "Horizon Recalculation\nFrame Interval "
                 TextInput:
                     id: hrfi
                     input_type: 'number'
@@ -403,18 +403,16 @@
     id: help
     size_hint: 0.8, 0.8
     auto_dismiss: True
-    title: ''
+    title: 'Help:'
     padding: 40
-    space: 40
-    background_color: 152/255,49/255,49/255,1
+    space: 4
+    background_color: 152/255,186/255,186/255,1
     BoxLayout:
         orientation: 'vertical'
-    
+        padding: 12
+
         Label:
-            size_hint: 1,None
-            height:450
-            pos_hint: {'center_x': 0.5, 'y': 0}
-            text: 'Usage:\n\n 1. Click on the Add Files button to select images or videos to add to the queue.\n\n2. Select whether the images need to be flipped horizontally or vertically.\n\n3. Select whether you would like to use the automatic horizon detection feature. Automatic horizon detection is always enabled for videos.\n\n4. If Manual Horizon is enabled, click on the lowest point of the horizon, and then click process.\n\n\nControls:\n\n Enter: process image\n\n ctrl+z:undo\n\n ctrl+s:save\n\n ctrl+h:help\n\n ctrl+p:preferences\n\n esc,ctrl+w:close'
+            text: '1. Click on the Add Files button to select images or videos to add to the queue.\n\n2. Select whether the images need to be flipped horizontally or vertically.\n\n3. Select whether you would like to use the automatic horizon detection feature. Automatic horizon detection is always enabled for videos.\n\n4. If Manual Horizon is enabled, click on the lowest point of the horizon, and then click process.\n\n\nControls:\n\n Enter: process image\n\n ctrl+z:undo\n\n ctrl+s:save\n\n ctrl+h:help\n\n ctrl+p:preferences\n\n esc,ctrl+w:close'
 
         Button:
             text: 'Close'
@@ -422,9 +420,6 @@
             height:50
             pos_hint: {'center_x': 0.5, 'center_y': 1}
             on_press: root.dismiss()
-
-        Label:
-            text: ''
 
 
 <VidPreviewPopup>:
